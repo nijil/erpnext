@@ -1,3 +1,19 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import webnotes
 from webnotes.utils import cint, cstr, flt
 from webnotes.model.doc import addchild, getchildren
@@ -35,7 +51,7 @@ class DocType:
 			msgprint("Please enter date of shorter duration as there are too many purchase receipt, hence it cannot be loaded.", raise_exception=1)
 			
 		for i in pr:
-			ch = addchild(self.doc, 'lc_pr_details', 'LC PR Detail', 1, self.doclist)
+			ch = addchild(self.doc, 'lc_pr_details', 'Landed Cost Purchase Receipt', 1, self.doclist)
 			ch.purchase_receipt = i and i['name'] or ''
 			ch.save()
 
@@ -46,7 +62,7 @@ class DocType:
 		idx = 0
 		landed_cost = sql("select account_head, description from `tabLanded Cost Master Detail` where parent=%s", (self.doc.landed_cost), as_dict = 1)
 		for cost in landed_cost:
-			lct = addchild(self.doc, 'landed_cost_details', 'Landed Cost Detail', 1, self.doclist)
+			lct = addchild(self.doc, 'landed_cost_details', 'Landed Cost Item', 1, self.doclist)
 			lct.account_head = cost['account_head']
 			lct.description = cost['description']
 
@@ -82,9 +98,9 @@ class DocType:
 				self.prwise_cost[pr] = self.prwise_cost.get(pr, 0) + amt
 				cumulative_grand_total += amt
 				
-				pr_oc_row = sql("select name from `tabPurchase Tax Detail` where parent = %s and category = 'For Valuation' and add_deduct_tax = 'Add' and charge_type = 'Actual' and account_head = %s",(pr, lc.account_head))
+				pr_oc_row = sql("select name from `tabPurchase Taxes and Charges` where parent = %s and category = 'For Valuation' and add_deduct_tax = 'Add' and charge_type = 'Actual' and account_head = %s",(pr, lc.account_head))
 				if not pr_oc_row:	# add if not exists
-					ch = addchild(pr_obj.doc, 'purchase_tax_details', 'Purchase Tax Detail', 1)
+					ch = addchild(pr_obj.doc, 'purchase_tax_details', 'Purchase Taxes and Charges', 1)
 					ch.category = 'For Valuation'
 					ch.add_deduct_tax = 'Add'
 					ch.charge_type = 'Actual'
@@ -97,7 +113,7 @@ class DocType:
 					ch.idx = 500 # add at the end
 					ch.save(1)
 				else:	# overwrite if exists
-					sql("update `tabPurchase Tax Detail` set rate = %s, tax_amount = %s where name = %s and parent = %s ", (amt, amt, pr_oc_row[0][0], pr))
+					sql("update `tabPurchase Taxes and Charges` set rate = %s, tax_amount = %s where name = %s and parent = %s ", (amt, amt, pr_oc_row[0][0], pr))
 		
 		
 	def reset_other_charges(self, pr_obj):
@@ -112,6 +128,7 @@ class DocType:
 		
 	def cal_charges_and_item_tax_amt(self):
 		""" Re-calculates other charges values and itemwise tax amount for getting valuation rate"""
+		import json
 		for pr in self.selected_pr:
 			obj = get_obj('Purchase Receipt', pr, with_children = 1)
 			total = 0
@@ -121,7 +138,11 @@ class DocType:
 				prev_total, item_tax = flt(prd.amount), 0
 				total += flt(prd.qty) * flt(prd.purchase_rate)
 			
-				item_tax_rate = prd.item_tax_rate and eval(prd.item_tax_rate) or {}
+				try:
+					item_tax_rate = prd.item_tax_rate and json.loads(prd.item_tax_rate) or {}
+				except ValueError:
+					item_tax_rate = prd.item_tax_rate and eval(prd.item_tax_rate) or {}
+
 				
 				ocd = getlist(obj.doclist, 'purchase_tax_details')
 				# calculate tax for other charges

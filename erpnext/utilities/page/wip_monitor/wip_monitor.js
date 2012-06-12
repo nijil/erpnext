@@ -1,3 +1,19 @@
+// ERPNext - web based ERP (http://erpnext.com)
+// Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 pscript['onload_WIP Monitor'] = function(){
 	wip = new WIP_Monitor();
 
@@ -23,7 +39,7 @@ WIP_Monitor.prototype.make_wip_dashboard = function(wip_dict)
 {
 	var me = this;
 	// list of doctypes which user can read
-	var can_read_dt = ['Lead', 'Enquiry', 'Sales Order', 'Receivable Voucher', 'Indent', 'Purchase Order', 'Payable Voucher', 'Delivery Note', 'Task', 'Serial No'];
+	var can_read_dt = ['Lead', 'Opportunity', 'Sales Order', 'Sales Invoice', 'Purchase Request', 'Purchase Order', 'Purchase Invoice', 'Delivery Note', 'Task', 'Serial No'];
   
 	$i('wip_body').innerHTML = '';
 	this.tab = make_table('wip_body',1,0,'100%',[],{padding:'4px'});
@@ -54,7 +70,7 @@ WIP_Monitor.prototype.show_wip_dashboard = function(parent, head, report_dict)
 	var report_dt
   
 	// dictionary for labels to be displayed
-	var wip_lbl_map = {'Lead':'Lead', 'Enquiry':'Enquiries', 'Sales Order':'Sales Order', 'Receivable Voucher':'Invoices', 'Indent':'Indent', 'Purchase Order':'Purchase Order', 'Payable Voucher':'Bills', 'Delivery Note':'Delivery Note', 'Task':'Tasks', 'Serial No':'Maintenance'};
+	var wip_lbl_map = {'Lead':'Lead', 'Opportunity':'Enquiries', 'Sales Order':'Sales Order', 'Sales Invoice':'Invoices', 'Purchase Request':'Purchase Request', 'Purchase Order':'Purchase Order', 'Purchase Invoice':'Bills', 'Delivery Note':'Delivery Note', 'Task':'Tasks', 'Serial No':'Maintenance'};
 
 	// header
 	var h = $a(parent,'h3');

@@ -1,3 +1,19 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import unittest
 import webnotes
 
@@ -14,15 +30,15 @@ class TestSalaryManager(unittest.TestCase):
 		ss1[0].employee = emp1.name
 		for s in ss1: s.save(1)
 		for s in ss1[1:]:
-			sql("update `tabEarning Detail` set parent = '%s' where name = '%s'" % (ss1[0].name, s.name))
-			sql("update `tabDeduction Detail` set parent = '%s' where name = '%s'" % (ss1[0].name, s.name))
+			sql("update `tabSalary Structure Earning` set parent = '%s' where name = '%s'" % (ss1[0].name, s.name))
+			sql("update `tabSalary Structure Deduction` set parent = '%s' where name = '%s'" % (ss1[0].name, s.name))
 			
 		
 		ss2[0].employee = emp2.name
 		for s in ss2: s.save(1)		
 		for s in ss2[1:]:
-			sql("update `tabEarning Detail` set parent = '%s' where name = '%s'" % (ss2[0].name, s.name))
-			sql("update `tabDeduction Detail` set parent = '%s' where name = '%s'" % (ss2[0].name, s.name))
+			sql("update `tabSalary Structure Earning` set parent = '%s' where name = '%s'" % (ss2[0].name, s.name))
+			sql("update `tabSalary Structure Deduction` set parent = '%s' where name = '%s'" % (ss2[0].name, s.name))
 			
 		sman.save()
 		self.sm = get_obj('Salary Manager')	
@@ -142,7 +158,7 @@ ss1 = [
 	Document(fielddata={
 		'parenttype':'Salary Structure',
 		'parentfield':'earning_details',
-		'doctype':'Earning Detail',
+		'doctype':'Salary Structure Earning',
 		'e_type' : 'Basic',
 		'depend_on_lwp':1,
 		'modified_value':100
@@ -150,7 +166,7 @@ ss1 = [
 	Document(fielddata={
 		'parenttype':'Salary Structure',
 		'parentfield':'earning_details',
-		'doctype':'Deduction Detail',
+		'doctype':'Salary Structure Deduction',
 		'd_type':'TDS',
 		'd_modified_amt':20
 	})
@@ -165,14 +181,14 @@ ss2 = [
 	Document(fielddata={
 		'parenttype':'Salary Structure',
 		'parentfield':'deduction_details',
-		'doctype':'Earning Detail',
+		'doctype':'Salary Structure Earning',
 		'e_type' : 'Basic',
 		'modified_value':100
 	}),
 	Document(fielddata={
 		'parenttype':'Salary Structure',
 		'parentfield':'deduction_details',
-		'doctype':'Deduction Detail',
+		'doctype':'Salary Structure Deduction',
 		'd_type':'TDS',
 		'd_modified_amt':20
 	})

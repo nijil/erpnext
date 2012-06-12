@@ -1,9 +1,25 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
-from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
+from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add, make_esc
 from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
@@ -86,9 +102,9 @@ class DocType(TransactionBase):
 		if based_on == 'Grand Total': auth_value = total
 		elif based_on == 'Customerwise Discount':
 			if doc_obj:
-				if doc_obj.doc.doctype == 'Receivable Voucher': customer = doc_obj.doc.customer
+				if doc_obj.doc.doctype == 'Sales Invoice': customer = doc_obj.doc.customer
 				else: customer = doc_obj.doc.customer_name
-				add_cond = " and master_name = '"+cstr(customer)+"'"
+				add_cond = " and master_name = '"+make_esc("'")(cstr(customer))+"'"
 		if based_on == 'Itemwise Discount':
 			if doc_obj:
 				for t in getlist(doc_obj.doclist, doc_obj.fname):
@@ -100,8 +116,8 @@ class DocType(TransactionBase):
 	# Check Approving Authority for transactions other than expense voucher and Appraisal
 	# -------------------------
 	def validate_approving_authority(self, doctype_name,company, total, doc_obj = ''):
-		if doctype_name == 'Payable Voucher': doctype_name = 'Purchase Invoice'
-		elif doctype_name == 'Receivable Voucher': doctype_name = 'Sales Invoice'
+		if doctype_name == 'Purchase Invoice': doctype_name = 'Purchase Invoice'
+		elif doctype_name == 'Sales Invoice': doctype_name = 'Sales Invoice'
 		av_dis = 0
 		if doc_obj:
 			ref_rate, basic_rate = 0, 0
@@ -176,7 +192,7 @@ class DocType(TransactionBase):
 		rule ={}
 		
 		if doc_obj:
-			if doctype_name == 'Expense Voucher':
+			if doctype_name == 'Expense Claim':
 				rule = self.get_value_based_rule(doctype_name,doc_obj.doc.employee,doc_obj.doc.total_claimed_amount, doc_obj.doc.company)
 			elif doctype_name == 'Appraisal':
 				rule = sql("select name, to_emp, to_designation, approving_role, approving_user from `tabAuthorization Rule` where transaction=%s and (to_emp=%s or to_designation IN (select designation from `tabEmployee` where name=%s)) and company = %s and docstatus!=2",(doctype_name,doc_obj.doc.employee, doc_obj.doc.employee, doc_obj.doc.company),as_dict=1)				

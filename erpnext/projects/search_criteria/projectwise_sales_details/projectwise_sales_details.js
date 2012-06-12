@@ -1,3 +1,19 @@
+// ERPNext - web based ERP (http://erpnext.com)
+// Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 report.customize_filters = function() {
   //hide all filters
   //------------------------------------------------
@@ -73,7 +89,7 @@ report.get_query = function() {
     if(company) cond += ' t1.company = "'+company+'" AND ';
     if(fy) cond += ' t1.fiscal_year = "'+fy+'" AND '; 
     
-    var q = 'SELECT DISTINCT t1.name, t1.status, t1.project_name, t1.customer, t1.customer_name, t1.per_billed, t1.per_installed, t1.grand_total FROM `tabDelivery Note` t1, `tabDelivery Note Detail` t2  WHERE '+cond+' IFNULL(t1.project_name,"") !="" AND t1.docstatus != 2';
+    var q = 'SELECT DISTINCT t1.name, t1.status, t1.project_name, t1.customer, t1.customer_name, t1.per_billed, t1.per_installed, t1.grand_total FROM `tabDelivery Note` t1, `tabDelivery Note Item` t2  WHERE '+cond+' IFNULL(t1.project_name,"") !="" AND t1.docstatus != 2';
 
     return q;
   }
@@ -88,7 +104,7 @@ report.get_query = function() {
     if(fy) cond += ' t1.fiscal_year = "'+fy+'" AND '; 
 
        
-    var q = 'SELECT DISTINCT t1.name , t1.debit_to , t1.project_name , t1.customer , t1.customer_name , t1.grand_total  FROM `tabReceivable Voucher` t1,  `tabRV Detail` t2 WHERE '+cond +'IFNULL(t1.project_name,"") !="" AND t1.docstatus != 2 AND t1.name = t2.parent';
+    var q = 'SELECT DISTINCT t1.name , t1.debit_to , t1.project_name , t1.customer , t1.customer_name , t1.grand_total  FROM `tabSales Invoice` t1,  `tabSales Invoice Item` t2 WHERE '+cond +'IFNULL(t1.project_name,"") !="" AND t1.docstatus != 2 AND t1.name = t2.parent';
 
     return q;  
   }

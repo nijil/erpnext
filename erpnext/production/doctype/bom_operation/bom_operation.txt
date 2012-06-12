@@ -3,171 +3,133 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2010-08-08 17:08:53',
+		'creation': '2012-03-27 14:36:02',
 		'docstatus': 0,
-		'modified': '2010-09-20 14:06:57',
-		'modified_by': 'umair@iwebnotes.com',
-		'owner': 'Administrator'
+		'modified': '2012-03-27 14:36:02',
+		'modified_by': u'Administrator',
+		'owner': u'Administrator'
 	},
 
 	# These values are common for all DocType
 	{
-		'colour': 'White:FFF',
+		'colour': u'White:FFF',
+		'default_print_format': u'Standard',
 		'doctype': 'DocType',
 		'istable': 1,
-		'module': 'Production',
+		'module': u'Production',
 		'name': '__common__',
-		'section_style': 'Simple',
-		'server_code_error': ' ',
+		'section_style': u'Simple',
+		'server_code_error': u' ',
 		'show_in_menu': 0,
-		'version': 6
+		'version': 8
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': 'DocField',
+		'doctype': u'DocField',
 		'name': '__common__',
-		'parent': 'BOM Operation',
-		'parentfield': 'fields',
-		'parenttype': 'DocType'
+		'parent': u'BOM Operation',
+		'parentfield': u'fields',
+		'parenttype': u'DocType',
+		'permlevel': 0
 	},
 
 	# These values are common for all DocPerm
 	{
-		'doctype': 'DocPerm',
+		'doctype': u'DocPerm',
 		'name': '__common__',
-		'parent': 'BOM Operation',
-		'parentfield': 'permissions',
-		'parenttype': 'DocType',
+		'parent': u'BOM Operation',
+		'parentfield': u'permissions',
+		'parenttype': u'DocType',
 		'read': 1,
-		'role': 'System Manager'
+		'role': u'System Manager'
 	},
 
 	# DocType, BOM Operation
 	{
 		'doctype': 'DocType',
-		'name': 'BOM Operation'
+		'name': u'BOM Operation'
 	},
 
 	# DocPerm
 	{
-		'doctype': 'DocPerm',
-		'idx': 1,
+		'doctype': u'DocPerm',
 		'permlevel': 0,
 		'write': 1
 	},
 
 	# DocPerm
 	{
-		'doctype': 'DocPerm',
-		'idx': 2,
+		'doctype': u'DocPerm',
 		'permlevel': 1
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldname': 'operation_no',
-		'fieldtype': 'Data',
-		'idx': 1,
-		'label': 'Operation No',
-		'oldfieldname': 'operation_no',
-		'oldfieldtype': 'Data',
-		'permlevel': 0,
+		'doctype': u'DocField',
+		'fieldname': u'operation_no',
+		'fieldtype': u'Data',
+		'label': u'Operation No',
+		'oldfieldname': u'operation_no',
+		'oldfieldtype': u'Data',
 		'reqd': 1
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldname': 'opn_description',
-		'fieldtype': 'Text',
-		'idx': 2,
-		'label': 'Opn Description',
-		'oldfieldname': 'opn_description',
-		'oldfieldtype': 'Text',
-		'permlevel': 0,
+		'doctype': u'DocField',
+		'fieldname': u'opn_description',
+		'fieldtype': u'Text',
+		'label': u'Opn Description',
+		'oldfieldname': u'opn_description',
+		'oldfieldtype': u'Text',
 		'reqd': 1
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldname': 'details',
-		'fieldtype': 'Data',
-		'idx': 3,
-		'label': 'Details',
-		'oldfieldname': 'details',
-		'oldfieldtype': 'Data',
-		'permlevel': 0
+		'doctype': u'DocField',
+		'fieldname': u'workstation',
+		'fieldtype': u'Link',
+		'label': u'Workstation',
+		'oldfieldname': u'workstation',
+		'oldfieldtype': u'Link',
+		'options': u'Workstation',
+		'reqd': 0,
+		'trigger': u'Client'
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldname': 'workstation',
-		'fieldtype': 'Link',
-		'idx': 4,
-		'label': 'Workstation',
-		'oldfieldname': 'workstation',
-		'oldfieldtype': 'Link',
-		'options': 'Workstation',
-		'permlevel': 0,
-		'reqd': 1,
-		'search_index': 0,
-		'trigger': 'Client'
-	},
-
-	# DocField
-	{
-		'doctype': 'DocField',
-		'fieldname': 'hour_rate',
-		'fieldtype': 'Currency',
-		'idx': 5,
-		'label': 'Hour Rate',
-		'oldfieldname': 'hour_rate',
-		'oldfieldtype': 'Currency',
-		'permlevel': 1,
+		'doctype': u'DocField',
+		'fieldname': u'hour_rate',
+		'fieldtype': u'Currency',
+		'label': u'Hour Rate',
+		'oldfieldname': u'hour_rate',
+		'oldfieldtype': u'Currency',
 		'reqd': 0
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldname': 'workstation_capacity',
-		'fieldtype': 'Currency',
-		'hidden': 1,
-		'idx': 6,
-		'label': 'Workstation Capacity',
-		'oldfieldname': 'workstation_capacity',
-		'oldfieldtype': 'Currency',
-		'permlevel': 0
-	},
-
-	# DocField
-	{
-		'doctype': 'DocField',
-		'fieldname': 'time_in_mins',
-		'fieldtype': 'Currency',
-		'idx': 7,
-		'label': 'Operation Time (mins)',
-		'oldfieldname': 'time_in_mins',
-		'oldfieldtype': 'Currency',
-		'permlevel': 0,
+		'doctype': u'DocField',
+		'fieldname': u'time_in_mins',
+		'fieldtype': u'Currency',
+		'label': u'Operation Time (mins)',
+		'oldfieldname': u'time_in_mins',
+		'oldfieldtype': u'Currency',
 		'reqd': 0
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'doctype': 'DocField',
-		'fieldname': 'operating_cost',
-		'fieldtype': 'Currency',
-		'idx': 8,
-		'label': 'Operating Cost',
-		'oldfieldname': 'operating_cost',
-		'oldfieldtype': 'Currency',
-		'permlevel': 1,
+		'doctype': u'DocField',
+		'fieldname': u'operating_cost',
+		'fieldtype': u'Currency',
+		'label': u'Operating Cost',
+		'oldfieldname': u'operating_cost',
+		'oldfieldtype': u'Currency',
 		'reqd': 0
 	}
 ]

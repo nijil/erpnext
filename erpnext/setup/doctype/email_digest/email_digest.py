@@ -1,3 +1,19 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import webnotes
 import webnotes.utils
 
@@ -83,7 +99,7 @@ class DocType:
 
 			'new_enquiries': self.generate_new_type_query({
 				'type': 'new_enquiries',
-				'doctype': 'Enquiry'
+				'doctype': 'Opportunity'
 			}),
 
 			'new_quotations': self.generate_new_type_query({
@@ -94,7 +110,7 @@ class DocType:
 
 			'new_sales_orders': self.generate_new_type_query({
 				'type': 'new_sales_orders',
-				'doctype': 'Receivable Voucher',
+				'doctype': 'Sales Invoice',
 				'sum_col': 'grand_total'
 			}),
 
@@ -126,7 +142,7 @@ class DocType:
 						r['value'] = float(r['debit'] - r['credit'])
 				#webnotes.msgprint(query)
 				#webnotes.msgprint(res)
-				result[query] = (res and len(res)==1) and res[0] or (res and res or None)
+				result[query] = res and (len(res)==1 and res[0]) or (res or None)
 				if result[query] is None:
 					del result[query]
 		
@@ -224,7 +240,9 @@ class DocType:
 			Adds common conditions in dictionary "args"
 		"""
 		start_date, end_date = self.get_start_end_dates()
-		fiscal_start_date = webnotes.utils.get_defaults()['year_start_date']
+		fiscal_year = webnotes.utils.get_defaults()['fiscal_year']
+		fiscal_start_date = webnotes.conn.get_value('Fiscal Year', fiscal_year,
+				'year_start_date')
 
 		if 'new' in args['type']:
 			args.update({
@@ -266,7 +284,8 @@ class DocType:
 			Returns start and end date depending on the frequency of email digest
 		"""
 		from datetime import datetime, date, timedelta
-		today = datetime.now().date()
+		from webnotes.utils import now_datetime
+		today = now_datetime().date()
 		year, month, day = today.year, today.month, today.day
 		
 		if self.doc.frequency == 'Daily':
@@ -377,8 +396,11 @@ class DocType:
 			* Execute get method
 			* Send email to recipients
 		"""
+		if not self.doc.recipient_list: return
+
 		self.sending = True
 		result, email_body = self.get()
+		
 		recipient_list = self.doc.recipient_list.split("\n")
 
 		# before sending, check if user is disabled or not
@@ -390,6 +412,7 @@ class DocType:
 
 		from webnotes.utils.email_lib import sendmail
 		try:
+			#webnotes.msgprint('in send')
 			sendmail(
 				recipients=recipient_list,
 				sender='notifications+email_digest@erpnext.com',
@@ -400,107 +423,22 @@ class DocType:
 			)
 		except Exception, e:
 			webnotes.msgprint('There was a problem in sending your email. Please contact support@erpnext.com')
-			#webnotes.errprint(webnotes.getTraceback())
+			webnotes.errprint(webnotes.getTraceback())
 
-
-	def on_update(self):
-		"""
-
-		"""
-		import webnotes
-		args = {
-			'db_name': webnotes.conn.get_value('Control Panel', '', 'account_id'),
-			'event': 'setup.doctype.email_digest.email_digest.send'
-		}
-		from webnotes.utils.scheduler import Scheduler
-		#print "before scheduler"
-		sch = Scheduler()
-		sch.connect()
-
-		if self.doc.enabled == 1:
-			# Create scheduler entry
-			res = sch.conn.sql("""
-				SELECT * FROM Event
-				WHERE
-					db_name = %(db_name)s AND
-					event = %(event)s
-			""", args)
-
-			if not (res and res[0]):
-				args['next_execution'] = self.get_next_execution()
-				sch.conn.begin()
-				sch.conn.sql("""
-					INSERT INTO	Event (db_name, event, `interval`, next_execution, recurring)
-					VALUES (%(db_name)s, %(event)s, 86400, %(next_execution)s, 1)
-				""", args)
-				sch.conn.commit()
-
-		else:
-			# delete scheduler entry if no other email digest is enabled
-			res = webnotes.conn.sql("""
-				SELECT * FROM `tabEmail Digest`
-				WHERE enabled=1
-			""")
-			if not (res and res[0]):
-				sch.clear(args['db_name'], args['event'])
-		#print "after on update"
-	
 
 	def get_next_sending(self):
-		"""
-
-		"""
-		# Get TimeZone
-		# Get System TimeZone
-		import time
-		from pytz import timezone
 		import datetime
-		import webnotes.defs
-		cp = webnotes.model.doc.Document('Control Panel','Control Panel')
-		app_tz = timezone(cp.time_zone)
-		server_tz = timezone(getattr(webnotes.defs, 'system_timezone'))
 		
 		start_date, end_date = self.get_start_end_dates()
 		
-		new_date = end_date + datetime.timedelta(days=1)
-		new_time = datetime.time(hour=6)
-
-		naive_dt = datetime.datetime.combine(new_date, new_time)
-		app_dt = app_tz.localize(naive_dt)
-		server_dt = server_tz.normalize(app_dt.astimezone(server_tz))
-
-		res = {
-			'app_dt': app_dt.replace(tzinfo=None),
-			'app_tz': app_tz,
-			'server_dt': server_dt.replace(tzinfo=None),
-			'server_tz': server_tz
-		}
-
+		send_date = end_date + datetime.timedelta(days=1)
+		
 		from webnotes.utils import formatdate
-		str_date = formatdate(str(res['app_dt'].date()))
-		str_time = res['app_dt'].time().strftime('%I:%M')
+		str_date = formatdate(str(send_date))
 
-		self.doc.next_send = str_date + " at about " + str_time
+		self.doc.next_send = str_date + " at midnight"
 
-		return res
-
-
-	def get_next_execution(self):
-		"""
-
-		"""
-		from datetime import datetime, timedelta
-		dt_args = self.get_next_sending()
-		server_dt = dt_args['server_dt']
-		now_dt = datetime.now(dt_args['server_tz'])
-		if now_dt.time() <= server_dt.time():
-			next_date = now_dt.date()
-		else:
-			next_date = now_dt.date() + timedelta(days=1)
-
-		next_time = server_dt.time()
-
-		return datetime.combine(next_date, next_time)
+		return send_date
 
 
 	def onload(self):
@@ -520,170 +458,172 @@ class DocType:
 		currency = company.default_currency
 
 		def table(args):
-			if type(args['body']) == type(''):
-				table_body = """\
-					<tbody><tr>
-						<td style='padding: 5px; font-size: 24px; \
-						font-weight: bold; background: #F7F7F5'>""" + \
-					args['body'] + \
-					"""\
-						</td>
-					</tr></tbody>"""
+			table_body = ""
+			
+			if isinstance(args['body'], basestring):
+				return """<p>%(head)s: <span style='font-size: 110%%; font-weight: bold;'>%(body)s</span></p>""" % args
+			else:
+				return ("""<p>%(head)s:</p> """ % args) +\
+				 	"".join(map(lambda b: "<p style='margin-left: 17px;'>%s</p>" % b, args['body']))
 
-			elif type(args['body'] == type([])):
-				body_rows = []
-				for rows in args['body']:
-					for r in rows:
-						body_rows.append("""\
-							<tr>
-								<td style='padding: 5px; font-size: 24px; \
-								font-weight: bold; background: #F7F7F5'>""" \
-								+ r + """\
-								</td>
-							</tr>""")
 
-					body_rows.append("<tr><td style='background: #F7F7F5'><br></td></tr>")
-
-				table_body = "<tbody>" + "".join(body_rows) + "</tbody>"
-
-			table_head = """\
-				<thead><tr>
-					<td style='padding: 5px; background: #D8D8D4; font-size: 16px; font-weight: bold'>""" \
-					+ args['head'] + """\
-					</td>
-				</tr></thead>"""
-
-			return "<table style='border-collapse: collapse; width: 100%;'>" \
-				+ table_head \
-				+ table_body \
-				+ "</table>"
-
-		currency_amount_str = "<span style='color: grey; font-size: 12px'>%s</span> %s"
+		currency_amount_str = "<span style='color: grey;'>%s</span> %s"
 
 		body_dict = {
 
 			'invoiced_amount': {
-				'table': 'invoiced_amount' in result and table({
-					'head': 'Invoiced Amount',
-					'body': currency_amount_str \
-						% (currency, fmt_money(result['invoiced_amount']['debit']))
-				}),
-				'idx': 300
+				'table': result.get('invoiced_amount') and \
+					table({
+						'head': 'Invoiced Amount',
+						'body': currency_amount_str \
+							% (currency, fmt_money(result['invoiced_amount'].get('debit')))
+					}),
+				'idx': 300,
+				'value': result.get('invoiced_amount') and result['invoiced_amount'].get('debit')
 			},
 
 			'payables': {
-				'table': 'payables' in result and table({
-					'head': 'Payables',
-					'body': currency_amount_str \
-						% (currency, fmt_money(result['payables']['credit']))
-				}),
-				'idx': 200
+				'table': result.get('payables') and \
+					table({
+						'head': 'Payables',
+						'body': currency_amount_str \
+							% (currency, fmt_money(result['payables'].get('credit')))
+					}),
+				'idx': 200,
+				'value': result.get('payables') and result['payables'].get('credit')
 			},
 
 			'collections': {
-				'table': 'collections' in result and table({
-					'head': 'Collections',
-					'body': currency_amount_str \
-						% (currency, fmt_money(result['collections']['credit']))
-				}),
-				'idx': 301
+				'table': result.get('collections') and \
+					table({
+						'head': 'Collections',
+						'body': currency_amount_str \
+							% (currency, fmt_money(result['collections'].get('credit')))
+					}),
+				'idx': 301,
+				'value': result.get('collections') and result['collections'].get('credit')
 			},
 
 			'payments': {
-				'table': 'payments' in result and table({
-					'head': 'Payments',
-					'body': currency_amount_str \
-						% (currency, fmt_money(result['payments']['debit']))
-				}),
-				'idx': 201
+				'table': result.get('payments') and \
+					table({
+						'head': 'Payments',
+						'body': currency_amount_str \
+							% (currency, fmt_money(result['payments'].get('debit')))
+					}),
+				'idx': 201,
+				'value': result.get('payments') and result['payments'].get('debit')
 			},
 
 			'income': {
-				'table': 'income' in result and table({
-					'head': 'Income',
-					'body': currency_amount_str \
-						% (currency, fmt_money(result['income']['value']))
-				}),
-				'idx': 302
+				'table': result.get('income') and \
+					table({
+						'head': 'Income',
+						'body': currency_amount_str \
+							% (currency, fmt_money(result['income'].get('value')))
+					}),
+				'idx': 302,
+				'value': result.get('income') and result['income'].get('value')
 			},
 
 			'income_year_to_date': {
-				'table': 'income_year_to_date' in result and table({
-					'head': 'Income Year To Date',
-					'body': currency_amount_str \
-						% (currency, fmt_money(result['income_year_to_date']['value']))
-				}),
-				'idx': 303
+				'table': result.get('income_year_to_date') and \
+					table({
+						'head': 'Income Year To Date',
+						'body': currency_amount_str \
+							% (currency, fmt_money(result['income_year_to_date'].get('value')))
+					}),
+				'idx': 303,
+				'value': result.get('income_year_to_date') and \
+				 	result['income_year_to_date'].get('value')
 			},
 
 			'expenses_booked': {
-				'table': 'expenses_booked' in result and table({
-					'head': 'Expenses Booked',
-					'body': currency_amount_str \
-						% (currency, fmt_money(result['expenses_booked']['value']))
-				}),
-				'idx': 202
+				'table': result.get('expenses_booked') and \
+					table({
+						'head': 'Expenses Booked',
+						'body': currency_amount_str \
+							% (currency, fmt_money(result['expenses_booked'].get('value')))
+					}),
+				'idx': 202,
+				'value': result.get('expenses_booked') and result['expenses_booked'].get('value')
 			},
 
 			'bank_balance': {
-				'table': 'bank_balance' in result and result['bank_balance'] and table({
-					'head': 'Bank Balance',
-					'body': [
-						[
-							"<span style='font-size: 16px; font-weight: normal'>%s</span>" % bank['name'],
-							currency_amount_str % (currency, fmt_money(bank['value']))
-						] for bank in result['bank_balance']
-					]
-				}),
-				'idx': 400
+				'table': result.get('bank_balance') and \
+					table({
+						'head': 'Bank / Cash Balance',
+						'body': [(bank['name'] + ": <span style='font-size: 110%%; font-weight: bold;'>" \
+									+ currency_amount_str % \
+									(currency, fmt_money(bank.get('value'))) + '</span>')
+							for bank in (isinstance(result['bank_balance'], list) and \
+								result['bank_balance'] or \
+								[result['bank_balance']])
+						]
+					}),
+				'idx': 0,
+				'value': 0.1
 			},
 
 			'new_leads': {
-				'table': 'new_leads' in result and table({
-					'head': 'New Leads',
-					'body': '%s' % result['new_leads']['count']
-				}),
-				'idx': 100
+				'table': result.get('new_leads') and \
+					table({
+						'head': 'New Leads',
+						'body': '%s' % result['new_leads'].get('count')
+					}),
+				'idx': 100,
+				'value': result.get('new_leads') and result['new_leads'].get('count')
 			},
 
 			'new_enquiries': {
-				'table': 'new_enquiries' in result and table({
-					'head': 'New Enquiries',
-					'body': '%s' % result['new_enquiries']['count']
-				}),
-				'idx': 101
+				'table': result.get('new_enquiries') and \
+					table({
+						'head': 'New Enquiries',
+						'body': '%s' % result['new_enquiries'].get('count')
+					}),
+				'idx': 101,
+				'value': result.get('new_enquiries') and result['new_enquiries'].get('count')
 			},
 
 			'new_quotations': {
-				'table': 'new_quotations' in result and table({
-					'head': 'New Quotations',
-					'body': '%s' % result['new_quotations']['count']
-				}),
-				'idx': 102
+				'table': result.get('new_quotations') and \
+					table({
+						'head': 'New Quotations',
+						'body': '%s' % result['new_quotations'].get('count')
+					}),
+				'idx': 102,
+				'value': result.get('new_quotations') and result['new_quotations'].get('count')
 			},
 
 			'new_sales_orders': {
-				'table': 'new_sales_orders' in result and table({
-					'head': 'New Sales Orders',
-					'body': '%s' % result['new_sales_orders']['count']
-				}),
-				'idx': 103
+				'table': result.get('new_sales_orders') and \
+					table({
+						'head': 'New Sales Orders',
+						'body': '%s' % result['new_sales_orders'].get('count')
+					}),
+				'idx': 103,
+				'value': result.get('new_sales_orders') and result['new_sales_orders'].get('count')
 			},
 
 			'new_purchase_orders': {
-				'table': 'new_purchase_orders' in result and table({
-					'head': 'New Purchase Orders',
-					'body': '%s' % result['new_purchase_orders']['count']
-				}),
-				'idx': 104
+				'table': result.get('new_purchase_orders') and \
+					table({
+						'head': 'New Purchase Orders',
+						'body': '%s' % result['new_purchase_orders'].get('count')
+					}),
+				'idx': 104,
+				'value': result.get('new_purchase_orders') and \
+				 	result['new_purchase_orders'].get('count')
 			},
 
 			'new_transactions': {
-				'table': 'new_transactions' in result and table({
-					'head': 'New Transactions',
-					'body': '%s' % result['new_transactions']['count']
-				}),
-				'idx': 105
+				'table': result.get('new_transactions') and \
+					table({
+						'head': 'New Transactions',
+						'body': '%s' % result['new_transactions'].get('count')
+					}),
+				'idx': 105,
+				'value': result.get('new_transactions') and result['new_transactions'].get('count')
 			}
 
 			#'stock_below_rl': 
@@ -692,46 +632,38 @@ class DocType:
 		table_list = []
 
 		# Sort these keys depending on idx value
-		bd_keys = sorted(body_dict, key=lambda x: body_dict[x]['idx'])
+		bd_keys = sorted(body_dict, key=lambda x: \
+			(-webnotes.utils.flt(body_dict[x]['value']), body_dict[x]['idx']))
+
+		new_section = False
+
+		def set_new_section(new_section):
+			if not new_section:
+				table_list.append("<hr /><h4>No Updates For:</h4><br>")
+				new_section = True
+			return new_section			
 
 		for k in bd_keys:
 			if self.doc.fields[k]:
 				if k in result:
+					if not body_dict[k].get('value') and not new_section:
+						new_section = set_new_section(new_section)
 					table_list.append(body_dict[k]['table'])
 				elif k in ['collections', 'payments']:
+					new_section = set_new_section(new_section)
 					table_list.append(\
-						"<div style='font-size: 16px; color: grey'>[" + \
+						"<p>[" + \
 							k.capitalize() + \
 							"]<br />Missing: Account of type 'Bank or Cash'\
-						</div>")
+						</p>")
 				elif k=='bank_balance':
+					new_section = set_new_section(new_section)
 					table_list.append(\
-						"<div style='font-size: 16px; color: grey'>[" + \
+						"<p>[" + \
 							"Bank Balance" + \
 							"]<br />Alert: GL Entry not found for Account of type 'Bank or Cash'\
-						</div>")
+						</p>")
 					
-		
-		i = 0
-		result = []
-		op_len = len(table_list)
-		while(True):
-			if i>=op_len:
-				break
-			elif (op_len - i) == 1:
-				result.append("""\
-					<tr>
-						<td style='width: 50%%; vertical-align: top;'>%s</td>
-						<td></td>
-					</tr>""" % (table_list[i]))
-			else:
-				result.append("""\
-					<tr>
-						<td style='width: 50%%; vertical-align: top;'>%s</td>
-						<td>%s</td>
-					</tr>""" % (table_list[i], table_list[i+1]))
-			
-			i = i + 2
 
 		from webnotes.utils import formatdate
 		start_date, end_date = self.get_start_end_dates()
@@ -740,18 +672,16 @@ class DocType:
 			or (formatdate(str(start_date)) + " to " + (formatdate(str(end_date))))
 
 		email_body = """
-			<div style='width: 100%%'>
-				<div style='padding: 10px; margin: auto; text-align: center; line-height: 80%%'>
-					<p style='font-weight: bold; font-size: 24px'>%s</p>
-					<p style='font-size: 16px; color: grey'>%s</p>
-					<p style='font-size: 20px; font-weight: bold'>%s</p>
-				</div>
-				<table cellspacing=15 style='width: 100%%'>""" \
+					<h2>%s</h2>
+					<p style='color: grey'>%s</p>
+					<h4>%s</h4>
+					<hr>
+				""" \
 					% ((self.doc.frequency + " Digest"), \
 						digest_daterange, self.doc.company) \
-				+ "".join(result) + """\
-				</table><br><p></p>
-			</div>"""
+				+ "".join(table_list) + """\
+				<br><p></p>
+			"""
 
 		return email_body
 
@@ -762,25 +692,20 @@ def send():
 	"""
 	edigest_list = webnotes.conn.sql("""
 		SELECT name FROM `tabEmail Digest`
-		WHERE enabled=1
+		WHERE enabled=1 and docstatus<2
 	""", as_list=1)
 
 	from webnotes.model.code import get_obj
-	from datetime import datetime, timedelta
-	now = datetime.now()
-	now_date = now.date()
-	now_time = (now + timedelta(hours=2)).time()
+	from webnotes.utils import now_datetime
 
+	now_date = now_datetime().date()
+	
 	for ed in edigest_list:
 		if ed[0]:
 			ed_obj = get_obj('Email Digest', ed[0])
 			ed_obj.sending = True
-			dt_dict = ed_obj.get_next_sending()
-			send_date = dt_dict['server_dt'].date()
-			send_time = dt_dict['server_dt'].time()
+			send_date = ed_obj.get_next_sending()
+			#webnotes.msgprint([ed[0], now_date, send_date])
 
-			if (now_date == send_date) and (send_time <= now_time):
-				#webnotes.msgprint('sending ' + ed_obj.doc.name)
+			if (now_date == send_date):
 				ed_obj.send()
-			#else:
-			#	webnotes.msgprint('not sending ' + ed_obj.doc.name)

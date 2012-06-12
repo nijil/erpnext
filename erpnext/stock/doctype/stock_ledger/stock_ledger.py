@@ -1,9 +1,25 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
@@ -16,7 +32,7 @@ convert_to_lists = webnotes.conn.convert_to_lists
 
 # -----------------------------------------------------------------------------------------
 
-def get_sr_no_list(sr_nos, qty = 0):
+def get_sr_no_list(sr_nos, qty = 0, item_code = ''):
 	serial_nos = cstr(sr_nos).strip().replace(',', '\n').split('\n')
 	valid_serial_nos = []
 	for val in serial_nos:
@@ -25,9 +41,8 @@ def get_sr_no_list(sr_nos, qty = 0):
 				msgprint("You have entered duplicate serial no: %s" % val, raise_exception=1)
 			else:
 				valid_serial_nos.append(val.strip())
-
-	if qty > 0 and cstr(sr_nos).strip() and len(valid_serial_nos) != flt(qty):
-		msgprint("Please enter serial nos for all "+ cstr(qty) + " quantity", raise_exception = 1)
+	if qty and cstr(sr_nos).strip() and len(valid_serial_nos) != abs(qty):
+		msgprint("Please enter serial nos for "+ cstr(abs(qty)) + " quantity against item code: " + item_code , raise_exception = 1)
 	return valid_serial_nos
 
 class DocType:
@@ -76,42 +91,53 @@ class DocType:
 				if is_stock_item != 'Yes':
 					msgprint("Serial No is not required for non-stock item: %s" % d.item_code, raise_exception=1)
 				elif ar_required != 'Yes':
-					msgprint("If serial no required, please select 'Yes' in 'Has Serial No' in Item :" + d.item_code + ', otherwise please remove serial no', raise_exception=1)
+					msgprint("If serial no required, please select 'Yes' in 'Has Serial No' in Item :" + d.item_code + \
+						', otherwise please remove serial no', raise_exception=1)
 			elif ar_required == 'Yes' and not d.serial_no:
 				msgprint("Serial no is mandatory for item: "+ d.item_code, raise_exception = 1)
+
+			# validate rejected serial nos
+			if fname == 'purchase_receipt_details' and flt(d.rejected_qty) > 0 and ar_required == 'Yes' and not d.rejected_serial_no:
+				msgprint("Rejected serial no is mandatory for rejected qty of item: "+ d.item_code, raise_exception = 1)
+				
+				
 
 
 
 	# -------------------
 	# get serial no list
 	# -------------------
-	def get_sr_no_list(self, sr_nos, qty = 0):
-		return get_sr_no_list(sr_nos, qty)
+	def get_sr_no_list(self, sr_nos, qty = 0, item_code = ''):
+		return get_sr_no_list(sr_nos, qty, item_code)
 
 	# ---------------------
 	# set serial no values
 	# ---------------------
 	def set_pur_serial_no_values(self, obj, serial_no, d, s, new_rec):
-		item_details = sql("select item_group, warranty_period from `tabItem` where name = '%s' and (ifnull(end_of_life,'')='' or end_of_life = '0000-00-00' or end_of_life > now()) " %(d.item_code), as_dict=1)
+		item_details = sql("select item_group, warranty_period from `tabItem` where name = '%s' and \
+			(ifnull(end_of_life,'')='' or end_of_life = '0000-00-00' or end_of_life > now()) " %(d.item_code), as_dict=1)
+		
 		s.purchase_document_type	=	obj.doc.doctype
 		s.purchase_document_no		=	obj.doc.name
 		s.purchase_date				=	obj.doc.posting_date
 		s.purchase_time				=	obj.doc.posting_time
 		s.purchase_rate				=	d.valuation_rate or d.incoming_rate
 		s.item_code					=	d.item_code
+		s.item_name					=	d.item_name
 		s.brand						=	d.brand
 		s.description				=	d.description
 		s.item_group				=	item_details and item_details[0]['item_group'] or ''
 		s.warranty_period			=	item_details and item_details[0]['warranty_period'] or 0
 		s.supplier					=	obj.doc.supplier
 		s.supplier_name				=	obj.doc.supplier_name
-		s.supplier_address			=	obj.doc.supplier_address
+		s.address_display			=	obj.doc.address_display or obj.doc.supplier_address
 		s.warehouse					=	d.warehouse or d.t_warehouse
 		s.docstatus					=	0
 		s.status					=	'In Store'
 		s.modified					=	nowdate()
 		s.modified_by				=	session['user']
 		s.serial_no					=	serial_no
+		s.sle_exists				=	1
 		s.fiscal_year				=	obj.doc.fiscal_year
 		s.company					=	obj.doc.company
 		s.save(new_rec)
@@ -167,7 +193,7 @@ class DocType:
 		s.delivery_time					=	 obj.doc.posting_time
 		s.customer						=	 obj.doc.customer
 		s.customer_name					=	 obj.doc.customer_name
-		s.delivery_address			 	=	 obj.doc.delivery_address
+		s.delivery_address			 	=	 obj.doc.address_display
 		s.territory						=	 obj.doc.territory
 		s.warranty_expiry_date	 		=	 s.warranty_period and add_days(cstr(obj.doc.posting_date), s.warranty_period) or ''
 		s.docstatus						=	 1
@@ -195,13 +221,20 @@ class DocType:
 		import datetime
 		for d in getlist(obj.doclist, fname):
 			if d.serial_no:
-				serial_nos = self.get_sr_no_list(d.serial_no, d.qty)
+				serial_nos = self.get_sr_no_list(d.serial_no)
 				for a in serial_nos:
 					serial_no = a.strip()
 					if is_incoming:
 						self.update_serial_purchase_details(obj, d, serial_no, is_submit)
 					else:
 						self.update_serial_delivery_details(obj, d, serial_no, is_submit)
+
+			if fname == 'purchase_receipt_details' and d.rejected_qty and d.rejected_serial_no:
+				serial_nos = self.get_sr_no_list(d.rejected_serial_no)
+				for a in serial_nos:
+					self.update_serial_purchase_details(obj, d, a, is_submit)
+				
+				
 
 
 	# -------------
@@ -210,21 +243,22 @@ class DocType:
 	def update_stock(self, values, is_amended = 'No'):
 		for v in values:
 			sle_id, serial_nos = '', ''
-
 			# get serial nos
 			if v["serial_no"]:
-				serial_nos = self.get_sr_no_list(v["serial_no"], v['actual_qty'])
+				serial_nos = self.get_sr_no_list(v["serial_no"], v['actual_qty'], v['item_code'])
 
 			# reverse quantities for cancel
 			if v['is_cancelled'] == 'Yes':
 				v['actual_qty'] = -flt(v['actual_qty'])
 				# cancel matching entry
-				sql("update `tabStock Ledger Entry` set is_cancelled='Yes' where voucher_no=%s and voucher_type=%s", (v['voucher_no'], v['voucher_type']))
+				sql("update `tabStock Ledger Entry` set is_cancelled='Yes' where voucher_no=%s \
+					and voucher_type=%s", (v['voucher_no'], v['voucher_type']))
 
 			if v["actual_qty"]:
 				sle_id = self.make_entry(v)
 
-			get_obj('Warehouse', v["warehouse"]).update_bin(flt(v["actual_qty"]), 0, 0, 0, 0, v["item_code"], v["posting_date"], sle_id, v["posting_time"], '', v["is_cancelled"],v["voucher_type"],v["voucher_no"], is_amended)
+			get_obj('Warehouse', v["warehouse"]).update_bin(flt(v["actual_qty"]), 0, 0, 0, 0, v["item_code"], \
+				v["posting_date"], sle_id, v["posting_time"], '', v["is_cancelled"],v["voucher_type"],v["voucher_no"], is_amended)
 
 
 	# -----------

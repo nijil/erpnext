@@ -1,9 +1,25 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
@@ -30,7 +46,7 @@ class DocType:
 	def get_leave_balance(self):
 		leave_all = sql("select total_leaves_allocated from `tabLeave Allocation` where employee = '%s' and leave_type = '%s' and fiscal_year = '%s' and docstatus = 1" % (self.doc.employee, self.doc.leave_type, self.doc.fiscal_year))
 		leave_all = leave_all and flt(leave_all[0][0]) or 0
-		leave_app = sql("select total_leave_days from `tabLeave Application` where employee = '%s' and leave_type = '%s' and fiscal_year = '%s' and docstatus = 1" % (self.doc.employee, self.doc.leave_type, self.doc.fiscal_year))
+		leave_app = sql("select SUM(total_leave_days) from `tabLeave Application` where employee = '%s' and leave_type = '%s' and fiscal_year = '%s' and docstatus = 1" % (self.doc.employee, self.doc.leave_type, self.doc.fiscal_year))
 		leave_app = leave_app and flt(leave_app[0][0]) or 0
 		ret = {'leave_balance':leave_all - leave_app}
 		return ret
@@ -43,9 +59,9 @@ class DocType:
 		"""
 			get total holidays
 		"""
-		tot_hol = sql("select count(*) from `tabHoliday List Detail` h1, `tabHoliday List` h2, `tabEmployee` e1 where e1.name = '%s' and h1.parent = h2.name and e1.holiday_list = h2.name and h1.holiday_date between '%s' and '%s'"% (self.doc.employee, self.doc.from_date, self.doc.to_date))
+		tot_hol = sql("select count(*) from `tabHoliday` h1, `tabHoliday List` h2, `tabEmployee` e1 where e1.name = '%s' and h1.parent = h2.name and e1.holiday_list = h2.name and h1.holiday_date between '%s' and '%s'"% (self.doc.employee, self.doc.from_date, self.doc.to_date))
 		if not tot_hol:
-			tot_hol = sql("select count(*) from `tabHoliday List Detail` h1, `tabHoliday List` h2 where h1.parent = h2.name and h1.holiday_date between '%s' and '%s' and ifnull(h2.is_default,0) = 1 and h2.fiscal_year = %s"% (self.doc.from_date, self.doc.to_date, self.doc.fiscal_year))
+			tot_hol = sql("select count(*) from `tabHoliday` h1, `tabHoliday List` h2 where h1.parent = h2.name and h1.holiday_date between '%s' and '%s' and ifnull(h2.is_default,0) = 1 and h2.fiscal_year = %s"% (self.doc.from_date, self.doc.to_date, self.doc.fiscal_year))
 		return tot_hol and flt(tot_hol[0][0]) or 0
 
 	

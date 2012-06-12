@@ -1,46 +1,42 @@
-# ERPNext - Open Source + SAAS ERP
+# ERPNext - Open Source ERP for small, medium sized businesses
 
-Version 2.0
+[https://erpnext.com](https://erpnext.com)
 
-Includes Accounting, Inventory, CRM, Sales, Purchase, Projects, HRMS
-
-Built on Python / MySQL / wnframework
-
-- [Download](http://erpnext.org)
-- [Use now as SAAS @ $7/user/month](https://erpnext.com)
+Includes Accounting, Inventory, CRM, Sales, Purchase, Projects, HRMS. Built on Python / MySQL.
 
 ## Platform
 
 ERPNext is built on [wnframework](https://github.com/webnotes/wnframework) (Version 2.0)
 
+## User Guide
+
+[See wiki](https://github.com/webnotes/erpnext/wiki/User-Guide)
+
 ## Download and Install
 
-For download and install details, please go to [erpnext.org](http://erpnext.org)
+First install all the pre-requisites, then
+
+    $ git clone git://github.com/webnotes/erpnext.git
+    $ cd erpnext
+    $ python erpnext_install.py
+    
+[See installation notes](https://github.com/webnotes/erpnext/wiki/How-to-Install-ERPNext)
+
+## Patch and update
+
+To patch and update from the latest git repository the erpnext folder and run.
+You will have to set your origin in git remote
+
+    $ lib/wnf.py --update origin master
 
 ## Forums
 
-- [User / Functional](http://groups.google.com/group/erpnext-user-forum)
-- [Technical](http://groups.google.com/group/wnframework)
+Please join our forums for more questions:
 
-## Changes from wnframework version 1.7
-
-To update from wnframework version 1.
-
-1. set your html folder to the root of erpnext (rather than wnframework)
-2. create a symlink in erpnext:
-
-    ln -s path/to/wnframework lib
-
-3. to setup the versions db, run:
-
-    python lib/wnf.py setup
-
-4. copy defs.py from cgi-bin/webnotes to py/webnotes
-5. change module_path (point to erpnext/erpnext) in defs.py
-6. delete cgi-bin directory
-7. delete all old module directories from erpnext
+- [Developer Forum](http://groups.google.com/group/erpnext-developer-forum)
+- [User Forum](http://groups.google.com/group/erpnext-user-forum)
 
 ## License
 
-ERPNext is available under the GNU/GPL license.
+GNU/General Public License
 

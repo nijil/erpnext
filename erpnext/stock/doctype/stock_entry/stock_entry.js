@@ -1,18 +1,45 @@
+// ERPNext - web based ERP (http://erpnext.com)
+// Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 cur_frm.cscript.onload = function(doc, cdt, cdn) {
   if (!doc.posting_date) doc.posting_date = dateutil.obj_to_str(new Date());
   if (!doc.transfer_date) doc.transfer_date = dateutil.obj_to_str(new Date());
+  if(!doc.purpose) set_multiple(cdt, cdn, {purpose:'Material Issue'});
   cfn_set_fields(doc, cdt, cdn);
 }
 
 
 var cfn_set_fields = function(doc, cdt, cdn) {
-  lst = ['supplier','supplier_name','supplier_address','customer','customer_name','customer_address']; 
-  if (doc.purpose == 'Production Order'){
-    unhide_field(['production_order', 'process', 'Get Items']);
-    hide_field(['from_warehouse', 'to_warehouse','purchase_receipt_no','delivery_note_no', 'sales_invoice_no','Warehouse HTML']);
-    doc.from_warehouse = '';
-    doc.to_warehosue = '';
-    if (doc.process == 'Backflush'){
+  lst = ['supplier','supplier_name','supplier_address','customer','customer_name','customer_address'];
+  if (in_list(['Material Issue', 'Material Transfer', 'Material Receipt', 'Sales Return', 'Purchase Return', 'Production Order', 'Subcontracting', 'Other'], doc.purpose)) {
+    hide_field(lst);
+	$(cur_frm.fields_dict.contact_section.row.wrapper).toggle(false);
+  } else unhide_field(lst);
+
+
+  if (doc.purpose == 'Production Order' || doc.purpose == 'Other'){
+    unhide_field('get_items');
+    hide_field(['from_warehouse', 'to_warehouse','purchase_receipt_no','delivery_note_no', 'sales_invoice_no','warehouse_html', 'transporter', 'is_excisable_goods', 'excisable_goods']);
+	if (doc.purpose=='Production Order') unhide_field(['production_order', 'process']);
+	else hide_field(['production_order', 'process']);
+
+	doc.from_warehouse = '';
+    doc.to_warehouse = '';
+	refresh_field(['from_warehosue', 'to_warehouse']);
+    if (doc.process == 'Backflush' || doc.purpose == 'Other'){
       unhide_field('fg_completed_qty');
     }
     else{
@@ -22,8 +49,7 @@ var cfn_set_fields = function(doc, cdt, cdn) {
   }
   else{
     unhide_field(['from_warehouse', 'to_warehouse']);
-    hide_field(['production_order', 'process', 'Get Items', 'fg_completed_qty','purchase_receipt_no','delivery_note_no', 'sales_invoice_no']);
-    hide_field(lst);
+    hide_field(['production_order', 'process', 'get_items', 'fg_completed_qty','purchase_receipt_no','delivery_note_no', 'sales_invoice_no']);
     doc.production_order = '';
     doc.process = '';
     doc.fg_completed_qty = 0;
@@ -32,18 +58,30 @@ var cfn_set_fields = function(doc, cdt, cdn) {
  
   if(doc.purpose == 'Purchase Return'){
     doc.customer=doc.customer_name = doc.customer_address=doc.delivery_note_no=doc.sales_invoice_no='';
-    hide_field(lst);
     unhide_field(['supplier','supplier_name','supplier_address','purchase_receipt_no']);
+	$(cur_frm.fields_dict.contact_section.row.wrapper).toggle(true);
   }
-  if(doc.purpose == 'Sales Return'){
+  else if(doc.purpose == 'Sales Return'){
     doc.supplier=doc.supplier_name = doc.supplier_address=doc.purchase_receipt_no='';
-    hide_field(lst);
     unhide_field(['customer','customer_name','customer_address','delivery_note_no', 'sales_invoice_no']);
+	$(cur_frm.fields_dict.contact_section.row.wrapper).toggle(true);
   } else{
-    doc.customer=doc.customer_name=doc.customer_address=doc.delivery_note_no=doc.sales_invoice_no=doc.supplier=doc.supplier_name = doc.supplier_address=doc.purchase_receipt_no='';
+    doc.customer=doc.customer_name=doc.customer_address=doc.delivery_note_no=doc.sales_invoice_no='';
+	doc.supplier=doc.supplier_name = doc.supplier_address=doc.purchase_receipt_no='';
   }
   refresh_many(lst);
 }
+
+//Refresh
+cur_frm.cscript.refresh = function(doc, cdt, cdn) { 
+	erpnext.hide_naming_series();
+
+	//India related
+	excise_flds = ['is_excisable_goods', 'excisable_goods', 'under_rule']
+	if(wn.control_panel.country == 'India') unhide_field(excise_flds);
+	else hide_field(excise_flds);
+}
+
 
 cur_frm.cscript.delivery_note_no = function(doc,cdt,cdn){
   if(doc.delivery_note_no) get_server_fields('get_cust_values','','',doc,cdt,cdn,1);
@@ -94,6 +132,7 @@ fld.get_query = function(doc, cdt, cdn) {
 		+'AND ifnull(`tabBin`.`actual_qty`,0) > 0 '
 		+'AND tabBin.warehouse="'+ d.s_warehouse +'" '
 		+'AND tabItem.docstatus < 2 '
+		+'AND (ifnull(`tabItem`.`end_of_life`,"") = "" OR `tabItem`.`end_of_life` > NOW() OR `tabItem`.`end_of_life`="0000-00-00") '
 		+'AND tabItem.%(key)s LIKE "%s" '
 		+'ORDER BY tabItem.name ASC '
 		+'LIMIT 50'
@@ -101,6 +140,7 @@ fld.get_query = function(doc, cdt, cdn) {
 		return 'SELECT tabItem.name, tabItem.description '
 		+'FROM tabItem '
 		+'WHERE tabItem.docstatus < 2 '
+		+'AND (ifnull(`tabItem`.`end_of_life`,"") = "" OR `tabItem`.`end_of_life` > NOW() OR `tabItem`.`end_of_life`="0000-00-00") '
 		+'AND tabItem.%(key)s LIKE "%s" '
 		+'ORDER BY tabItem.name ASC '
 		+'LIMIT 50'

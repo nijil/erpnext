@@ -1,9 +1,25 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
@@ -120,7 +136,7 @@ class DocType:
 	# check if child exists
 	# ==================================================================
 	def check_if_child_exists(self):
-		return sql("select name from `tabAccount` where parent_account = %s and docstatus != 2", self.doc.name, debug=0)
+		return sql("select name from `tabAccount` where parent_account = %s and docstatus != 2", self.doc.name)
 	
 	# Update balance
 	# ==================================================================
@@ -202,13 +218,12 @@ class DocType:
 		self.update_nsm_model()		
 		# Add curret year balance
 		self.set_year_balance()
-		
 
 	# Check user role for approval process
 	# ==================================================================
 	def get_authorized_user(self):
 		# Check logged-in user is authorized
-		if get_value('Manage Account', None, 'credit_controller') in webnotes.user.get_roles():
+		if get_value('Global Defaults', None, 'credit_controller') in webnotes.user.get_roles():
 			return 1
 			
 	# Check Credit limit for customer
@@ -232,7 +247,7 @@ class DocType:
 	# ==================================================================
 	def check_balance_before_trash(self):
 		if self.check_gle_exists():
-			msgprint("Account with existing transaction can not be trashed", raise_exception=1)
+			msgprint("Account with existing transaction (Sales Invoice / Purchase Invoice / Journal Voucher) can not be trashed", raise_exception=1)
 		if self.check_if_child_exists():
 			msgprint("Child account exists for this account. You can not trash this account.", raise_exception=1)
 
@@ -247,10 +262,14 @@ class DocType:
 	# ==================================================================
 	def on_trash(self): 
 		# Check balance before trash
-		self.check_balance_before_trash()		
+		self.check_balance_before_trash()
+		
 		# rebuild tree
 		set(self.doc,'old_parent', '')
 		self.update_nsm_model()
+
+		# delete all cancelled gl entry of this account
+		sql("delete from `tabGL Entry` where account = %s and ifnull(is_cancelled, 'No') = 'Yes'", self.doc.name)
 
 		#delete Account Balance
 		sql("delete from `tabAccount Balance` where account = %s", self.doc.name)
@@ -260,6 +279,8 @@ class DocType:
 	def on_restore(self):
 		# rebuild tree
 		self.update_nsm_model()
+		# intiate balances
+		self.set_year_balance()
 	
 	# on rename
 	# ---------

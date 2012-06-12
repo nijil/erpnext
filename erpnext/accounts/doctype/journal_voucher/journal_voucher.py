@@ -1,9 +1,25 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
 from webnotes.utils import cint, cstr, flt, fmt_money, formatdate, getTraceback, get_defaults, getdate, has_common, month_name, now, nowdate, sendmail, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
@@ -37,9 +53,9 @@ class DocType:
   def get_outstanding(self, args):
     args = eval(args)
     o_s = sql("select outstanding_amount from `tab%s` where name = '%s'" % (args['doctype'],args['docname']))
-    if args['doctype'] == 'Payable Voucher':
+    if args['doctype'] == 'Purchase Invoice':
       return {'debit': o_s and flt(o_s[0][0]) or 0}
-    if args['doctype'] == 'Receivable Voucher':
+    if args['doctype'] == 'Sales Invoice':
       return {'credit': o_s and flt(o_s[0][0]) or 0}
 
   #--------------------------------------------------------------------------------------------------------
@@ -56,11 +72,11 @@ class DocType:
     
     for d in getlist(self.doclist, 'entries'):
       if d.against_invoice and d.credit:
-        currency = sql("select currency from `tabReceivable Voucher` where name = '%s'" % d.against_invoice)
+        currency = sql("select currency from `tabSales Invoice` where name = '%s'" % d.against_invoice)
         currency = currency and currency[0][0] or ''
         r.append('%s %s against Invoice: %s' % (cstr(currency), fmt_money(flt(d.credit)), d.against_invoice))
       if d.against_voucher and d.debit:
-        bill_no = sql("select bill_no, bill_date, currency from `tabPayable Voucher` where name=%s", d.against_voucher)
+        bill_no = sql("select bill_no, bill_date, currency from `tabPurchase Invoice` where name=%s", d.against_voucher)
         if bill_no and bill_no[0][0] and bill_no[0][0].lower().strip() not in ['na', 'not applicable', 'none']:
           bill_no = bill_no and bill_no[0]
           r.append('%s %s against Bill %s dated %s' % (bill_no[2] and cstr(bill_no[2]) or '', fmt_money(flt(d.debit)), bill_no[0], bill_no[1] and formatdate(bill_no[1].strftime('%Y-%m-%d')) or ''))
@@ -81,7 +97,7 @@ class DocType:
       self.is_approving_authority = 0
 
       # Fetch credit controller role
-      approving_authority = sql("select value from `tabSingles` where field='credit_controller' and doctype='Manage Account'")
+      approving_authority = sql("select value from `tabSingles` where field='credit_controller' and doctype='Global Defaults'")
       approving_authority = approving_authority and approving_authority[0][0] or ''
 	    
       # Check logged-in user is authorized
@@ -139,13 +155,13 @@ class DocType:
   def check_account_against_entries(self):
     for d in getlist(self.doclist,'entries'):
       if d.against_invoice:
-        acc=sql("select debit_to from `tabReceivable Voucher` where name='%s'"%d.against_invoice)
+        acc=sql("select debit_to from `tabSales Invoice` where name='%s'"%d.against_invoice)
         if acc and acc[0][0] != d.account:
           msgprint("Debit account is not matching with receivable voucher")
           raise Exception
       
       if d.against_voucher:
-        acc=sql("select credit_to from `tabPayable Voucher` where name='%s'"%d.against_voucher)
+        acc=sql("select credit_to from `tabPurchase Invoice` where name='%s'"%d.against_voucher)
         if acc and acc[0][0] != d.account:
           msgprint("Credit account is not matching with payable voucher")
           raise Exception
@@ -353,9 +369,9 @@ class DocType:
   def get_values(self):
     cond = (flt(self.doc.write_off_amount) > 0) and ' and outstanding_amount <= '+self.doc.write_off_amount or ''
     if self.doc.write_off_based_on == 'Accounts Receivable':
-      return sql("select name, debit_to, outstanding_amount from `tabReceivable Voucher` where docstatus = 1 and company = '%s' and outstanding_amount > 0 %s" % (self.doc.company, cond))
+      return sql("select name, debit_to, outstanding_amount from `tabSales Invoice` where docstatus = 1 and company = '%s' and outstanding_amount > 0 %s" % (self.doc.company, cond))
     elif self.doc.write_off_based_on == 'Accounts Payable':
-      return sql("select name, credit_to, outstanding_amount from `tabPayable Voucher` where docstatus = 1 and company = '%s' and outstanding_amount > 0 %s" % (self.doc.company, cond))
+      return sql("select name, credit_to, outstanding_amount from `tabPurchase Invoice` where docstatus = 1 and company = '%s' and outstanding_amount > 0 %s" % (self.doc.company, cond))
 
 
   # -------------------------

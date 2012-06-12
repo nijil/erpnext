@@ -1,3 +1,19 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
@@ -19,11 +35,14 @@ class DocType:
 	def actual_amt_check(self):
 		if self.doc.batch_no:
 			batch_bal = flt(sql("select sum(actual_qty) from `tabStock Ledger Entry` where warehouse = '%s' and item_code = '%s' and batch_no = '%s'"%(self.doc.warehouse,self.doc.item_code,self.doc.batch_no))[0][0])
-	
+			self.doc.fields.update({'batch_bal': batch_bal})
+
 			if (batch_bal + self.doc.actual_qty) < 0:
 				msgprint("""Not enough quantity (requested: %(actual_qty)s, current: %(batch_bal)s in Batch 
 		<b>%(batch_no)s</b> for Item <b>%(item_code)s</b> at Warehouse<b>%(warehouse)s</b> 
-		as on %(posting_date)s %(posting_time)s""" % self.doc.fields.update({'batch_bal': batch_bal}), raise_exception = 1)
+		as on %(posting_date)s %(posting_time)s""" % self.doc.fields, raise_exception = 1)
+
+			self.doc.fields.pop('batch_bal')
 			 
 
 	# mandatory
@@ -67,15 +86,30 @@ class DocType:
 	# Nobody can do SL Entries where posting date is before freezing date except authorized person
 	#----------------------------------------------------------------------------------------------
 	def check_stock_frozen_date(self):
-		stock_frozen_upto = get_value('Manage Account', None, 'stock_frozen_upto') or ''
+		stock_frozen_upto = get_value('Global Defaults', None, 'stock_frozen_upto') or ''
 		if stock_frozen_upto:
-			stock_auth_role = get_value('Manage Account', None,'stock_auth_role')
+			stock_auth_role = get_value('Global Defaults', None,'stock_auth_role')
 			if getdate(self.doc.posting_date) <= getdate(stock_frozen_upto) and not stock_auth_role in webnotes.user.get_roles():
 				msgprint("You are not authorized to do / modify back dated stock entries before %s" % getdate(stock_frozen_upto).strftime('%d-%m-%Y'), raise_exception=1)
 
+	def validate_posting_time(self):
+		""" Validate posting time format"""
+		if self.doc.posting_time and len(self.doc.posting_time.split(':')) > 2:
+			msgprint("Wrong format of posting time, can not complete the transaction. If you think \
+				you entered posting time correctly, please contact ERPNext support team.")
+			raise Exception
+	
+	def scrub_posting_time(self):
+		if not self.doc.posting_time or self.doc.posting_time == '00:0':
+			self.doc.posting_time = '00:00'
+		if len(self.doc.posting_time.split(':')) > 2:
+			self.doc.posting_time = '00:00'
+			
 
 	def validate(self):
 		self.validate_mandatory()
+		self.validate_posting_time()
 		self.validate_item()
 		self.actual_amt_check()
 		self.check_stock_frozen_date()
+		self.scrub_posting_time()

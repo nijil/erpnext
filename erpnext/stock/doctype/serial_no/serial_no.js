@@ -1,3 +1,19 @@
+// ERPNext - web based ERP (http://erpnext.com)
+// Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 // ************************************** onload ****************************************************
 cur_frm.cscript.onload = function(doc, cdt, cdn) {
   if(!doc.status) set_multiple(cdt, cdn, {status:'In Store'});
@@ -42,4 +58,13 @@ cur_frm.fields_dict['territory'].get_query = function(doc,cdt,cdn) {
 cur_frm.cscript.supplier = function(doc,dt,dn) {
   if(doc.supplier) get_server_fields('get_default_supplier_address', JSON.stringify({supplier: doc.supplier}),'', doc, dt, dn, 1);
   if(doc.supplier) unhide_field(['supplier_name','address_display']);
+}
+
+//item code
+//----------
+cur_frm.fields_dict['item_code'].get_query = function(doc,cdt,cdn) {
+  return 'SELECT `tabItem`.`name`,`tabItem`.`description` FROM `tabItem` \
+	WHERE `tabItem`.`docstatus`!= 2 AND ifnull(`tabItem`.`has_serial_no`, "No") = "Yes" \
+	AND (ifnull(`tabItem`.`end_of_life`,"") = "" OR `tabItem`.`end_of_life` > NOW() OR `tabItem`.`end_of_life`="0000-00-00") \
+	AND `tabItem`.%(key)s LIKE "%s"  ORDER BY  `tabItem`.`name` ASC LIMIT 50';
 }

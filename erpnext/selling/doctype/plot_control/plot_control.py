@@ -1,9 +1,25 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
@@ -25,9 +41,9 @@ class DocType:
   def get_monthwise_amount(self,lst):
     lst = lst.split(',')
     if not lst[1]:
-      ret = convert_to_lists(sql("SELECT SUM(grand_total) AMOUNT,CASE MONTH(due_date) WHEN 1 THEN 'JAN' WHEN 2 THEN 'FEB' WHEN 3 THEN 'MAR' WHEN 4 THEN 'APR' WHEN 5 THEN 'MAY' WHEN 6 THEN 'JUN' WHEN 7 THEN 'JUL' WHEN 8 THEN 'AUG' WHEN 9 THEN 'SEP' WHEN 10 THEN 'OCT' WHEN 11 THEN 'NOV' WHEN 12 THEN 'DEC' END MONTHNAME FROM `tabReceivable Voucher` WHERE docstatus = 1 AND fiscal_year = '%s' GROUP BY MONTH(due_date) ORDER BY MONTH(due_date)"%lst[0]))
+      ret = convert_to_lists(sql("SELECT SUM(grand_total) AMOUNT,CASE MONTH(due_date) WHEN 1 THEN 'JAN' WHEN 2 THEN 'FEB' WHEN 3 THEN 'MAR' WHEN 4 THEN 'APR' WHEN 5 THEN 'MAY' WHEN 6 THEN 'JUN' WHEN 7 THEN 'JUL' WHEN 8 THEN 'AUG' WHEN 9 THEN 'SEP' WHEN 10 THEN 'OCT' WHEN 11 THEN 'NOV' WHEN 12 THEN 'DEC' END MONTHNAME FROM `tabSales Invoice` WHERE docstatus = 1 AND fiscal_year = '%s' GROUP BY MONTH(due_date) ORDER BY MONTH(due_date)"%lst[0]))
     else:
-      ret = convert_to_lists(sql("select sum(t2.amount) AMOUNT ,CASE MONTH(t1.due_date) WHEN 1 THEN 'JAN' WHEN 2 THEN 'FEB' WHEN 3 THEN 'MAR' WHEN 4 THEN 'APR' WHEN 5 THEN 'MAY' WHEN 6 THEN 'JUN' WHEN 7 THEN 'JUL' WHEN 8 THEN 'AUG' WHEN 9 THEN 'SEP' WHEN 10 THEN 'OCT' WHEN 11 THEN 'NOV' WHEN 12 THEN 'DEC' END MONTHNAME from `tabReceivable Voucher` t1,`tabRV Detail` t2 WHERE t1.name = t2.parent and t1.docstatus = 1 and t2.item_group = '%s' AND t1.fiscal_year = '%s' GROUP BY MONTH(t1.due_date) ORDER BY MONTH(t1.due_date)"%(lst[1],lst[0])))
+      ret = convert_to_lists(sql("select sum(t2.amount) AMOUNT ,CASE MONTH(t1.due_date) WHEN 1 THEN 'JAN' WHEN 2 THEN 'FEB' WHEN 3 THEN 'MAR' WHEN 4 THEN 'APR' WHEN 5 THEN 'MAY' WHEN 6 THEN 'JUN' WHEN 7 THEN 'JUL' WHEN 8 THEN 'AUG' WHEN 9 THEN 'SEP' WHEN 10 THEN 'OCT' WHEN 11 THEN 'NOV' WHEN 12 THEN 'DEC' END MONTHNAME from `tabSales Invoice` t1,`tabSales Invoice Item` t2 WHERE t1.name = t2.parent and t1.docstatus = 1 and t2.item_group = '%s' AND t1.fiscal_year = '%s' GROUP BY MONTH(t1.due_date) ORDER BY MONTH(t1.due_date)"%(lst[1],lst[0])))
     
     m =cint(sql("select month('%s')"%(get_defaults()['year_start_date']))[0][0])
 
@@ -52,13 +68,13 @@ class DocType:
     cases = self.get_week_cases(lst[0],lst[1])
           
     if not lst[2]:
-      query = "SELECT SUM(grand_total) AMOUNT,CASE WEEK(due_date)"+ cases +"END Weekly FROM `tabReceivable Voucher` WHERE MONTH(due_date) = %d AND docstatus = 1 AND fiscal_year = '%s' GROUP BY Weekly  ORDER BY Weekly"
+      query = "SELECT SUM(grand_total) AMOUNT,CASE WEEK(due_date)"+ cases +"END Weekly FROM `tabSales Invoice` WHERE MONTH(due_date) = %d AND docstatus = 1 AND fiscal_year = '%s' GROUP BY Weekly  ORDER BY Weekly"
       
       ret = convert_to_lists(sql(query%(cint(lst[0]),lst[1])))
     
     else:
           
-      query = "SELECT SUM(t2.amount) AMOUNT,CASE WEEK(t1.due_date)" + cases + "END Weekly FROM `tabReceivable Voucher` t1, `tabRV Detail` t2 WHERE MONTH(t1.due_date) = %d AND t1.docstatus = 1 AND t1.fiscal_year = '%s' AND t1.name = t2.parent AND t2.item_group ='%s' GROUP BY Weekly  ORDER BY Weekly"
+      query = "SELECT SUM(t2.amount) AMOUNT,CASE WEEK(t1.due_date)" + cases + "END Weekly FROM `tabSales Invoice` t1, `tabSales Invoice Item` t2 WHERE MONTH(t1.due_date) = %d AND t1.docstatus = 1 AND t1.fiscal_year = '%s' AND t1.name = t2.parent AND t2.item_group ='%s' GROUP BY Weekly  ORDER BY Weekly"
       
       ret =convert_to_lists(sql(query%(cint(lst[0]),lst[1],lst[2])))
  
@@ -97,12 +113,12 @@ class DocType:
       if(m1 == 13): m1 = 1 
     
     if not lst[1]:
-      query = "SELECT SUM(grand_total) AMOUNT,CASE WEEK(due_date)"+cases+"END Weekly, month(due_date) month FROM `tabReceivable Voucher` WHERE docstatus = 1 AND fiscal_year = '%s' GROUP BY `month`,weekly ORDER BY `month`,weekly"
+      query = "SELECT SUM(grand_total) AMOUNT,CASE WEEK(due_date)"+cases+"END Weekly, month(due_date) month FROM `tabSales Invoice` WHERE docstatus = 1 AND fiscal_year = '%s' GROUP BY `month`,weekly ORDER BY `month`,weekly"
       ret = convert_to_lists(sql(query%lst[0]))
     
     else:
     
-      query = "SELECT SUM(t2.amount) AMOUNT,CASE WEEK(t1.due_date)" + cases + "END Weekly, month(due_date) month FROM `tabReceivable Voucher` t1, `tabRV Detail` t2 WHERE t1.docstatus = 1 AND t1.fiscal_year = '%s' AND t1.name = t2.parent AND t2.item_group ='%s' GROUP BY Weekly  ORDER BY Weekly"
+      query = "SELECT SUM(t2.amount) AMOUNT,CASE WEEK(t1.due_date)" + cases + "END Weekly, month(due_date) month FROM `tabSales Invoice` t1, `tabSales Invoice Item` t2 WHERE t1.docstatus = 1 AND t1.fiscal_year = '%s' AND t1.name = t2.parent AND t2.item_group ='%s' GROUP BY Weekly  ORDER BY Weekly"
       ret = convert_to_lists(sql(query%(lst[0],lst[1])))
       
     

@@ -1,9 +1,25 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
@@ -102,15 +118,21 @@ class DocType:
 
 	def check_for_active_boms(self, check):
 		if check in ['Is Active', 'Is Purchase Item']:
-			bom_mat = sql("select distinct t1.parent from `tabBOM Material` t1, `tabBill Of Materials` t2 where t1.item_code ='%s' and (t1.bom_no = '' or t1.bom_no is NULL) and t2.name = t1.parent and t2.is_active = 'Yes' and t2.docstatus = 1 and t1.docstatus =1 " % self.doc.name )
+			bom_mat = sql("select distinct t1.parent from `tabBOM Item` t1, `tabBOM` t2 where t1.item_code ='%s' and (t1.bom_no = '' or t1.bom_no is NULL) and t2.name = t1.parent and t2.is_active = 'Yes' and t2.docstatus = 1 and t1.docstatus =1 " % self.doc.name )
 			if bom_mat and bom_mat[0][0]:
 				msgprint("%s should be 'Yes'. As Item %s is present in one or many Active BOMs." % (cstr(check), cstr(self.doc.name)))
 				raise Exception
 		if check == 'Is Active' or ( check == 'Is Manufactured Item' and self.doc.is_sub_contracted_item != 'Yes') or (check ==	'Is Sub Contracted Item' and self.doc.is_manufactured_item != 'Yes') :
-			bom = sql("select name from `tabBill Of Materials` where item = '%s' and is_active ='Yes'" % cstr(self.doc.name))
+			bom = sql("select name from `tabBOM` where item = '%s' and is_active ='Yes'" % cstr(self.doc.name))
 			if bom and bom[0][0]:
 				msgprint("%s should be 'Yes'. As Item %s is present in one or many Active BOMs." % (cstr(check), cstr(self.doc.name)))
 				raise Exception
+				
+	def validate_barcode(self):
+		if self.doc.barcode:
+			duplicate = sql("select name from tabItem where barcode = %s and name != %s", (self.doc.barcode, self.doc.name))
+			if duplicate:
+				msgprint("Barcode: %s already used in item: %s" % (self.doc.barcode, cstr(duplicate[0][0])), raise_exception = 1)
 
 	def validate(self):
 		fl = {'is_manufactured_item'	:'Is Manufactured Item',
@@ -123,6 +145,7 @@ class DocType:
 		self.check_ref_rate_detail()
 		self.fill_customer_code()
 		self.check_item_tax()
+		self.validate_barcode()
 		if not self.doc.min_order_qty:
 			self.doc.min_order_qty = 0
 		self.check_non_asset_warehouse()
@@ -139,6 +162,9 @@ class DocType:
 
 		if self.doc.has_serial_no == 'Yes' and self.doc.is_stock_item == 'No':
 			msgprint("'Has Serial No' can not be 'Yes' for non-stock item", raise_exception=1)
+
+		# make product page
+		self.make_page()
 
 	def check_non_asset_warehouse(self):
 		if self.doc.is_asset_item == "Yes":
@@ -192,3 +218,35 @@ Total Available Qty: %s
 	def on_rename(self,newdn,olddn):
 		sql("update tabItem set item_code = %s where name = %s", (newdn, olddn))
 
+	def make_page(self):
+		if self.doc.show_in_website=='Yes':
+
+			import website.utils
+
+			if self.doc.page_name:
+				import webnotes.model
+				webnotes.model.delete_doc('Page', self.doc.page_name)
+				
+			p = website.utils.add_page("Product " + self.doc.item_name)
+			self.doc.page_name = p.name
+
+			from jinja2 import Template
+			import markdown2
+			import os
+
+
+			self.doc.long_description_html = markdown2.markdown(self.doc.description or '')
+
+			with open(os.path.join(os.path.dirname(__file__), 'template.html'), 'r') as f:
+				p.content = Template(f.read()).render(doc=self.doc)
+
+			with open(os.path.join(os.path.dirname(__file__), 'product_page.js'), 'r') as f:
+				p.script = Template(f.read()).render(doc=self.doc)
+
+			p.save()
+
+			website.utils.add_guest_access_to_page(p.name)
+
+			del self.doc.fields['long_description_html']
+
+			

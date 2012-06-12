@@ -1,3 +1,19 @@
+// ERPNext - web based ERP (http://erpnext.com)
+// Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 cur_frm.cscript.onload = function(doc, dt, dn) {
   if(!doc.status) set_multiple(dt,dn,{status:'Draft'});
   if(doc.customer) cur_frm.cscript.customer(doc,cdt,cdn);
@@ -44,7 +60,7 @@ cur_frm.fields_dict['contact_person'].get_query = function(doc, cdt, cdn) {
   return 'SELECT name,CONCAT(first_name," ",ifnull(last_name,"")) As FullName,department,designation FROM tabContact WHERE customer = "'+ doc.customer +'" AND docstatus != 2 AND name LIKE "%s" ORDER BY name ASC LIMIT 50';
 }
 
-cur_frm.cscript['Get Items'] = function(doc, dt, dn) {
+cur_frm.cscript.get_items = function(doc, dt, dn) {
   var callback = function(r,rt) { 
 	  unhide_field(['customer_address','contact_person','customer_name','address_display','contact_display','contact_mobile','contact_email','territory','customer_group']);
 	  cur_frm.refresh();
@@ -94,8 +110,8 @@ cur_frm.fields_dict['sales_order_no'].get_query = function(doc) {
   if(doc.customer) {
     cond = '`tabSales Order`.customer = "'+doc.customer+'" AND';
   }
-  //return repl('SELECT DISTINCT `tabSales Order`.name FROM `tabSales Order`, `tabSales Order Detail` WHERE `tabSales Order`.company = "%(company)s" AND `tabSales Order`.docstatus = 1 AND %(cond)s `tabSales Order`.name LIKE "%s" ORDER BY `tabSales Order`.name DESC LIMIT 50', {company:doc.company, cond:cond});
-  return repl('SELECT DISTINCT `tabSales Order`.name FROM `tabSales Order`, `tabSales Order Detail`, `tabItem` WHERE `tabSales Order`.company = "%(company)s" AND `tabSales Order`.docstatus = 1 AND `tabSales Order Detail`.parent = `tabSales Order`.name AND `tabSales Order Detail`.item_code = `tabItem`.name AND `tabItem`.is_service_item = "Yes" AND %(cond)s `tabSales Order`.name LIKE "%s" ORDER BY `tabSales Order`.name DESC LIMIT 50', {company:doc.company, cond:cond});
+  //return repl('SELECT DISTINCT `tabSales Order`.name FROM `tabSales Order`, `tabSales Order Item` WHERE `tabSales Order`.company = "%(company)s" AND `tabSales Order`.docstatus = 1 AND %(cond)s `tabSales Order`.name LIKE "%s" ORDER BY `tabSales Order`.name DESC LIMIT 50', {company:doc.company, cond:cond});
+  return repl('SELECT DISTINCT `tabSales Order`.name FROM `tabSales Order`, `tabSales Order Item`, `tabItem` WHERE `tabSales Order`.company = "%(company)s" AND `tabSales Order`.docstatus = 1 AND `tabSales Order Item`.parent = `tabSales Order`.name AND `tabSales Order Item`.item_code = `tabItem`.name AND `tabItem`.is_service_item = "Yes" AND %(cond)s `tabSales Order`.name LIKE "%s" ORDER BY `tabSales Order`.name DESC LIMIT 50', {company:doc.company, cond:cond});
 }
 
 cur_frm.fields_dict['customer_issue_no'].get_query = function(doc) {

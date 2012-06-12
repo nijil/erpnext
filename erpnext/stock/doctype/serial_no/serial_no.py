@@ -1,3 +1,19 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
@@ -55,10 +71,13 @@ class DocType(TransactionBase):
 		self.validate_warehouse()
 		self.validate_item()
 
+	def on_update(self):
+		if self.doc.warehouse and self.doc.status == 'In Store' and cint(self.doc.sle_exists) == 0 and \
+			not sql("select name from `tabStock Ledger Entry` where serial_no = %s and ifnull(is_cancelled, 'No') = 'No'", self.doc.name):
+			self.make_stock_ledger_entry(1)
+			webnotes.conn.set(self.doc, 'sle_exists', 1)
 
-	# ------------------------
-	# make stock ledger entry
-	# ------------------------
+
 	def make_stock_ledger_entry(self, qty):
 		from webnotes.model.code import get_obj
 		values = [{
@@ -75,19 +94,11 @@ class DocType(TransactionBase):
 			'incoming_rate'			: self.doc.purchase_rate,
 			'company'				: self.doc.company,
 			'fiscal_year'			: self.doc.fiscal_year,
-			'is_cancelled'			: 'No', # is_cancelled is always 'No' because while deleted it can not find creation entry if it not created directly, voucher no != serial no.
+			'is_cancelled'			: 'No', # is_cancelled is always 'No' because while deleted it can not find creation entry if it not created directly, voucher no != serial no
 			'batch_no'				: '',
 			'serial_no'				: self.doc.name
 		}]
 		get_obj('Stock Ledger', 'Stock Ledger').update_stock(values)
-
-
-	# ----------
-	# on update
-	# ----------
-	def on_update(self):
-		if self.doc.localname and self.doc.warehouse and self.doc.status == 'In Store' and not sql("select name from `tabStock Ledger Entry` where serial_no = '%s' and ifnull(is_cancelled, 'No') = 'No'" % (self.doc.name)):
-			self.make_stock_ledger_entry(1)
 
 
 	# ---------

@@ -1,9 +1,25 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
@@ -53,7 +69,7 @@ class DocType:
   # Validate Rule
   # --------------
   def validate_rule(self):
-    if not self.doc.transaction == 'Expense Voucher' and not self.doc.transaction == 'Appraisal':
+    if not self.doc.transaction == 'Expense Claim' and not self.doc.transaction == 'Appraisal':
       if not self.doc.approving_role and not self.doc.approving_user:
         msgprint("Please enter Approving Role or Approving User")
         raise Exception
@@ -79,8 +95,8 @@ class DocType:
       if self.doc.transaction == 'Appraisal' and self.doc.based_on != 'Not Applicable':
         msgprint("Based on is 'Not Applicable' while setting authorization rule for 'Appraisal'")
         raise Exception
-      if self.doc.transaction == 'Expense Voucher' and self.doc.based_on != 'Total Claimed Amount':
-        msgprint("Authorization rule should be based on 'Total Calimed Amount' while setting authorization rule for 'Expense Voucher'")
+      if self.doc.transaction == 'Expense Claim' and self.doc.based_on != 'Total Claimed Amount':
+        msgprint("Authorization rule should be based on 'Total Calimed Amount' while setting authorization rule for 'Expense Claim'")
         raise Exception
 
 

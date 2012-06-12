@@ -1,9 +1,25 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
@@ -36,10 +52,12 @@ class DocType:
 			msgprint("GL Entry: Debit or Credit amount is mandatory for %s" % self.doc.account)
 			raise Exception
 			
+			
+		# COMMMENTED below to allow zero amount (+ and -) entry in tax table
 		# Debit and credit can not done at the same time
-		if flt(self.doc.credit) != 0 and flt(self.doc.debit) != 0:
-			msgprint("Sorry you cannot credit and debit under same account head.")
-			raise Exception, "Validation Error."
+		#if flt(self.doc.credit) != 0 and flt(self.doc.debit) != 0:
+		#	msgprint("Sorry you cannot credit and debit under same account head.")
+		#	raise Exception, "Validation Error."
 		
 	# Cost center is required only if transaction made against pl account
 	#--------------------------------------------------------------------
@@ -96,9 +114,9 @@ class DocType:
 	#----------------------------------------------------------------------------------------------
 	def check_freezing_date(self, adv_adj):
 		if not adv_adj:
-			acc_frozen_upto = get_value('Manage Account', None, 'acc_frozen_upto')
+			acc_frozen_upto = get_value('Global Defaults', None, 'acc_frozen_upto')
 			if acc_frozen_upto:
-				bde_auth_role = get_value( 'Manage Account', None,'bde_auth_role')
+				bde_auth_role = get_value( 'Global Defaults', None,'bde_auth_role')
 				if getdate(self.doc.posting_date) <= getdate(acc_frozen_upto) and not bde_auth_role in webnotes.user.get_roles():
 					msgprint("You are not authorized to do/modify back dated accounting entries before %s." % getdate(acc_frozen_upto).strftime('%d-%m-%Y'), raise_exception=1)
 
@@ -135,15 +153,16 @@ class DocType:
 		# amount to debit
 		amt = flt(self.doc.debit) - flt(self.doc.credit)
 		if det[0][2] == 'Credit': amt = -amt
+
 		if cancel:
 			debit = -1 * flt(self.doc.credit)
 			credit = -1 * flt(self.doc.debit)
 		else:
 			debit = flt(self.doc.debit)
 			credit = flt(self.doc.credit)
-		
+
 		self.create_new_balances(det)
-		
+
 		# build dict
 		p = {
 			'debit': self.doc.is_opening=='No' and flt(debit) or 0
@@ -158,6 +177,7 @@ class DocType:
 			,'fiscal_year': self.doc.fiscal_year
 		}
 
+		# Update account balance for current year
 		sql("""update `tabAccount Balance` ab, `tabAccount` a 
 				set 
 					ab.debit = ifnull(ab.debit,0) + %(debit)s
@@ -170,6 +190,34 @@ class DocType:
 					and ab.account = a.name
 					%(end_date_condition)s
 					and ab.fiscal_year = '%(fiscal_year)s' """ % p)
+
+		# Future year balances
+		# Update opening only where period_type is Year
+		sql("""update `tabAccount Balance` ab, `tabAccount` a, `tabFiscal Year` fy
+				set 
+					ab.opening = ifnull(ab.opening,0) + %(diff)s
+				where
+					a.lft <= %(lft)s
+					and a.rgt >= %(rgt)s
+					and ab.account = a.name
+					and ifnull(a.is_pl_account, 'No') = 'No'
+					and ab.period = ab.fiscal_year
+					and fy.name = ab.fiscal_year
+					and fy.year_start_date > '%(posting_date)s'""" % p)
+
+		# Update balance for all period for future years
+		sql("""update `tabAccount Balance` ab, `tabAccount` a, `tabFiscal Year` fy 
+				set 
+					ab.balance = ifnull(ab.balance,0) + %(diff)s
+				where
+					a.lft <= %(lft)s
+					and a.rgt >= %(rgt)s
+					and ab.account = a.name
+					and ifnull(a.is_pl_account, 'No') = 'No'
+					and fy.name = ab.fiscal_year
+					and fy.year_start_date > '%(posting_date)s'""" % p)
+
+
 
 			
 	# Get periods(month and year)
@@ -186,12 +234,12 @@ class DocType:
 		bal = flt(sql("select sum(debit)-sum(credit) from `tabGL Entry` where against_voucher=%s and against_voucher_type=%s and ifnull(is_cancelled,'No') = 'No'", (self.doc.against_voucher, self.doc.against_voucher_type))[0][0] or 0.0)
 		tds = 0
 		
-		if self.doc.against_voucher_type=='Payable Voucher':
+		if self.doc.against_voucher_type=='Purchase Invoice':
 			# amount to debit
 			bal = -bal
 			
 			# Check if tds applicable
-			tds = sql("select total_tds_on_voucher from `tabPayable Voucher` where name = '%s'" % self.doc.against_voucher)
+			tds = sql("select total_tds_on_voucher from `tabPurchase Invoice` where name = '%s'" % self.doc.against_voucher)
 			tds = tds and flt(tds[0][0]) or 0
 		
 		# Validation : Outstanding can not be negative
@@ -209,7 +257,7 @@ class DocType:
 		#check for user role Freezed
 		master_type=sql("select master_type, master_name from `tabAccount` where name='%s' " %self.doc.account)
 		tot_outstanding = 0	#needed when there is no GL Entry in the system for that acc head
-		if (self.doc.voucher_type=='Journal Voucher' or self.doc.voucher_type=='Receivable Voucher') and (master_type and master_type[0][0]=='Customer' and master_type[0][1]):
+		if (self.doc.voucher_type=='Journal Voucher' or self.doc.voucher_type=='Sales Invoice') and (master_type and master_type[0][0]=='Customer' and master_type[0][1]):
 			dbcr = sql("select sum(debit),sum(credit) from `tabGL Entry` where account = '%s' and is_cancelled='No'" % self.doc.account)
 			if dbcr:
 				tot_outstanding = flt(dbcr[0][0])-flt(dbcr[0][1])+flt(self.doc.debit)-flt(self.doc.credit)

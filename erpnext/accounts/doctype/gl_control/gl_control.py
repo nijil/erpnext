@@ -1,15 +1,29 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist, clone
 from webnotes.model.code import get_obj
 from webnotes import session, form, is_testing, msgprint, errprint
 
-sql = webnotes.conn.sql
-get_value = webnotes.conn.get_value
 in_transaction = webnotes.conn.in_transaction
 convert_to_lists = webnotes.conn.convert_to_lists
 
@@ -21,12 +35,6 @@ class DocType:
 		self.doc, self.doclist = d, dl
 		self.entries = []
 
-	# Get Company List
-	# ----------------
-	def get_companies(self,arg=''):
-		ret = sql("select name, abbr from tabCompany where docstatus != 2")
-		return {'cl':[r[0] for r in ret]}
-
 	def get_company_currency(self,arg=''):
 		dcc = TransactionBase().get_company_currency(arg)
 		return dcc
@@ -35,7 +43,7 @@ class DocType:
 	# --------------------
 	def get_bal(self,arg):
 		ac, fy = arg.split('~~~')
-		det = sql("select t1.balance, t2.debit_or_credit from `tabAccount Balance` t1, `tabAccount` t2 where t1.period = %s and t2.name=%s and t1.account = t2.name", (fy, ac))
+		det = webnotes.conn.sql("select t1.balance, t2.debit_or_credit from `tabAccount Balance` t1, `tabAccount` t2 where t1.period = %s and t2.name=%s and t1.account = t2.name", (fy, ac))
 		bal = det and flt(det[0][0]) or 0
 		dr_or_cr = det and flt(det[0][1]) or ''
 		return fmt_money(bal) + ' ' + dr_or_cr
@@ -44,10 +52,10 @@ class DocType:
 		acc, f, t = arg.split('~~~')
 		c, fy = '', get_defaults()['fiscal_year']
 
-		det = sql("select debit_or_credit, lft, rgt, is_pl_account from tabAccount where name=%s", acc)
+		det = webnotes.conn.sql("select debit_or_credit, lft, rgt, is_pl_account from tabAccount where name=%s", acc)
 		if f: c += (' and t1.posting_date >= "%s"' % f)
 		if t: c += (' and t1.posting_date <= "%s"' % t)
-		bal = sql("select sum(ifnull(t1.debit,0))-sum(ifnull(t1.credit,0)) from `tabGL Entry` t1 where t1.account='%s' and ifnull(is_opening, 'No') = 'No' %s" % (acc, c))
+		bal = webnotes.conn.sql("select sum(ifnull(t1.debit,0))-sum(ifnull(t1.credit,0)) from `tabGL Entry` t1 where t1.account='%s' and ifnull(is_opening, 'No') = 'No' %s" % (acc, c))
 		bal = bal and flt(bal[0][0]) or 0
 
 		if det[0][0] != 'Debit':
@@ -55,7 +63,7 @@ class DocType:
 
 		# add opening for balance sheet accounts
 		if det[0][3] == 'No':
-			opening = flt(sql("select opening from `tabAccount Balance` where account=%s and period=%s", (acc, fy))[0][0])
+			opening = flt(webnotes.conn.sql("select opening from `tabAccount Balance` where account=%s and period=%s", (acc, fy))[0][0])
 			bal = bal + opening
 
 		return flt(bal)
@@ -67,11 +75,11 @@ class DocType:
 		acc, f, t = arg.split('~~~')
 		c, fy = '', get_defaults()['fiscal_year']
 
-		det = sql("select debit_or_credit, lft, rgt, is_pl_account from tabAccount where name=%s", acc)
+		det = webnotes.conn.sql("select debit_or_credit, lft, rgt, is_pl_account from tabAccount where name=%s", acc)
 		if f: c += (' and t1.posting_date >= "%s"' % f)
 		if t: c += (' and t1.posting_date <= "%s"' % t)
 		if cost_center: c += (' and t1.cost_center = "%s"' % cost_center)
-		bal = sql("select sum(ifnull(t1.debit,0))-sum(ifnull(t1.credit,0)) from `tabGL Entry` t1 where t1.account='%s' %s" % (acc, c))
+		bal = webnotes.conn.sql("select sum(ifnull(t1.debit,0))-sum(ifnull(t1.credit,0)) from `tabGL Entry` t1 where t1.account='%s' %s" % (acc, c))
 		bal = bal and flt(bal[0][0]) or 0
 
 		if det[0][0] != 'Debit':
@@ -91,9 +99,9 @@ class DocType:
 
 			if parent=='Root Node':
 
-				cl = sql("select t1.name, t1.group_or_ledger, t1.debit_or_credit, t2.balance, t1.account_name from tabAccount t1, `tabAccount Balance` t2 where ifnull(t1.parent_account, '') = '' and t1.docstatus != 2 and t1.company=%s and t1.name = t2.account and t2.period = %s order by t1.name asc", (company, fy),as_dict=1)
+				cl = webnotes.conn.sql("select t1.name, t1.group_or_ledger, t1.debit_or_credit, t2.balance, t1.account_name from tabAccount t1, `tabAccount Balance` t2 where ifnull(t1.parent_account, '') = '' and t1.docstatus != 2 and t1.company=%s and t1.name = t2.account and t2.period = %s order by t1.name asc", (company, fy),as_dict=1)
 			else:
-				cl = sql("select t1.name, t1.group_or_ledger, t1.debit_or_credit, t2.balance, t1.account_name from tabAccount t1, `tabAccount Balance` t2 where ifnull(t1.parent_account, '')=%s and t1.docstatus != 2 and t1.company=%s and t1.name = t2.account and t2.period = %s order by t1.name asc",(parent, company, fy) ,as_dict=1)
+				cl = webnotes.conn.sql("select t1.name, t1.group_or_ledger, t1.debit_or_credit, t2.balance, t1.account_name from tabAccount t1, `tabAccount Balance` t2 where ifnull(t1.parent_account, '')=%s and t1.docstatus != 2 and t1.company=%s and t1.name = t2.account and t2.period = %s order by t1.name asc",(parent, company, fy) ,as_dict=1)
 
 			# remove Decimals
 			for c in cl: c['balance'] = flt(c['balance'])
@@ -101,9 +109,9 @@ class DocType:
 		# get children cost center details
 		elif type=='Cost Center':
 			if parent=='Root Node':
-				cl = sql("select name,group_or_ledger, cost_center_name from `tabCost Center`	where ifnull(parent_cost_center, '')='' and docstatus != 2 and company_name=%s order by name asc",(company),as_dict=1)
+				cl = webnotes.conn.sql("select name,group_or_ledger, cost_center_name from `tabCost Center`	where ifnull(parent_cost_center, '')='' and docstatus != 2 and company_name=%s order by name asc",(company),as_dict=1)
 			else:
-				cl = sql("select name,group_or_ledger,cost_center_name from `tabCost Center` where ifnull(parent_cost_center, '')=%s and docstatus != 2 and company_name=%s order by name asc",(parent,company),as_dict=1)
+				cl = webnotes.conn.sql("select name,group_or_ledger,cost_center_name from `tabCost Center` where ifnull(parent_cost_center, '')=%s and docstatus != 2 and company_name=%s order by name asc",(parent,company),as_dict=1)
 		return {'parent':parent, 'parent_acc_name':parent_acc_name, 'cl':cl}
 
 	# Add a new account
@@ -130,7 +138,7 @@ class DocType:
 		for d in arg.keys():
 			cc.fields[d] = arg[d]
 		# map company abbr
-		other_info = sql("select company_abbr from `tabCost Center` where name='%s'"%arg['parent_cost_center'])
+		other_info = webnotes.conn.sql("select company_abbr from `tabCost Center` where name='%s'"%arg['parent_cost_center'])
 		cc.company_abbr = other_info and other_info[0][0] or arg['company_abbr']
 
 		cc_obj = get_obj(doc=cc)
@@ -163,11 +171,11 @@ class DocType:
 	#----------------------------------------------------------------------------
 	def make_single_entry(self,parent,d,le_map,cancel, merge_entries):
 		if self.get_val(le_map['account'], d, parent) and (self.get_val(le_map['debit'], d, parent) or self.get_val(le_map['credit'], d, parent)):
-			flist = ['account','cost_center','against','debit','credit','remarks','voucher_type','voucher_no','transaction_date','posting_date','fiscal_year','against_voucher','against_voucher_type','company','is_opening', 'aging_date']
+			flist = ['account','cost_center','against','debit','credit','remarks','voucher_type','voucher_no','posting_date','fiscal_year','against_voucher','against_voucher_type','company','is_opening', 'aging_date']
 
 			# Check budget before gl entry
 			#check budget only if account is expense account
-			is_expense_acct = sql("select name from tabAccount where is_pl_account='Yes' and debit_or_credit='Debit' and name=%s",self.get_val(le_map['account'], d, parent))
+			is_expense_acct = webnotes.conn.sql("select name from tabAccount where is_pl_account='Yes' and debit_or_credit='Debit' and name=%s",self.get_val(le_map['account'], d, parent))
 			if is_expense_acct and self.get_val(le_map['cost_center'], d, parent):
 				get_obj('Budget Control').check_budget([self.get_val(le_map[k], d, parent) for k in flist if k in ['account','cost_center','debit','credit','posting_date','fiscal_year','company']],cancel)
 
@@ -190,10 +198,17 @@ class DocType:
 	# ----------------
 	def save_entries(self, cancel, adv_adj, update_outstanding):
 		for le in self.entries:
-			# cancel
-			if cancel or flt(le.debit) < 0 or flt(le.credit) < 0:
+			#toggle debit, credit if negative entry
+			if flt(le.debit) < 0 or flt(le.credit) < 0:
 				tmp=le.debit
 				le.debit, le.credit = abs(flt(le.credit)), abs(flt(tmp))
+			
+			# toggled debit/credit in two separate condition because both should be executed at the 
+			# time of cancellation when there is negative amount (tax discount)
+			if cancel:
+				tmp=le.debit
+				le.debit, le.credit = abs(flt(le.credit)), abs(flt(tmp))
+
 
 			le_obj = get_obj(doc=le)
 			# validate except on_cancel
@@ -214,7 +229,7 @@ class DocType:
 	def make_gl_entries(self, doc, doclist, cancel=0, adv_adj = 0, use_mapper='', merge_entries = 1, update_outstanding='Yes'):
 		self.entries = []
 		# get entries
-		le_map_list = sql("select * from `tabGL Mapper Detail` where parent = %s", use_mapper or doc.doctype, as_dict=1)
+		le_map_list = webnotes.conn.sql("select * from `tabGL Mapper Detail` where parent = %s", use_mapper or doc.doctype, as_dict=1)
 		self.td, self.tc = 0.0, 0.0
 		for le_map in le_map_list:
 			if le_map['table_field']:
@@ -237,17 +252,17 @@ class DocType:
 		# set as cancelled
 		if cancel:
 			vt, vn = self.get_val(le_map['voucher_type'],	doc, doc), self.get_val(le_map['voucher_no'],	doc, doc)
-			sql("update `tabGL Entry` set is_cancelled='Yes' where voucher_type=%s and voucher_no=%s", (vt, vn))
+			webnotes.conn.sql("update `tabGL Entry` set is_cancelled='Yes' where voucher_type=%s and voucher_no=%s", (vt, vn))
 
 	# Get account balance on any date
 	# -------------------------------
 	def get_as_on_balance(self, account_name, fiscal_year, as_on, credit_or_debit, lft, rgt):
 		# initialization
-		det = sql("select start_date, opening from `tabAccount Balance` where period = %s and account = %s", (fiscal_year, account_name))
+		det = webnotes.conn.sql("select start_date, opening from `tabAccount Balance` where period = %s and account = %s", (fiscal_year, account_name))
 		from_date, opening, debit_bal, credit_bal, closing_bal = det and det[0][0] or getdate(nowdate()), det and flt(det[0][1]) or 0, 0, 0, det and flt(det[0][1]) or 0
 
 		# prev month closing
-		prev_month_det = sql("select end_date, debit, credit, balance from `tabAccount Balance` where account = %s and end_date <= %s and fiscal_year = %s order by end_date desc limit 1", (account_name, as_on, fiscal_year))
+		prev_month_det = webnotes.conn.sql("select end_date, debit, credit, balance from `tabAccount Balance` where account = %s and end_date <= %s and fiscal_year = %s order by end_date desc limit 1", (account_name, as_on, fiscal_year))
 		if prev_month_det:
 			from_date = getdate(add_days(prev_month_det[0][0].strftime('%Y-%m-%d'), 1))
 			opening = 0
@@ -257,7 +272,7 @@ class DocType:
 
 		# curr month transaction
 		if getdate(as_on) >= from_date:
-			curr_month_bal = sql("select SUM(t1.debit), SUM(t1.credit) from `tabGL Entry` t1, `tabAccount` t2 WHERE t1.posting_date >= %s AND t1.posting_date <= %s and ifnull(t1.is_opening, 'No') = 'No' AND t1.account = t2.name AND t2.lft >= %s AND t2.rgt <= %s and ifnull(t1.is_cancelled, 'No') = 'No'", (from_date, as_on, lft, rgt))
+			curr_month_bal = webnotes.conn.sql("select SUM(t1.debit), SUM(t1.credit) from `tabGL Entry` t1, `tabAccount` t2 WHERE t1.posting_date >= %s AND t1.posting_date <= %s and ifnull(t1.is_opening, 'No') = 'No' AND t1.account = t2.name AND t2.lft >= %s AND t2.rgt <= %s and ifnull(t1.is_cancelled, 'No') = 'No'", (from_date, as_on, lft, rgt))
 			curr_debit_amt, curr_credit_amt = flt(curr_month_bal[0][0]), flt(curr_month_bal[0][1])
 			debit_bal = curr_month_bal and debit_bal + curr_debit_amt or debit_bal
 			credit_bal = curr_month_bal and credit_bal + curr_credit_amt or credit_bal
@@ -272,7 +287,7 @@ class DocType:
 	# ADVANCE ALLOCATION
 	#-------------------
 	def get_advances(self, obj, account_head, table_name,table_field_name, dr_or_cr):
-		jv_detail = sql("select t1.name, t1.remark, t2.%s, t2.name, t1.ded_amount from `tabJournal Voucher` t1, `tabJournal Voucher Detail` t2 where t1.name = t2.parent and (t2.against_voucher is null or t2.against_voucher = '') and (t2.against_invoice is null or t2.against_invoice = '') and (t2.against_jv is null or t2.against_jv = '') and t2.account = '%s' and t2.is_advance = 'Yes' and t1.docstatus = 1 order by t1.voucher_date " % (dr_or_cr,account_head))
+		jv_detail = webnotes.conn.sql("select t1.name, t1.remark, t2.%s, t2.name, t1.ded_amount from `tabJournal Voucher` t1, `tabJournal Voucher Detail` t2 where t1.name = t2.parent and (t2.against_voucher is null or t2.against_voucher = '') and (t2.against_invoice is null or t2.against_invoice = '') and (t2.against_jv is null or t2.against_jv = '') and t2.account = '%s' and t2.is_advance = 'Yes' and t1.docstatus = 1 order by t1.voucher_date " % (dr_or_cr,account_head))
 		# clear advance table
 		obj.doc.clear_table(obj.doclist,table_field_name)
 		# Create advance table
@@ -283,7 +298,7 @@ class DocType:
 			add.remarks = d[1]
 			add.advance_amount = flt(d[2])
 			add.allocate_amount = 0
-			if table_name == 'Advance Allocation Detail':
+			if table_name == 'Purchase Invoice Advance':
 				add.tds_amount = flt(d[4])
 
 	# Clear rows which is not adjusted
@@ -291,7 +306,7 @@ class DocType:
 	def clear_advances(self, obj,table_name,table_field_name):
 		for d in getlist(obj.doclist,table_field_name):
 			if not flt(d.allocated_amount):
-				sql("update `tab%s` set parent = '' where name = '%s' and parent = '%s'" % (table_name, d.name, d.parent))
+				webnotes.conn.sql("update `tab%s` set parent = '' where name = '%s' and parent = '%s'" % (table_name, d.name, d.parent))
 				d.parent = ''
 
 	# Update aginst document in journal voucher
@@ -305,7 +320,7 @@ class DocType:
 				get_obj(dt='GL Control').make_gl_entries(jv_obj.doc, jv_obj.doclist, cancel =1, adv_adj =1)
 
 				# update ref in JV Detail
-				sql("update `tabJournal Voucher Detail` set %s = '%s' where name = '%s'" % (doctype=='Payable Voucher' and 'against_voucher' or 'against_invoice', cstr(against_document_no), d.jv_detail_no))
+				webnotes.conn.sql("update `tabJournal Voucher Detail` set %s = '%s' where name = '%s'" % (doctype=='Purchase Invoice' and 'against_voucher' or 'against_invoice', cstr(against_document_no), d.jv_detail_no))
 
 				# re-submit JV
 				jv_obj = get_obj('Journal Voucher', d.journal_voucher, with_children =1)
@@ -332,12 +347,12 @@ class DocType:
 	def add_extra_entry(self,jv_obj,jv,jv_detail_no, allocate, account_head, doctype, dr_or_cr, against_document_no):
 		# get old entry details
 
-		jvd = sql("select %s, cost_center, balance, against_account from `tabJournal Voucher Detail` where name = '%s'" % (dr_or_cr,jv_detail_no))
+		jvd = webnotes.conn.sql("select %s, cost_center, balance, against_account from `tabJournal Voucher Detail` where name = '%s'" % (dr_or_cr,jv_detail_no))
 		advance = jvd and flt(jvd[0][0]) or 0
 		balance = flt(advance) - flt(allocate)
 
 		# update old entry
-		sql("update `tabJournal Voucher Detail` set %s = '%s', %s = '%s' where name = '%s'" % (dr_or_cr, flt(allocate), doctype == "Payable Voucher" and 'against_voucher' or 'against_invoice',cstr(against_document_no), jv_detail_no))
+		webnotes.conn.sql("update `tabJournal Voucher Detail` set %s = '%s', %s = '%s' where name = '%s'" % (dr_or_cr, flt(allocate), doctype == "Purchase Invoice" and 'against_voucher' or 'against_invoice',cstr(against_document_no), jv_detail_no))
 
 		# new entry with balance amount
 		add = addchild(jv_obj.doc, 'entries', 'Journal Voucher Detail', 1, jv_obj.doclist)
@@ -356,7 +371,7 @@ class DocType:
 		# 2. check if amount is same
 		# 3. check if is_advance is 'Yes'
 		# 4. check if jv is submitted
-		ret = sql("select t2.%s from `tabJournal Voucher` t1, `tabJournal Voucher Detail` t2 where t1.name = t2.parent and ifnull(t2.against_voucher, '') = '' and ifnull(t2.against_invoice, '') = '' and t2.account = '%s' and t1.name = '%s' and t2.name = '%s' and t2.is_advance = 'Yes' and t1.docstatus=1 and t2.%s = %s" % (dr_or_cr, account_head, d.journal_voucher, d.jv_detail_no, dr_or_cr, d.advance_amount))
+		ret = webnotes.conn.sql("select t2.%s from `tabJournal Voucher` t1, `tabJournal Voucher Detail` t2 where t1.name = t2.parent and ifnull(t2.against_voucher, '') = '' and ifnull(t2.against_invoice, '') = '' and t2.account = '%s' and t1.name = '%s' and t2.name = '%s' and t2.is_advance = 'Yes' and t1.docstatus=1 and t2.%s = %s" % (dr_or_cr, account_head, d.journal_voucher, d.jv_detail_no, dr_or_cr, d.advance_amount))
 		if (not ret):
 			msgprint("Please click on 'Get Advances Paid' button as the advance entries have been changed.")
 			raise Exception
@@ -376,8 +391,8 @@ class DocType:
 
 			against_fld = {
 				'Journal Voucher' : 'against_jv',
-				'Receivable Voucher' : 'against_invoice',
-				'Payable Voucher' : 'against_voucher'
+				'Sales Invoice' : 'against_invoice',
+				'Purchase Invoice' : 'against_voucher'
 			}
 			
 			d['against_fld'] = against_fld[d['against_voucher_type']]
@@ -399,13 +414,13 @@ class DocType:
 			Updates against document, if partial amount splits into rows
 		"""
 
-		sql("""
+		webnotes.conn.sql("""
 			update `tabJournal Voucher Detail` t1, `tabJournal Voucher` t2	
 			set t1.%(dr_or_cr)s = '%(allocated_amt)s', t1.%(against_fld)s = '%(against_voucher)s', t2.modified = now() 
 			where t1.name = '%(voucher_detail_no)s' and t1.parent = t2.name""" % d)
 
 		if d['allocated_amt'] < d['unadjusted_amt']:
-			jvd = sql("select cost_center, balance, against_account, is_advance from `tabJournal Voucher Detail` where name = '%s'" % d['voucher_detail_no'])
+			jvd = webnotes.conn.sql("select cost_center, balance, against_account, is_advance from `tabJournal Voucher Detail` where name = '%s'" % d['voucher_detail_no'])
 			# new entry with balance amount
 			ch = addchild(jv_obj.doc, 'entries', 'Journal Voucher Detail', 1)
 			ch.account = d['account']
@@ -425,7 +440,7 @@ class DocType:
 			check if amount is same
 			check if jv is submitted
 		"""
-		ret = sql("""
+		ret = webnotes.conn.sql("""
 			select t2.%(dr_or_cr)s from `tabJournal Voucher` t1, `tabJournal Voucher Detail` t2 
 			where t1.name = t2.parent and t2.account = '%(account)s' 
 			and ifnull(t2.against_voucher, '')='' and ifnull(t2.against_invoice, '')='' and ifnull(t2.against_jv, '')=''
@@ -436,49 +451,12 @@ class DocType:
 		if not ret:
 			msgprint("Payment Entry has been modified after you pulled it. Please pull it again.", raise_exception=1)
 		
-######################################################################################################################
-		
-
-
-	# Repair Outstanding Amount
-	#---------------------------------
-	def repair_voucher_outstanding(self, voucher_obj):
-		msg = []
-
-		# Get Balance from GL Entries
-		bal = sql("select sum(debit)-sum(credit) from `tabGL Entry` where against_voucher=%s and against_voucher_type=%s", (voucher_obj.doc.name , voucher_obj.doc.doctype))
-		bal = bal and flt(bal[0][0]) or 0.0
-		if cstr(voucher_obj.doc.doctype) == 'Payable Voucher':
-			bal = -bal
-
-		# Check outstanding Amount
-		if flt(voucher_obj.doc.outstanding_amount) != flt(bal):
-			msgprint('<div style="color: RED"> Difference found in Outstanding Amount of %s : %s (Before : %s; After : %s) </div>' % (voucher_obj.doc.doctype, voucher_obj.doc.name, voucher_obj.doc.outstanding_amount, bal))
-			msg.append('<div style="color: RED"> Difference found in Outstanding Amount of %s : %s (Before : %s; After : %s) </div>' % (voucher_obj.doc.doctype, voucher_obj.doc.name, voucher_obj.doc.outstanding_amount, bal))
-
-			# set voucher balance
-			#sql("update `tab%s` set outstanding_amount=%s where name='%s'" % (voucher_obj.doc.doctype, bal, voucher_obj.doc.name))
-			webnotes.conn.set(voucher_obj.doc, 'outstanding_amount', flt(bal))
-
-		# Send Mail
-		if msg:
-			email_msg = """ Dear Administrator,
-
-In Account := %s User := %s has Repaired Outstanding Amount For %s : %s and following was found:-
-
-%s
-
-""" % (get_value('Control Panel', None,'account_id'), session['user'], voucher_obj.doc.doctype, voucher_obj.doc.name, '\n'.join(msg))
-
-			sendmail(['support@iwebnotes.com'], subject='Repair Outstanding Amount', parts = [('text/plain', email_msg)])
-		# Acknowledge User
-		msgprint(cstr(voucher_obj.doc.doctype) + " : " + cstr(voucher_obj.doc.name) + " has been checked" + cstr(msg and " and repaired successfully." or ". No changes Found."))
 
 	def repost_illegal_cancelled(self, after_date='2011-01-01'):
 		"""
 			Find vouchers that are not cancelled correctly and repost them
 		"""
-		vl = sql("""
+		vl = webnotes.conn.sql("""
 			select voucher_type, voucher_no, account, sum(debit) as sum_debit, sum(credit) as sum_credit
 			from `tabGL Entry`
 			where is_cancelled='Yes' and creation > %s
@@ -490,7 +468,7 @@ In Account := %s User := %s has Repaired Outstanding Amount For %s : %s and foll
 			if v['sum_debit'] != 0 or v['sum_credit'] != 0:
 				ac_list.append(v['account'])
 
-		fy_list = sql("""select name from `tabFiscal Year`
+		fy_list = webnotes.conn.sql("""select name from `tabFiscal Year`
 		where (%s between year_start_date and date_sub(date_add(year_start_date,interval 1 year), interval 1 day))
 		or year_start_date > %s
 		order by year_start_date ASC""", (after_date, after_date))
@@ -506,11 +484,12 @@ def manage_recurring_invoices():
 		Create recurring invoices on specific date by copying the original one
 		and notify the concerned people
 	"""	
-	rv = sql("""select name, recurring_id from `tabReceivable Voucher` where ifnull(convert_into_recurring_invoice, 0) = 1 
-			and next_date = %s and next_date <= end_date order by next_date	desc""", nowdate())
+	rv = webnotes.conn.sql("""select name, recurring_id from `tabSales Invoice` where ifnull(convert_into_recurring_invoice, 0) = 1 
+			and next_date = %s and next_date <= ifnull(end_date, '2199-12-31') and docstatus=1""", nowdate())
+			
 	for d in rv:
-		if not sql("""select name from `tabReceivable Voucher` where posting_date = %s and recurring_id = %s""", (nowdate(), d[1])):
-			prev_rv = get_obj('Receivable Voucher', d[0], with_children=1)
+		if not webnotes.conn.sql("""select name from `tabSales Invoice` where posting_date = %s and recurring_id = %s and docstatus=1""", (nowdate(), d[1])):
+			prev_rv = get_obj('Sales Invoice', d[0], with_children=1)
 			new_rv = create_new_invoice(prev_rv)
 
 			send_notification(new_rv)
@@ -522,10 +501,12 @@ def create_new_invoice(prev_rv):
 
 	# update new rv 
 
-	new_rv.doc.voucher_date = new_rv.doc.next_date
 	new_rv.doc.posting_date = new_rv.doc.next_date
 	new_rv.doc.aging_date = new_rv.doc.next_date
 	new_rv.doc.due_date = add_days(new_rv.doc.next_date, cint(date_diff(prev_rv.doc.due_date, prev_rv.doc.posting_date)))
+	new_rv.doc.invoice_period_from_date = get_next_month_date(new_rv.doc.invoice_period_from_date)
+	new_rv.doc.invoice_period_to_date = get_next_month_date(new_rv.doc.invoice_period_to_date)
+	new_rv.doc.owner = prev_rv.doc.owner
 	new_rv.doc.save()
 
 	# submit and after submit
@@ -534,22 +515,39 @@ def create_new_invoice(prev_rv):
 
 	return new_rv
 
+def get_next_month_date(dt):
+	import datetime
+	m = getdate(dt).month + 1
+	y = getdate(dt).year
+	d = getdate(dt).day
+	if m > 12:
+		m, y = 1, y+1
+	try:
+		next_month_date = datetime.date(y, m, d)
+	except:
+		import calendar
+		last_day = calendar.monthrange(y, m)[1]
+		next_month_date = datetime.date(y, m, last_day)
+	return next_month_date.strftime("%Y-%m-%d")
+
 
 def send_notification(new_rv):
 	"""Notify concerned persons about recurring invoice generation"""
 	subject = "Invoice : " + new_rv.doc.name
 
-	com = new_rv.doc.company   # get_value('Control Panel', '', 'letter_head')
+	com = new_rv.doc.company   # webnotes.conn.get_value('Control Panel', '', 'letter_head')
 
 	hd = '''<div><h2>%s</h2></div>
 			<div><h3>Invoice: %s</h3></div>
 			<table cellspacing= "5" cellpadding="5"  width = "100%%">
 				<tr>
 					<td width = "50%%"><b>Customer</b><br>%s<br>%s</td>
-					<td width = "50%%">Invoice Date: %s<br>Due Date: %s</td>
+					<td width = "50%%">Invoice Date	   : %s<br>Invoice Period : %s to %s <br>Due Date	   : %s</td>
 				</tr>
 			</table>
-		''' % (com, new_rv.doc.name, new_rv.doc.customer, new_rv.doc.address_display, new_rv.doc.posting_date, new_rv.doc.due_date)
+		''' % (com, new_rv.doc.name, new_rv.doc.customer, new_rv.doc.address_display, getdate(new_rv.doc.posting_date).strftime("%d-%m-%Y"), \
+		getdate(new_rv.doc.invoice_period_from_date).strftime("%d-%m-%Y"), getdate(new_rv.doc.invoice_period_to_date).strftime("%d-%m-%Y"),\
+		getdate(new_rv.doc.due_date).strftime("%d-%m-%Y"))
 	
 	
 	tbl = '''<table border="1px solid #CCC" width="100%%" cellpadding="0px" cellspacing="0px">
@@ -582,13 +580,12 @@ def send_notification(new_rv):
 							</table>
 						</td>
 					</tr>
-					<tr><td>Terms:</td></tr>
+					<tr><td>Terms and Conditions:</td></tr>
 					<tr><td>%s</td></tr>
 				</table>
-			''' % (new_rv.doc.net_total, new_rv.doc.total_tax,new_rv.doc.grand_total, new_rv.doc.in_words,new_rv.doc.terms)
+			''' % (new_rv.doc.net_total, new_rv.doc.other_charges_total,new_rv.doc.grand_total, new_rv.doc.in_words,new_rv.doc.terms)
 
 
 	msg = hd + tbl + totals
 	from webnotes.utils.email_lib import sendmail
-	sendmail(recipients = [new_rv.doc.email_notification_address], \
-		sender=new_rv.doc.owner, subject=subject, parts=[['text/plain', msg]])
+	sendmail(new_rv.doc.notification_email_address.split(", "), subject=subject, msg = msg)

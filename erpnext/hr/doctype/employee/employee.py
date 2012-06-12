@@ -1,8 +1,24 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
@@ -23,7 +39,7 @@ class DocType:
   # Autoname
   #========================================================================================================
   def autoname(self):
-    ret = sql("select value from `tabSingles` where doctype = 'Manage Account' and field = 'emp_created_by'")
+    ret = sql("select value from `tabSingles` where doctype = 'Global Defaults' and field = 'emp_created_by'")
     if not ret:
       msgprint("To Save Employee, please go to Setup -->Global Defaults. Click on HR and select 'Employee Records to be created by'.")
       raise Exception 
@@ -97,7 +113,7 @@ class DocType:
   # Validate name
   #========================================================================================================
   def validate_name(self):  
-    ret = sql("select value from `tabSingles` where doctype = 'Manage Account' and field = 'emp_created_by'")
+    ret = sql("select value from `tabSingles` where doctype = 'Global Defaults' and field = 'emp_created_by'")
 
     if not ret:
       msgprint("To Save Employee, please go to Setup -->Global Defaults. Click on HR and select 'Employee Records to be created by'.")

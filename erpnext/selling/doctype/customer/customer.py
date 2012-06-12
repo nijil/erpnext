@@ -1,3 +1,19 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
@@ -30,7 +46,7 @@ class DocType:
 			supp = supp and supp[0][0] or ''
 			if supp:
 				msgprint("You already have a Supplier with same name")
-				raise Exception
+				raise Exception("You already have a Supplier with same name")
 			else:
 				self.doc.name = cust
 		else:
@@ -219,10 +235,16 @@ class DocType:
 		for rec in sql("select * from `tabContact` where customer='%s'" %(self.doc.name), as_dict=1):
 			sql("delete from `tabContact` where name=%s",(rec['name']))
 	
+	def delete_customer_communication(self):
+		webnotes.conn.sql("""\
+			delete from `tabCommunication`
+			where customer = %s and supplier is null""", self.doc.name)
+	
 # ******************************************************* on trash *********************************************************
 	def on_trash(self):
 		self.delete_customer_address()
 		self.delete_customer_contact()
+		self.delete_customer_communication()
 		if self.doc.lead_name:
 			sql("update `tabLead` set status='Interested' where name=%s",self.doc.lead_name)
 			
@@ -237,19 +259,19 @@ class DocType:
 			('Contact', 'customer'),
 			('Customer Issue', 'customer'),
 			('Delivery Note', 'customer'),
-			('Enquiry', 'customer'),
+			('Opportunity', 'customer'),
 			('Installation Note', 'customer'),
 			('Maintenance Schedule', 'customer'),
 			('Maintenance Visit', 'customer'),
 			('Project', 'customer'),
 			('Quotation', 'customer'),
-			('Receivable Voucher', 'customer'),
+			('Sales Invoice', 'customer'),
 			('Sales Order', 'customer'),
 			('Serial No', 'customer'),
 			('Shipping Address', 'customer'),
 			('Stock Entry', 'customer'),
 			('Support Ticket', 'customer'),
-			('Ticket', 'customer')]
+			('Task', 'customer')]
 			for rec in update_fields:
 				sql("update `tab%s` set customer_name = '%s' where %s = '%s'" %(rec[0],newdn,rec[1],olddn))
 				

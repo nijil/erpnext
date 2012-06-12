@@ -1,3 +1,19 @@
+// ERPNext - web based ERP (http://erpnext.com)
+// Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 cur_frm.add_fetch('employee', 'company', 'company');
 
 // On load
@@ -63,7 +79,7 @@ cur_frm.cscript.d_depends_on_lwp = cur_frm.cscript.d_modified_amount;
 // Calculate earning total
 // ------------------------------------------------------------------------
 var calculate_earning_total = function(doc, dt, dn) {
-	var tbl = getchildren('SS Earning Detail', doc.name, 'earning_details', doc.doctype);
+	var tbl = getchildren('Salary Slip Earning', doc.name, 'earning_details', doc.doctype);
 
 	var total_earn = 0;
 	for(var i = 0; i < tbl.length; i++){
@@ -80,7 +96,7 @@ var calculate_earning_total = function(doc, dt, dn) {
 // Calculate deduction total
 // ------------------------------------------------------------------------
 var calculate_ded_total = function(doc, dt, dn) {
-	var tbl = getchildren('SS Deduction Detail', doc.name, 'deduction_details', doc.doctype);
+	var tbl = getchildren('Salary Slip Deduction', doc.name, 'deduction_details', doc.doctype);
 
 	var total_ded = 0;
 	for(var i = 0; i < tbl.length; i++){

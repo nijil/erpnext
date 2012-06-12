@@ -3,47 +3,48 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2010-08-08 17:09:14',
+		'creation': '2012-03-27 14:36:05',
 		'docstatus': 0,
-		'modified': '2010-12-30 14:49:58',
-		'modified_by': 'umair@iwebnotes.com',
-		'owner': 'jai@webnotestech.com'
+		'modified': '2012-03-27 14:36:05',
+		'modified_by': u'Administrator',
+		'owner': u'jai@webnotestech.com'
 	},
 
 	# These values are common for all DocType
 	{
-		'_last_update': '1294312191',
-		'colour': 'White:FFF',
+		'_last_update': u'1326188323',
+		'colour': u'White:FFF',
+		'default_print_format': u'Standard',
 		'doctype': 'DocType',
 		'in_create': 1,
 		'issingle': 1,
-		'module': 'Production',
+		'module': u'Production',
 		'name': '__common__',
 		'read_only': 1,
-		'section_style': 'Tabbed',
-		'server_code_error': ' ',
+		'section_style': u'Tabbed',
+		'server_code_error': u' ',
 		'show_in_menu': 1,
-		'version': 87
+		'version': 106
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': 'DocField',
+		'doctype': u'DocField',
 		'name': '__common__',
-		'parent': 'Production Planning Tool',
-		'parentfield': 'fields',
-		'parenttype': 'DocType',
+		'parent': u'Production Planning Tool',
+		'parentfield': u'fields',
+		'parenttype': u'DocType',
 		'permlevel': 0
 	},
 
 	# These values are common for all DocPerm
 	{
 		'create': 1,
-		'doctype': 'DocPerm',
+		'doctype': u'DocPerm',
 		'name': '__common__',
-		'parent': 'Production Planning Tool',
-		'parentfield': 'permissions',
-		'parenttype': 'DocType',
+		'parent': u'Production Planning Tool',
+		'parentfield': u'permissions',
+		'parenttype': u'DocType',
 		'permlevel': 0,
 		'read': 1,
 		'write': 1
@@ -52,279 +53,266 @@
 	# DocType, Production Planning Tool
 	{
 		'doctype': 'DocType',
-		'name': 'Production Planning Tool'
+		'name': u'Production Planning Tool'
 	},
 
 	# DocPerm
 	{
-		'doctype': 'DocPerm',
-		'idx': 1,
-		'role': 'System Manager'
+		'doctype': u'DocPerm',
+		'role': u'System Manager'
 	},
 
 	# DocPerm
 	{
-		'doctype': 'DocPerm',
-		'idx': 2,
-		'role': 'Production User'
+		'doctype': u'DocPerm',
+		'role': u'Production User'
 	},
 
 	# DocPerm
 	{
-		'doctype': 'DocPerm',
-		'idx': 3,
-		'role': 'Production Manager'
+		'doctype': u'DocPerm',
+		'role': u'Production Manager'
 	},
 
 	# DocField
 	{
-		'colour': 'White:FFF',
-		'description': 'Select Sales Orders from which you want to create Production Orders. Enter the From and To Dates to get Open Orders in that period.',
-		'doctype': 'DocField',
-		'fieldtype': 'Section Break',
-		'idx': 1,
-		'label': 'Find Sales Orders'
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'select_sales_orders',
+		'fieldtype': u'Section Break',
+		'label': u'Select Sales Orders'
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldname': 'from_date',
-		'fieldtype': 'Date',
-		'idx': 2,
-		'label': 'From Date'
+		'doctype': u'DocField',
+		'fieldname': u'column_break0',
+		'fieldtype': u'Column Break',
+		'width': u'50%'
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldname': 'to_date',
-		'fieldtype': 'Date',
-		'idx': 3,
-		'label': 'To Date'
+		'doctype': u'DocField',
+		'fieldname': u'from_date',
+		'fieldtype': u'Date',
+		'label': u'From Date'
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldtype': 'Column Break',
-		'idx': 4,
-		'width': '40%'
+		'doctype': u'DocField',
+		'fieldname': u'to_date',
+		'fieldtype': u'Date',
+		'label': u'To Date'
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldtype': 'Button',
-		'idx': 5,
-		'label': 'Get Open Documents',
-		'options': 'get_open_docs'
+		'doctype': u'DocField',
+		'fieldname': u'fg_item',
+		'fieldtype': u'Link',
+		'label': u'FG Item',
+		'options': u'Item'
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldtype': 'Section Break',
-		'idx': 6,
-		'options': 'Simple'
+		'doctype': u'DocField',
+		'fieldname': u'column_break1',
+		'fieldtype': u'Column Break',
+		'width': u'50%'
 	},
 
 	# DocField
 	{
-		'colour': 'White:FFF',
-		'doctype': 'DocField',
-		'fieldtype': 'Button',
-		'idx': 7,
-		'label': 'Clear Document Table',
-		'trigger': 'Client'
+		'doctype': u'DocField',
+		'fieldname': u'customer',
+		'fieldtype': u'Link',
+		'label': u'Customer',
+		'options': u'Customer'
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldname': 'pp_so_details',
-		'fieldtype': 'Table',
-		'idx': 8,
-		'label': 'PP SO Details',
-		'options': 'PP SO Detail'
-	},
-
-	# DocField
-	{
-		'doctype': 'DocField',
-		'fieldtype': 'Section Break',
-		'idx': 9,
-		'options': 'Simple'
-	},
-
-	# DocField
-	{
-		'doctype': 'DocField',
-		'fieldname': 'sales_order',
-		'fieldtype': 'Link',
-		'idx': 10,
-		'label': 'Sales Order',
-		'options': 'Sales Order'
-	},
-
-	# DocField
-	{
-		'doctype': 'DocField',
-		'fieldname': 'production_forecast',
-		'fieldtype': 'Link',
-		'hidden': 1,
-		'idx': 11,
-		'label': 'Production Forecast',
-		'options': 'Production Forecast'
-	},
-
-	# DocField
-	{
-		'doctype': 'DocField',
-		'fieldtype': 'Column Break',
-		'idx': 12,
-		'width': '40%'
-	},
-
-	# DocField
-	{
-		'doctype': 'DocField',
-		'fieldtype': 'Button',
-		'idx': 13,
-		'label': 'Add In Plan',
-		'options': 'pull_document'
-	},
-
-	# DocField
-	{
-		'colour': 'White:FFF',
-		'description': 'Click on "Get Items" to get un-fulfilled items from your Sales Orders. After setting the quantities you can raise Production Orders or download the material requirements for analysis',
-		'doctype': 'DocField',
-		'fieldtype': 'Section Break',
-		'idx': 14,
-		'label': 'Items'
-	},
-
-	# DocField
-	{
-		'doctype': 'DocField',
-		'fieldtype': 'Button',
-		'idx': 15,
-		'label': 'Get Items',
-		'options': 'get_items'
-	},
-
-	# DocField
-	{
-		'doctype': 'DocField',
-		'fieldtype': 'Column Break',
-		'idx': 16,
-		'width': '50%'
-	},
-
-	# DocField
-	{
-		'colour': 'White:FFF',
-		'doctype': 'DocField',
-		'fieldtype': 'Button',
-		'idx': 17,
-		'label': 'Clear Item Table',
-		'trigger': 'Client'
-	},
-
-	# DocField
-	{
-		'doctype': 'DocField',
-		'fieldtype': 'Section Break',
-		'idx': 18,
-		'options': 'Simple'
-	},
-
-	# DocField
-	{
-		'colour': 'White:FFF',
-		'default': 'No',
-		'description': 'Select "Yes" if stock is maintained and tracked for sub assembly items.',
-		'doctype': 'DocField',
-		'fieldname': 'consider_sa_items',
-		'fieldtype': 'Select',
-		'idx': 19,
-		'label': 'Consider Sub Assemblies',
-		'options': 'No\nYes',
+		'doctype': u'DocField',
+		'fieldname': u'company',
+		'fieldtype': u'Link',
+		'label': u'Company',
+		'options': u'Company',
 		'reqd': 1
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldname': 'pp_details',
-		'fieldtype': 'Table',
-		'idx': 20,
-		'label': 'PP Details',
-		'options': 'PP Detail'
+		'doctype': u'DocField',
+		'fieldname': u'section_break0',
+		'fieldtype': u'Section Break',
+		'options': u'Simple'
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldtype': 'Section Break',
-		'idx': 21,
-		'options': 'Simple'
+		'doctype': u'DocField',
+		'fieldname': u'column_break2',
+		'fieldtype': u'Column Break',
+		'width': u'50%'
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldtype': 'Button',
-		'idx': 22,
-		'label': 'Raise Production Order',
-		'options': 'raise_production_order'
+		'doctype': u'DocField',
+		'fieldname': u'get_sales_orders',
+		'fieldtype': u'Button',
+		'label': u'Get Sales Orders',
+		'options': u'get_open_sales_orders'
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldtype': 'Column Break',
-		'idx': 23,
-		'width': '50%'
+		'doctype': u'DocField',
+		'fieldname': u'column_break3',
+		'fieldtype': u'Column Break',
+		'width': u'50%'
 	},
 
 	# DocField
 	{
-		'colour': 'White:FFF',
-		'doctype': 'DocField',
-		'fieldtype': 'Button',
-		'idx': 24,
-		'label': 'Download Raw Material Report',
-		'trigger': 'Client'
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'clear_so_table',
+		'fieldtype': u'Button',
+		'label': u'Clear SO Table',
+		'options': u'clear_so_table',
+		'trigger': u'Client'
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldtype': 'Section Break',
-		'idx': 25,
-		'label': 'Company Info'
+		'doctype': u'DocField',
+		'fieldname': u'section_break1',
+		'fieldtype': u'Section Break',
+		'options': u'Simple'
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldname': 'fiscal_year',
-		'fieldtype': 'Select',
-		'idx': 26,
-		'in_filter': 1,
-		'label': 'Fiscal Year',
-		'options': 'Link:Fiscal Year'
+		'description': u'Select Sales Orders from which you want to create Production Orders. You can get sales orders based on above criteria.',
+		'doctype': u'DocField',
+		'fieldname': u'pp_so_details',
+		'fieldtype': u'Table',
+		'label': u'Production Plan Sales Orders',
+		'options': u'Production Plan Sales Order'
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldname': 'company',
-		'fieldtype': 'Link',
-		'idx': 27,
-		'label': 'Company',
-		'options': 'Company'
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'items',
+		'fieldtype': u'Section Break',
+		'label': u'Items'
+	},
+
+	# DocField
+	{
+		'doctype': u'DocField',
+		'fieldname': u'get_items_from_so',
+		'fieldtype': u'Button',
+		'label': u'Get Items from SO',
+		'options': u'get_items_from_so'
+	},
+
+	# DocField
+	{
+		'doctype': u'DocField',
+		'fieldname': u'column_break4',
+		'fieldtype': u'Column Break',
+		'width': u'50%'
+	},
+
+	# DocField
+	{
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'clear_item_table',
+		'fieldtype': u'Button',
+		'label': u'Clear Item Table',
+		'options': u'clear_item_table',
+		'trigger': u'Client'
+	},
+
+	# DocField
+	{
+		'doctype': u'DocField',
+		'fieldname': u'section_break2',
+		'fieldtype': u'Section Break',
+		'options': u'Simple'
+	},
+
+	# DocField
+	{
+		'description': u'Enter items and planned qty for which you want to raise production orders or download raw materials for analysis. You can pull items (which are pending to deliver) from SO as well by adding SO in plan.',
+		'doctype': u'DocField',
+		'fieldname': u'pp_details',
+		'fieldtype': u'Table',
+		'label': u'Production Plan Items',
+		'options': u'Production Plan Item'
+	},
+
+	# DocField
+	{
+		'colour': u'White:FFF',
+		'default': u'No',
+		'description': u'Select "Yes" if stock is maintained and tracked for sub assembly items.',
+		'doctype': u'DocField',
+		'fieldname': u'consider_sa_items',
+		'fieldtype': u'Select',
+		'label': u'Consider Sub Assemblies as Raw Material',
+		'options': u'No\nYes',
+		'reqd': 1
+	},
+
+	# DocField
+	{
+		'doctype': u'DocField',
+		'fieldname': u'section_break3',
+		'fieldtype': u'Section Break',
+		'options': u'Simple'
+	},
+
+	# DocField
+	{
+		'doctype': u'DocField',
+		'fieldname': u'column_break5',
+		'fieldtype': u'Column Break',
+		'width': u'50%'
+	},
+
+	# DocField
+	{
+		'doctype': u'DocField',
+		'fieldname': u'raise_production_order',
+		'fieldtype': u'Button',
+		'label': u'Raise Production Order',
+		'options': u'raise_production_order'
+	},
+
+	# DocField
+	{
+		'doctype': u'DocField',
+		'fieldname': u'column_break6',
+		'fieldtype': u'Column Break',
+		'width': u'50%'
+	},
+
+	# DocField
+	{
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'download_raw_material',
+		'fieldtype': u'Button',
+		'label': u'Download Raw Material',
+		'trigger': u'Client'
 	}
 ]

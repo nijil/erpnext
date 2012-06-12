@@ -1,3 +1,19 @@
+// ERPNext - web based ERP (http://erpnext.com)
+// Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 cur_frm.cscript.refresh = function(doc) {
 	// make sensitive fields(has_serial_no, is_stock_item, valuation_method)
 	// read only if any stock ledger entry exists
@@ -18,20 +34,20 @@ cur_frm.cscript.refresh = function(doc) {
 
 cur_frm.fields_dict['default_bom'].get_query = function(doc) {
    //var d = locals[this.doctype][this.docname];
-   return 'SELECT DISTINCT `tabBill Of Materials`.`name` FROM `tabBill Of Materials` WHERE `tabBill Of Materials`.`item` = "' + doc.item_code + '"  AND `tabBill Of Materials`.`is_active` = "No" and `tabBill Of Materials`.docstatus != 2 AND `tabBill Of Materials`.%(key)s LIKE "%s" ORDER BY `tabBill Of Materials`.`name` LIMIT 50'
+   return 'SELECT DISTINCT `tabBOM`.`name` FROM `tabBOM` WHERE `tabBOM`.`item` = "' + doc.item_code + '"  AND `tabBOM`.`is_active` = "No" and `tabBOM`.docstatus != 2 AND `tabBOM`.%(key)s LIKE "%s" ORDER BY `tabBOM`.`name` LIMIT 50'
 }
 
 
 // Expense Account
 // ---------------------------------
 cur_frm.fields_dict['purchase_account'].get_query = function(doc){
-  return 'SELECT DISTINCT `tabAccount`.`name` FROM `tabAccount` WHERE `tabAccount`.`debit_or_credit`="Debit" AND `tabAccount`.`group_or_ledger`="Ledger" AND `tabAccount`.`docstatus`!=2 AND `tabAccount`.`is_pl_account` = "Yes" AND `tabAccount`.%(key)s LIKE "%s" ORDER BY `tabAccount`.`name` LIMIT 50'
+  return 'SELECT DISTINCT `tabAccount`.`name` FROM `tabAccount` WHERE `tabAccount`.`debit_or_credit`="Debit" AND `tabAccount`.`group_or_ledger`="Ledger" AND `tabAccount`.`docstatus`!=2 AND `tabAccount`.%(key)s LIKE "%s" ORDER BY `tabAccount`.`name` LIMIT 50'
 }
 
 // Income Account
 // --------------------------------
 cur_frm.fields_dict['default_income_account'].get_query = function(doc) {
-  return 'SELECT DISTINCT `tabAccount`.`name` FROM `tabAccount` WHERE `tabAccount`.`debit_or_credit`="Credit" AND `tabAccount`.`group_or_ledger`="Ledger" AND `tabAccount`.`is_pl_account` = "Yes" AND `tabAccount`.`docstatus`!=2 AND `tabAccount`.`account_type` ="Income Account" AND `tabAccount`.%(key)s LIKE "%s" ORDER BY `tabAccount`.`name` LIMIT 50'
+  return 'SELECT DISTINCT `tabAccount`.`name` FROM `tabAccount` WHERE `tabAccount`.`debit_or_credit`="Credit" AND `tabAccount`.`group_or_ledger`="Ledger" AND `tabAccount`.`docstatus`!=2 AND `tabAccount`.`account_type` ="Income Account" AND `tabAccount`.%(key)s LIKE "%s" ORDER BY `tabAccount`.`name` LIMIT 50'
 }
 
 
@@ -64,20 +80,11 @@ cur_frm.fields_dict['item_group'].get_query = function(doc,cdt,cdn) {
   return 'SELECT `tabItem Group`.`name`,`tabItem Group`.`parent_item_group` FROM `tabItem Group` WHERE `tabItem Group`.`is_group` = "No" AND `tabItem Group`.`docstatus`!= 2 AND `tabItem Group`.%(key)s LIKE "%s"  ORDER BY  `tabItem Group`.`name` ASC LIMIT 50'
 }
 
-cur_frm.cscript.IGHelp = function(doc,dt,dn){
-  var call_back = function(){
-    var sb_obj = new SalesBrowser();
-    sb_obj.set_val('Item Group');
-
-  }
-  loadpage('Sales Browser',call_back);
-}
-
 // for description from attachment
 // takes the first attachment and creates
 // a table with both image and attachment in HTML
 // in the "alternate_description" field
-cur_frm.cscript['Add Image'] = function(doc, dt, dn) {
+cur_frm.cscript.add_image = function(doc, dt, dn) {
 	if(!doc.file_list) {
 		msgprint('Please attach a file first!');
 	}
@@ -111,7 +118,7 @@ cur_frm.cscript.validate = function(doc,cdt,cdn){
   cur_frm.cscript.weight_to_validate(doc,cdt,cdn);
 }
 
-//===========Fill Default Currency in "Ref Rate Details====================
+//===========Fill Default Currency in "Item Prices====================
 cur_frm.fields_dict['ref_rate_details'].grid.onrowadd = function(doc, cdt, cdn){
 	locals[cdt][cdn].ref_currency = sys_defaults.currency;
 	refresh_field('ref_currency',cdn,'ref_rate_details');

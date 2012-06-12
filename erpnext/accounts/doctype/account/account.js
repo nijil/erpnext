@@ -1,3 +1,19 @@
+// ERPNext - web based ERP (http://erpnext.com)
+// Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 // Fetch parent details
 // -----------------------------------------
 cur_frm.add_fetch('parent_account', 'debit_or_credit', 'debit_or_credit');
@@ -15,11 +31,11 @@ cur_frm.cscript.account_type = function(doc, cdt, cdn) {
 cur_frm.cscript.onload = function(doc, cdt, cdn) {
   cur_frm.cscript.account_type(doc, cdt, cdn);
   // hide India specific fields
-  var cp = locals['Control Panel']['Control Panel'];
+  var cp = wn.control_panel;
   if(cp.country == 'India')
-    unhide_field(['pan_number', 'tds_applicable', 'tds_details', 'TDS']);
+    unhide_field(['pan_number', 'tds_applicable', 'tds_details', 'tds']);
   else
-    hide_field(['pan_number', 'tds_applicable', 'tds_details', 'TDS']);
+    hide_field(['pan_number', 'tds_applicable', 'tds_details', 'tds']);
 }
 
 // Refresh
@@ -34,14 +50,14 @@ cur_frm.cscript.refresh = function(doc, cdt, cdn) {
 // Hide/unhide group or ledger
 // -----------------------------------------
 cur_frm.cscript.hide_unhide_group_ledger = function(doc) {
-  hide_field(['Convert to Group', 'Convert to Ledger']);
-  if (cstr(doc.group_or_ledger) == 'Group') unhide_field('Convert to Ledger');
-  else if (cstr(doc.group_or_ledger) == 'Ledger') unhide_field('Convert to Group');
+  hide_field(['convert_to_group', 'convert_to_ledger']);
+  if (cstr(doc.group_or_ledger) == 'Group') unhide_field('convert_to_ledger');
+  else if (cstr(doc.group_or_ledger) == 'Ledger') unhide_field('convert_to_group');
 }
 
 // Convert group to ledger
 // -----------------------------------------
-cur_frm.cscript['Convert to Ledger'] = function(doc, cdt, cdn) {
+cur_frm.cscript.convert_to_ledger = function(doc, cdt, cdn) {
   $c_obj(make_doclist(cdt,cdn),'convert_group_to_ledger','',function(r,rt) {
     if(r.message == 1) {
       doc.group_or_ledger = 'Ledger';
@@ -53,7 +69,7 @@ cur_frm.cscript['Convert to Ledger'] = function(doc, cdt, cdn) {
 
 // Convert ledger to group
 // -----------------------------------------
-cur_frm.cscript['Convert to Group'] = function(doc, cdt, cdn) {
+cur_frm.cscript.convert_to_group = function(doc, cdt, cdn) {
   $c_obj(make_doclist(cdt,cdn),'convert_ledger_to_group','',function(r,rt) {
     if(r.message == 1) {
       doc.group_or_ledger = 'Group';

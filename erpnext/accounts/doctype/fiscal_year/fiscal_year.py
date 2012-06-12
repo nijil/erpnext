@@ -1,9 +1,25 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
@@ -27,10 +43,10 @@ class DocType:
 			
 		if not in_transaction:
 			sql("start transaction")
-				
+		
 		self.clear_account_balances()
 		self.create_account_balances()
-		self.update_opening()
+		self.update_opening(self.doc.company)
 		self.post_entries()
 		sql("commit")
 		
@@ -81,17 +97,17 @@ class DocType:
 		return periods
 
 	# ====================================================================================
-	def update_opening(self):
+	def update_opening(self, company):
 		"""
 			set opening from last year closing
 		
 		"""
 		
-		abl = sql("select t1.account, t1.balance from `tabAccount Balance` t1, tabAccount t2 where t1.period= '%s' and t2.company= '%s' and ifnull(t2.is_pl_account, 'No') = 'No' and t1.account = t2.name for update" % (self.doc.past_year, self.doc.company))
+		abl = sql("select t1.account, t1.balance from `tabAccount Balance` t1, tabAccount t2 where t1.period= '%s' and t2.company= '%s' and ifnull(t2.is_pl_account, 'No') = 'No' and t1.account = t2.name for update" % (self.doc.past_year, company))
 		
 		cnt = 0
 		for ab in abl:
-			if cnt % 100 == 0: 
+			if cnt % 100 == 0:
 				sql("commit")
 				sql("start transaction")
 		
@@ -162,8 +178,8 @@ class DocType:
 	# ====================================================================================
 	def clear_outstanding(self):
 		# clear o/s of current year
-		sql("update `tabPayable Voucher` set outstanding_amount = 0 where fiscal_year=%s and company=%s", (self.doc.name, self.doc.company))
-		sql("update `tabReceivable Voucher` set outstanding_amount = 0 where fiscal_year=%s and company=%s", (self.doc.name, self.doc.company))
+		sql("update `tabPurchase Invoice` set outstanding_amount = 0 where fiscal_year=%s and company=%s", (self.doc.name, self.doc.company))
+		sql("update `tabSales Invoice` set outstanding_amount = 0 where fiscal_year=%s and company=%s", (self.doc.name, self.doc.company))
 
 	# Update Voucher Outstanding
 	def update_voucher_outstanding(self):
@@ -174,7 +190,7 @@ class DocType:
 			# get voucher balance
 			bal = sql("select sum(debit)-sum(credit) from `tabGL Entry` where against_voucher=%s and against_voucher_type=%s and ifnull(is_cancelled, 'No') = 'No'", (d[0], d[1]))
 			bal = bal and flt(bal[0][0]) or 0.0
-			if d[1] == 'Payable Voucher':
+			if d[1] == 'Purchase Invoice':
 				bal = -bal
 			# set voucher balance
 			sql("update `tab%s` set outstanding_amount=%s where name='%s'"% (d[1], bal, d[0]))
@@ -184,10 +200,19 @@ class DocType:
 	def create_periods(self):
 		get_obj('Period Control').generate_periods(self.doc.name)
 
+	def validate(self):
+		if sql("select name from `tabFiscal Year` where year_start_date < %s", self.doc.year_start_date) and not self.doc.past_year:
+			msgprint("Please enter Past Year", raise_exception=1)
+
+		if not self.doc.is_fiscal_year_closed:
+			self.doc.is_fiscal_year_closed = 'No'
+
+
 	# on update
 	def on_update(self):
-		if not self.doc.is_fiscal_year_closed:
-			self.is_fiscal_year_closed = 'No'
-			self.doc.save()
 		self.create_periods()
 		self.create_account_balances()
+
+		if self.doc.fields.get('localname', '')[:15] == 'New Fiscal Year':
+			for d in sql("select name from tabCompany"):
+				self.update_opening(d[0])

@@ -1,3 +1,19 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Check mandatory filters
 # ------------------------------------------------------------------
 
@@ -57,7 +73,7 @@ aging_based_on = 'Aging Date'
 if filter_values.has_key('aging_based_on') and filter_values['aging_based_on']:
 	aging_based_on = filter_values['aging_based_on'].split(NEWLINE)[-1]
 
-if	len(res) > 600 and from_export == 0:
+if	len(res) > 2000 and from_export == 0:
 	msgprint("This is a very large report and cannot be shown in the browser as it is likely to make your browser very slow.Please select Account or click on 'Export' to open in excel")
 	raise Exception
 
@@ -73,11 +89,11 @@ for each in sql("select t2.name, t1.supplier_type from tabSupplier t1, tabAccoun
 
 # get due_date, bill_no, bill_date from PV
 pv_dict = {}
-for t in sql("select name, due_date, bill_no, bill_date from `tabPayable Voucher` group by name"):
+for t in sql("select name, due_date, bill_no, bill_date from `tabPurchase Invoice` group by name"):
 	pv_dict[t[0]] = [cstr(t[1]), t[2], cstr(t[3])]
 
 # pv outside this period
-pv_outside_period = [d[0] for d in sql("select distinct name from `tabPayable Voucher` where (posting_date < '%s' or posting_date > '%s') and docstatus = 1" % (from_date, to_date))]
+pv_outside_period = [d[0] for d in sql("select distinct name from `tabPurchase Invoice` where (posting_date < '%s' or posting_date > '%s') and docstatus = 1" % (from_date, to_date))]
 
 
 out = []
@@ -90,17 +106,17 @@ for r in res:
 	# supplier type
 	r.append(supp_type_dict.get(r[col_idx['Account']], ''))	
 	
-	if r[col_idx['Voucher Type']] == 'Payable Voucher':
+	if r[col_idx['Voucher Type']] == 'Purchase Invoice':
 		r += pv_dict.get(r[col_idx['Voucher No']], ['', '', ''])
 	else:
 		r += ['', '', '']
 	
-	# if entry against Payable Voucher
-	if r[col_idx['Against Voucher']] and r[col_idx['Voucher Type']] == 'Payable Voucher':
+	# if entry against Purchase Invoice
+	if r[col_idx['Against Voucher']] and r[col_idx['Voucher Type']] == 'Purchase Invoice':
 		cond = " and ifnull(against_voucher, '') = '%s'" % r[col_idx['Against Voucher']]
 
 	# if entry against JV & and not adjusted within period
-	elif r[col_idx['Against Voucher Type']] == 'Payable Voucher' and r[col_idx['Against Voucher']] in pv_outside_period:
+	elif r[col_idx['Against Voucher Type']] == 'Purchase Invoice' and r[col_idx['Against Voucher']] in pv_outside_period:
 		booking_amt = 0
 		cond = " and voucher_no = '%s' and ifnull(against_voucher, '') = '%s'" % (r[col_idx['Voucher No']], r[col_idx['Against Voucher']])
 	
@@ -116,7 +132,7 @@ for r in res:
 		total_outstanding_amt += flt(outstanding_amt)
 
 		# add to total booking amount
-		if outstanding_amt and r[col_idx['Voucher Type']] == 'Payable Voucher' and r[col_idx['Against Voucher']]:
+		if outstanding_amt and r[col_idx['Voucher Type']] == 'Purchase Invoice' and r[col_idx['Against Voucher']]:
 			total_booking_amt += flt(booking_amt)
 
 	r += [booking_amt, outstanding_amt]

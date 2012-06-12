@@ -1,4 +1,20 @@
-$import(Contact Control)
+// ERPNext - web based ERP (http://erpnext.com)
+// Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+wn.require('erpnext/setup/doctype/contact_control/contact_control.js');
 
 cur_frm.cscript.onload = function(doc,dt,dn){
 	// history doctypes and scripts
@@ -16,12 +32,12 @@ cur_frm.cscript.onload = function(doc,dt,dn){
 cur_frm.cscript.refresh = function(doc,dt,dn){  
   
 	if(doc.__islocal){
-		hide_field(['Address HTML','Contact HTML']);
+		hide_field(['address_html', 'contact_html']);
 		//cur_frm.cscript.set_cl_msg(doc);
 		//cur_frm.cscript.set_hl_msg(doc);		
 	}
 	else{
-		unhide_field(['Address HTML','Contact HTML']);
+		unhide_field(['address_html', 'contact_html']);
 		// make lists
 		cur_frm.cscript.make_address(doc,dt,dn);
 		cur_frm.cscript.make_contact(doc,dt,dn);
@@ -32,18 +48,10 @@ cur_frm.cscript.refresh = function(doc,dt,dn){
 
 cur_frm.cscript.make_address = function() {
 	if(!cur_frm.address_list) {
-		cur_frm.address_list = new wn.widgets.Listing({
-			parent: cur_frm.fields_dict['Address HTML'].wrapper,
+		cur_frm.address_list = new wn.ui.Listing({
+			parent: cur_frm.fields_dict['address_html'].wrapper,
 			page_length: 2,
-			new_doctype: "Address",
-			new_doc_onload: function(dn) {
-				ndoc = locals["Address"][dn];
-				ndoc.sales_partner = cur_frm.doc.name;
-				ndoc.address_type = 'Office';				
-			},
-			new_doc_onsave: function(dn) {				
-				cur_frm.address_list.run()
-			},			
+			new_doctype: "Address",			
 			get_query: function() {
 				return "select name, address_type, address_line1, address_line2, city, state, country, pincode, fax, email_id, phone, is_primary_address, is_shipping_address from tabAddress where sales_partner='"+cur_frm.docname+"' and docstatus != 2 order by is_primary_address desc"
 			},
@@ -64,17 +72,10 @@ cur_frm.cscript.make_address = function() {
 
 cur_frm.cscript.make_contact = function() {
 	if(!cur_frm.contact_list) {
-		cur_frm.contact_list = new wn.widgets.Listing({
-			parent: cur_frm.fields_dict['Contact HTML'].wrapper,
+		cur_frm.contact_list = new wn.ui.Listing({
+			parent: cur_frm.fields_dict['contact_html'].wrapper,
 			page_length: 2,
 			new_doctype: "Contact",
-			new_doc_onload: function(dn) {
-				ndoc = locals["Contact"][dn];
-				ndoc.sales_partner = cur_frm.doc.name;				
-			},
-			new_doc_onsave: function(dn) {				
-				cur_frm.contact_list.run()
-			},
 			get_query: function() {
 				return "select name, first_name, last_name, email_id, phone, mobile_no, department, designation, is_primary_contact from tabContact where sales_partner='"+cur_frm.docname+"' and docstatus != 2 order by is_primary_contact desc"
 			},
@@ -137,12 +138,12 @@ cur_frm.cscript.make_si_list = function(parent,doc){
 	lst.colwidths = ['5%','25%','20%','25%','25%'];
 	lst.colnames = ['Sr.','Id','Invoice Date','Total Commission','Grand Total'];
 	lst.coltypes = ['Data','Link','Data','Data','Currency','Currency'];
-	lst.coloptions = ['','Receivable Voucher','','','',''];
+	lst.coloptions = ['','Sales Invoice','','','',''];
 
 	cur_frm.cscript.set_list_opts(lst);
 
-	var q = repl("select name,posting_date, total_commission,grand_total from `tabReceivable Voucher` where sales_partner='%(sp)s'", {'sp':doc.name});
-	var q_max = repl("select count(name) from `tabReceivable Voucher` where sales_partner='%(cust)s'", {'sp':doc.name});
+	var q = repl("select name,posting_date, total_commission,grand_total from `tabSales Invoice` where sales_partner='%(sp)s'", {'sp':doc.name});
+	var q_max = repl("select count(name) from `tabSales Invoice` where sales_partner='%(cust)s'", {'sp':doc.name});
 	
-	cur_frm.cscript.run_list(lst,parent,q,q_max,doc,'Sales Invoice','Receivable Voucher');	
+	cur_frm.cscript.run_list(lst,parent,q,q_max,doc,'Sales Invoice','Sales Invoice');	
 }

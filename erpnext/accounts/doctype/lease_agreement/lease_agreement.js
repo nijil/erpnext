@@ -1,3 +1,19 @@
+// ERPNext - web based ERP (http://erpnext.com)
+// Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 $.extend(cur_frm.cscript, {
 	Generate: function(doc, dt, dn) {
 		if(doc.installment_amount==''){
@@ -28,9 +44,9 @@ $.extend(cur_frm.cscript, {
 	},
 	hide_show_buttons: function(doc) {
 		if(doc.docstatus==0) {
-			hide_field('Installment Reciept'); show_field('Generate');
+			hide_field('installment_reciept'); show_field('generate');
 		} else if (doc.docstatus==1) {
-			show_field('Installment Reciept');hide_field('Generate');
+			show_field('installment_reciept');hide_field('generate');
 		}
 	},
 	clear_installments: function(doc) {
@@ -74,5 +90,5 @@ cur_frm.add_fetch('invoice','grand_total','invoice_amount');
 
 cur_frm.fields_dict.invoice.get_query=function(doc){
 
-	return "SELECT tv.name FROM `tabReceivable Voucher` tv WHERE debit_to='"+doc.account+"' and  tv.%(key)s like '%s' ORDER BY tv.name LIMIT 50"
+	return "SELECT tv.name FROM `tabSales Invoice` tv WHERE debit_to='"+doc.account+"' and  tv.%(key)s like '%s' ORDER BY tv.name LIMIT 50"
 }

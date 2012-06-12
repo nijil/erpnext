@@ -1,9 +1,25 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
@@ -28,14 +44,14 @@ class DocType:
   # voucher in which tds was applicable for 1st time
         
   def validate_first_entry(self,obj):
-    if obj.doc.doctype == 'Payable Voucher':
+    if obj.doc.doctype == 'Purchase Invoice':
       supp_acc = obj.doc.credit_to
     elif obj.doc.doctype == 'Journal Voucher':
       supp_acc = obj.doc.supplier_account
 
     if obj.doc.ded_amount:
       # first pv
-      first_pv = sql("select posting_date from `tabPayable Voucher` where credit_to = '%s' and docstatus = 1 and tds_category = '%s' and fiscal_year = '%s' and tds_applicable = 'Yes' and (ded_amount != 0 or ded_amount is not null) order by posting_date asc limit 1"%(supp_acc, obj.doc.tds_category, obj.doc.fiscal_year))
+      first_pv = sql("select posting_date from `tabPurchase Invoice` where credit_to = '%s' and docstatus = 1 and tds_category = '%s' and fiscal_year = '%s' and tds_applicable = 'Yes' and (ded_amount != 0 or ded_amount is not null) order by posting_date asc limit 1"%(supp_acc, obj.doc.tds_category, obj.doc.fiscal_year))
       first_pv_date = first_pv and first_pv[0][0] or ''
       # first jv
       first_jv = sql("select posting_date from `tabJournal Voucher` where supplier_account = '%s'and docstatus = 1 and tds_category = '%s' and fiscal_year = '%s' and tds_applicable = 'Yes' and (ded_amount != 0 or ded_amount is not null) order by posting_date asc limit 1"%(supp_acc, obj.doc.tds_category, obj.doc.fiscal_year))
@@ -61,7 +77,7 @@ class DocType:
     self.validate_first_entry(obj)
 
     # get current amount and supplier head
-    if obj.doc.doctype == 'Payable Voucher':
+    if obj.doc.doctype == 'Purchase Invoice':
       supplier_account = obj.doc.credit_to
       total_amount=flt(obj.doc.grand_total)
       for d in getlist(obj.doclist,'advance_allocation_details'):
@@ -74,7 +90,7 @@ class DocType:
     if obj.doc.tds_category:      
       # get total billed
       total_billed = 0
-      pv = sql("select sum(ifnull(grand_total,0)), sum(ifnull(ded_amount,0)) from `tabPayable Voucher` where tds_category = %s and credit_to = %s and fiscal_year = %s and docstatus = 1 and name != %s and is_opening != 'Yes'", (obj.doc.tds_category, supplier_account, obj.doc.fiscal_year, obj.doc.name))
+      pv = sql("select sum(ifnull(grand_total,0)), sum(ifnull(ded_amount,0)) from `tabPurchase Invoice` where tds_category = %s and credit_to = %s and fiscal_year = %s and docstatus = 1 and name != %s and is_opening != 'Yes'", (obj.doc.tds_category, supplier_account, obj.doc.fiscal_year, obj.doc.name))
       jv = sql("select sum(ifnull(total_debit,0)), sum(ifnull(ded_amount,0)) from `tabJournal Voucher` where tds_category = %s and supplier_account = %s and fiscal_year = %s and docstatus = 1 and name != %s and is_opening != 'Yes'", (obj.doc.tds_category, supplier_account, obj.doc.fiscal_year, obj.doc.name))
       tds_in_pv = pv and pv[0][1] or 0
       tds_in_jv = jv and jv[0][1] or 0

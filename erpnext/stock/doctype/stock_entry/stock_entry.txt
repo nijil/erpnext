@@ -3,24 +3,39 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2010-08-08 17:09:25',
+		'creation': '2012-05-03 11:12:49',
 		'docstatus': 0,
+<<<<<<< HEAD
 		'modified': '2011-12-23 14:07:36',
 		'modified_by': 'Administrator',
 		'owner': 'Administrator'
+=======
+		'modified': '2012-05-03 18:08:43',
+		'modified_by': u'Administrator',
+		'owner': u'Administrator'
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 	},
 
 	# These values are common for all DocType
 	{
+<<<<<<< HEAD
 		'_last_update': '1324629300',
+=======
+		'_last_update': u'1334303911',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'allow_attach': 0,
 		'allow_copy': 0,
 		'allow_email': 0,
 		'allow_print': 0,
 		'allow_rename': 0,
 		'allow_trash': 0,
+<<<<<<< HEAD
 		'colour': 'White:FFF',
 		'default_print_format': 'Standard',
+=======
+		'colour': u'White:FFF',
+		'default_print_format': u'Standard',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'doctype': 'DocType',
 		'hide_heading': 0,
 		'hide_toolbar': 0,
@@ -29,68 +44,51 @@
 		'is_transaction_doc': 0,
 		'issingle': 0,
 		'max_attachments': 0,
-		'module': 'Stock',
+		'module': u'Stock',
 		'name': '__common__',
-		'print_outline': 'No',
+		'print_outline': u'No',
 		'read_only': 0,
 		'read_only_onload': 0,
-		'search_fields': 'transfer_date, from_warehouse, to_warehouse, purpose, remarks',
-		'section_style': 'Tabbed',
-		'server_code_error': ' ',
+		'search_fields': u'transfer_date, from_warehouse, to_warehouse, purpose, remarks',
+		'section_style': u'Tabbed',
+		'server_code_error': u' ',
 		'show_in_menu': 0,
+<<<<<<< HEAD
 		'subject': 'Transfer Date: %(transfer_date)s | Posting Date: %(posting_date)s | Psting Time: %(posting_time)s | %(remarks)s ',
 		'tag_fields': 'purpose',
 		'use_template': 0,
 		'version': 250
+=======
+		'subject': u'%(remarks)s',
+		'tag_fields': u'purpose',
+		'use_template': 0,
+		'version': 1
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': 'DocField',
+		'doctype': u'DocField',
 		'name': '__common__',
-		'parent': 'Stock Entry',
-		'parentfield': 'fields',
-		'parenttype': 'DocType'
+		'parent': u'Stock Entry',
+		'parentfield': u'fields',
+		'parenttype': u'DocType'
 	},
 
 	# These values are common for all DocPerm
 	{
-		'doctype': 'DocPerm',
+		'doctype': u'DocPerm',
 		'name': '__common__',
-		'parent': 'Stock Entry',
-		'parentfield': 'permissions',
-		'parenttype': 'DocType',
+		'parent': u'Stock Entry',
+		'parentfield': u'permissions',
+		'parenttype': u'DocType',
 		'read': 1
 	},
 
 	# DocType, Stock Entry
 	{
 		'doctype': 'DocType',
-		'name': 'Stock Entry'
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		'doctype': 'DocPerm',
-		'permlevel': 1,
-		'role': 'Material Manager',
-		'submit': 0,
-		'write': 0
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		'doctype': 'DocPerm',
-		'permlevel': 1,
-		'role': 'Material User',
-		'submit': 0,
-		'write': 0
+		'name': u'Stock Entry'
 	},
 
 	# DocPerm
@@ -98,9 +96,9 @@
 		'amend': 1,
 		'cancel': 1,
 		'create': 1,
-		'doctype': 'DocPerm',
+		'doctype': u'DocPerm',
 		'permlevel': 0,
-		'role': 'Production User',
+		'role': u'Material Manager',
 		'submit': 1,
 		'write': 1
 	},
@@ -110,23 +108,15 @@
 		'amend': 0,
 		'cancel': 0,
 		'create': 0,
+<<<<<<< HEAD
 		'doctype': 'DocPerm',
+=======
+		'doctype': u'DocPerm',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 1,
-		'role': 'Production User',
+		'role': u'Material Manager',
 		'submit': 0,
 		'write': 0
-	},
-
-	# DocPerm
-	{
-		'amend': 0,
-		'cancel': 0,
-		'create': 0,
-		'doctype': 'DocPerm',
-		'permlevel': 2,
-		'role': 'Production User',
-		'submit': 0,
-		'write': 1
 	},
 
 	# DocPerm
@@ -134,9 +124,9 @@
 		'amend': 1,
 		'cancel': 1,
 		'create': 1,
-		'doctype': 'DocPerm',
+		'doctype': u'DocPerm',
 		'permlevel': 0,
-		'role': 'Production Manager',
+		'role': u'Material User',
 		'submit': 1,
 		'write': 1
 	},
@@ -146,27 +136,108 @@
 		'amend': 0,
 		'cancel': 0,
 		'create': 0,
+<<<<<<< HEAD
 		'doctype': 'DocPerm',
+=======
+		'doctype': u'DocPerm',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 1,
-		'role': 'Production Manager',
+		'role': u'Material User',
 		'submit': 0,
 		'write': 0
 	},
 
 	# DocPerm
 	{
+		'amend': 1,
+		'cancel': 1,
+		'create': 1,
+<<<<<<< HEAD
+		'doctype': 'DocPerm',
+=======
+		'doctype': u'DocPerm',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
+		'permlevel': 0,
+		'role': u'Production User',
+		'submit': 1,
+		'write': 1
+	},
+
+	# DocPerm
+	{
+<<<<<<< HEAD
 		'amend': 0,
 		'cancel': 0,
 		'create': 0,
 		'doctype': 'DocPerm',
+=======
+		'doctype': u'DocPerm',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
+		'permlevel': 1,
+		'role': u'Production User'
+	},
+
+	# DocPerm
+	{
+		'create': 0,
+<<<<<<< HEAD
+		'doctype': 'DocPerm',
+=======
+		'doctype': u'DocPerm',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 2,
-		'role': 'Production Manager',
-		'submit': 0,
+		'role': u'Production User',
+		'write': 1
+	},
+
+	# DocPerm
+	{
+		'amend': 1,
+		'cancel': 1,
+		'create': 1,
+<<<<<<< HEAD
+		'doctype': 'DocPerm',
+=======
+		'doctype': u'DocPerm',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
+		'permlevel': 0,
+		'role': u'Production Manager',
+		'submit': 1,
+		'write': 1
+	},
+
+	# DocPerm
+	{
+<<<<<<< HEAD
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		'doctype': 'DocPerm',
+=======
+		'doctype': u'DocPerm',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
+		'permlevel': 1,
+		'role': u'Production Manager'
+	},
+
+	# DocPerm
+	{
+<<<<<<< HEAD
+		'amend': 0,
+		'cancel': 0,
+		'create': 0,
+		'doctype': 'DocPerm',
+=======
+		'doctype': u'DocPerm',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
+		'permlevel': 2,
+		'role': u'Production Manager',
 		'write': 1
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldtype': 'Section Break',
 		'label': 'Warehouse',
@@ -179,24 +250,39 @@
 		'doctype': 'DocField',
 		'fieldtype': 'Column Break',
 		'oldfieldtype': 'Column Break',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'col1',
+		'fieldtype': u'Column Break',
+		'oldfieldtype': u'Column Break',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
-		'width': '50%'
+		'width': u'50%'
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
+<<<<<<< HEAD
 		'colour': 'White:FFF',
 		'description': 'To manage multiple series please go to Setup > Manage Series',
 		'doctype': 'DocField',
 		'fieldname': 'naming_series',
 		'fieldtype': 'Select',
+=======
+		'colour': u'White:FFF',
+		'description': u'To manage multiple series please go to Setup > Manage Series',
+		'doctype': u'DocField',
+		'fieldname': u'naming_series',
+		'fieldtype': u'Select',
+		'hidden': 0,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 0,
-		'label': 'Series',
+		'label': u'Series',
 		'no_copy': 1,
-		'oldfieldname': 'naming_series',
-		'oldfieldtype': 'Select',
-		'options': 'STE',
+		'oldfieldname': u'naming_series',
+		'oldfieldtype': u'Select',
+		'options': u'\nSTE',
 		'permlevel': 0,
 		'print_hide': 1,
 		'report_hide': 0,
@@ -207,6 +293,7 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
+<<<<<<< HEAD
 		'description': 'The date at which current entry is corrected in the system.',
 		'doctype': 'DocField',
 		'fieldname': 'amendment_date',
@@ -229,69 +316,84 @@
 		'doctype': 'DocField',
 		'fieldname': 'purpose',
 		'fieldtype': 'Select',
+=======
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'purpose',
+		'fieldtype': u'Select',
+		'hidden': 0,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 1,
-		'label': 'Purpose',
+		'label': u'Purpose',
 		'no_copy': 0,
-		'oldfieldname': 'purpose',
-		'oldfieldtype': 'Select',
-		'options': 'Material Issue\nMaterial Receipt\nMaterial Transfer\nSales Return\nPurchase Return\nSubcontracting\nProduction Order',
+		'oldfieldname': u'purpose',
+		'oldfieldtype': u'Select',
+		'options': u'Material Issue\nMaterial Receipt\nMaterial Transfer\nSales Return\nPurchase Return\nSubcontracting\nProduction Order\nOther',
 		'permlevel': 0,
+		'print_hide': 0,
 		'report_hide': 0,
 		'reqd': 1,
 		'search_index': 0,
-		'trigger': 'Client'
+		'trigger': u'Client'
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'colour': 'White:FFF',
-		'doctype': 'DocField',
-		'fieldname': 'delivery_note_no',
-		'fieldtype': 'Link',
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'delivery_note_no',
+		'fieldtype': u'Link',
 		'hidden': 1,
 		'in_filter': 0,
-		'label': 'Delivery Note No',
+		'label': u'Delivery Note No',
 		'no_copy': 0,
-		'oldfieldname': 'delivery_note_no',
-		'oldfieldtype': 'Link',
-		'options': 'Delivery Note',
+		'oldfieldname': u'delivery_note_no',
+		'oldfieldtype': u'Link',
+		'options': u'Delivery Note',
 		'permlevel': 0,
 		'print_hide': 1,
 		'report_hide': 0,
+		'reqd': 0,
 		'search_index': 1,
-		'trigger': 'Client'
+		'trigger': u'Client'
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'colour': 'White:FFF',
-		'doctype': 'DocField',
-		'fieldname': 'purchase_receipt_no',
-		'fieldtype': 'Link',
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'purchase_receipt_no',
+		'fieldtype': u'Link',
 		'hidden': 1,
 		'in_filter': 0,
-		'label': 'Purchase Receipt No',
+		'label': u'Purchase Receipt No',
 		'no_copy': 0,
-		'oldfieldname': 'purchase_receipt_no',
-		'oldfieldtype': 'Link',
-		'options': 'Purchase Receipt',
+		'oldfieldname': u'purchase_receipt_no',
+		'oldfieldtype': u'Link',
+		'options': u'Purchase Receipt',
 		'permlevel': 0,
 		'print_hide': 1,
 		'report_hide': 0,
+		'reqd': 0,
 		'search_index': 1,
-		'trigger': 'Client'
+		'trigger': u'Client'
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldname': 'sales_invoice_no',
-		'fieldtype': 'Link',
+		'doctype': u'DocField',
+		'fieldname': u'sales_invoice_no',
+		'fieldtype': u'Link',
 		'hidden': 1,
+<<<<<<< HEAD
 		'label': 'Sales Invoice No',
 		'options': 'Receivable Voucher',
+=======
+		'label': u'Sales Invoice No',
+		'options': u'Sales Invoice',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
 		'print_hide': 1
 	},
@@ -299,82 +401,143 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'colour': 'White:FFF',
-		'doctype': 'DocField',
-		'fieldname': 'supplier',
-		'fieldtype': 'Link',
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'process',
+		'fieldtype': u'Select',
 		'hidden': 1,
+<<<<<<< HEAD
 		'in_filter': 0,
 		'label': 'Supplier',
+=======
+		'in_filter': 1,
+		'label': u'Process',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'no_copy': 0,
-		'oldfieldname': 'supplier',
-		'oldfieldtype': 'Link',
-		'options': 'Supplier',
+		'oldfieldname': u'process',
+		'oldfieldtype': u'Select',
+		'options': u'\nMaterial Transfer\nBackflush',
 		'permlevel': 0,
 		'print_hide': 1,
 		'report_hide': 0,
+		'reqd': 0,
 		'search_index': 0,
-		'trigger': 'Client'
+		'trigger': u'Client'
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'supplier_name',
 		'fieldtype': 'Data',
 		'in_filter': 0,
 		'label': 'Supplier Name',
+=======
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'production_order',
+		'fieldtype': u'Link',
+		'hidden': 1,
+		'in_filter': 1,
+		'label': u'Production Order',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'no_copy': 0,
-		'oldfieldname': 'supplier_name',
-		'oldfieldtype': 'Data',
-		'permlevel': 1,
+		'oldfieldname': u'production_order',
+		'oldfieldtype': u'Link',
+		'options': u'Production Order',
+		'permlevel': 0,
+		'print_hide': 1,
 		'report_hide': 0,
-		'search_index': 0
+		'reqd': 0,
+		'search_index': 1,
+		'trigger': u'Client'
+	},
+
+	# DocField
+	{
+		'depends_on': u"eval:doc.purpose == 'Other'",
+		'doctype': u'DocField',
+		'fieldname': u'bom_no',
+		'fieldtype': u'Link',
+		'label': u'BOM No',
+		'options': u'BOM',
+		'permlevel': 0
+	},
+
+	# DocField
+	{
+		'colour': u'White:FFF',
+		'depends_on': u"eval:doc.purpose == 'Other'",
+		'description': u'Select "Yes" if stock is maintained and tracked for sub-assembly items. Select "No" if you want child items of sub-assembly for material transfer.',
+		'doctype': u'DocField',
+		'fieldname': u'consider_sa_items_as_raw_materials',
+		'fieldtype': u'Select',
+		'label': u'Consider SA Items as Raw Materials',
+		'options': u'\nNo\nYes',
+		'permlevel': 0
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
+<<<<<<< HEAD
 		'colour': 'White:FFF',
 		'doctype': 'DocField',
 		'fieldname': 'supplier_address',
 		'fieldtype': 'Small Text',
 		'hidden': 1,
+=======
+		'doctype': u'DocField',
+		'fieldname': u'fg_completed_qty',
+		'fieldtype': u'Currency',
+		'hidden': 0,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 0,
-		'label': 'Supplier Address',
+		'label': u'FG Completed Qty',
 		'no_copy': 0,
-		'oldfieldname': 'supplier_address',
-		'oldfieldtype': 'Small Text',
+		'oldfieldname': u'fg_completed_qty',
+		'oldfieldtype': u'Currency',
 		'permlevel': 0,
+		'print_hide': 1,
 		'report_hide': 0,
+		'reqd': 0,
 		'search_index': 0,
-		'trigger': 'Client'
+		'trigger': u'Client'
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
+<<<<<<< HEAD
 		'colour': 'White:FFF',
 		'doctype': 'DocField',
 		'fieldname': 'customer',
 		'fieldtype': 'Link',
 		'hidden': 1,
+=======
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'get_items',
+		'fieldtype': u'Button',
+		'hidden': 0,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 0,
-		'label': 'Customer',
+		'label': u'Get Items',
 		'no_copy': 0,
-		'oldfieldname': 'customer',
-		'oldfieldtype': 'Link',
-		'options': 'Customer',
+		'oldfieldtype': u'Button',
+		'options': u'get_items',
 		'permlevel': 0,
 		'print_hide': 1,
 		'report_hide': 0,
-		'search_index': 0,
-		'trigger': 'Client'
+		'reqd': 0,
+		'search_index': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'allow_on_submit': 0,
 		'doctype': 'DocField',
 		'fieldname': 'customer_name',
@@ -382,100 +545,16 @@
 		'hidden': 1,
 		'in_filter': 0,
 		'label': 'Customer Name',
+=======
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'warehouse_html',
+		'fieldtype': u'HTML',
+		'label': u'Warehouse HTML',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'no_copy': 0,
-		'oldfieldname': 'customer_name',
-		'oldfieldtype': 'Data',
-		'permlevel': 1,
-		'report_hide': 0,
-		'search_index': 0
-	},
-
-	# DocField
-	{
-		'allow_on_submit': 0,
-		'doctype': 'DocField',
-		'fieldname': 'customer_address',
-		'fieldtype': 'Small Text',
-		'hidden': 1,
-		'in_filter': 0,
-		'label': 'Customer Address',
-		'no_copy': 0,
-		'oldfieldname': 'customer_address',
-		'oldfieldtype': 'Small Text',
-		'permlevel': 0,
-		'report_hide': 0,
-		'search_index': 0
-	},
-
-	# DocField
-	{
-		'allow_on_submit': 0,
-		'colour': 'White:FFF',
-		'doctype': 'DocField',
-		'fieldname': 'process',
-		'fieldtype': 'Select',
-		'hidden': 1,
-		'in_filter': 1,
-		'label': 'Process',
-		'no_copy': 0,
-		'oldfieldname': 'process',
-		'oldfieldtype': 'Select',
-		'options': '\nMaterial Transfer\nBackflush',
-		'permlevel': 0,
-		'print_hide': 1,
-		'report_hide': 0,
-		'search_index': 0,
-		'trigger': 'Client'
-	},
-
-	# DocField
-	{
-		'allow_on_submit': 0,
-		'colour': 'White:FFF',
-		'doctype': 'DocField',
-		'fieldname': 'production_order',
-		'fieldtype': 'Link',
-		'hidden': 1,
-		'in_filter': 1,
-		'label': 'Production Order',
-		'no_copy': 0,
-		'oldfieldname': 'production_order',
-		'oldfieldtype': 'Link',
-		'options': 'Production Order',
-		'permlevel': 0,
-		'print_hide': 1,
-		'report_hide': 0,
-		'search_index': 1,
-		'trigger': 'Client'
-	},
-
-	# DocField
-	{
-		'allow_on_submit': 0,
-		'doctype': 'DocField',
-		'fieldname': 'fg_completed_qty',
-		'fieldtype': 'Currency',
-		'in_filter': 0,
-		'label': 'FG Completed Qty',
-		'no_copy': 0,
-		'oldfieldname': 'fg_completed_qty',
-		'oldfieldtype': 'Currency',
-		'permlevel': 0,
-		'print_hide': 1,
-		'report_hide': 0,
-		'search_index': 0,
-		'trigger': 'Client'
-	},
-
-	# DocField
-	{
-		'colour': 'White:FFF',
-		'doctype': 'DocField',
-		'fieldtype': 'HTML',
-		'label': 'Warehouse HTML',
-		'no_copy': 0,
-		'oldfieldtype': 'HTML',
-		'options': "<div class='columnHeading'>Warehouse</div>",
+		'oldfieldtype': u'HTML',
+		'options': u"<div class='columnHeading'>Warehouse</div>",
 		'permlevel': 0,
 		'print_hide': 1
 	},
@@ -483,48 +562,235 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'colour': 'White:FFF',
+<<<<<<< HEAD
 		'doctype': 'DocField',
-		'fieldname': 'from_warehouse',
-		'fieldtype': 'Link',
+		'fieldname': 'customer_address',
+		'fieldtype': 'Small Text',
+		'hidden': 1,
+=======
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'from_warehouse',
+		'fieldtype': u'Link',
+		'hidden': 0,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 0,
-		'label': 'Source Warehouse',
+		'label': u'Source Warehouse',
 		'no_copy': 0,
-		'oldfieldname': 'from_warehouse',
-		'oldfieldtype': 'Link',
-		'options': 'Warehouse',
+		'oldfieldname': u'from_warehouse',
+		'oldfieldtype': u'Link',
+		'options': u'Warehouse',
 		'permlevel': 0,
 		'print_hide': 1,
 		'report_hide': 0,
 		'reqd': 0,
 		'search_index': 0,
-		'trigger': 'Client'
+		'trigger': u'Client'
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
+<<<<<<< HEAD
 		'colour': 'White:FFF',
-		'description': '<b>Notes:</b> Either Source or Target is Mandatory',
 		'doctype': 'DocField',
-		'fieldname': 'to_warehouse',
-		'fieldtype': 'Link',
+		'fieldname': 'process',
+		'fieldtype': 'Select',
+		'hidden': 1,
+		'in_filter': 1,
+		'label': 'Process',
+=======
+		'colour': u'White:FFF',
+		'description': u'<b>Notes:</b> Either Source or Target is Mandatory',
+		'doctype': u'DocField',
+		'fieldname': u'to_warehouse',
+		'fieldtype': u'Link',
+		'hidden': 0,
 		'in_filter': 0,
-		'label': 'Target Warehouse',
+		'label': u'Target Warehouse',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'no_copy': 0,
-		'oldfieldname': 'to_warehouse',
-		'oldfieldtype': 'Link',
-		'options': 'Warehouse',
+		'oldfieldname': u'to_warehouse',
+		'oldfieldtype': u'Link',
+		'options': u'Warehouse',
 		'permlevel': 0,
 		'print_hide': 1,
 		'report_hide': 0,
 		'reqd': 0,
 		'search_index': 0,
-		'trigger': 'Client'
+		'trigger': u'Client'
 	},
 
 	# DocField
 	{
+		'doctype': u'DocField',
+		'fieldname': u'col2',
+		'fieldtype': u'Column Break',
+		'oldfieldtype': u'Column Break',
+		'permlevel': 0,
+		'width': u'50%'
+	},
+
+	# DocField
+	{
+		'allow_on_submit': 0,
+<<<<<<< HEAD
+		'colour': 'White:FFF',
+		'doctype': 'DocField',
+		'fieldname': 'production_order',
+		'fieldtype': 'Link',
+		'hidden': 1,
+=======
+		'description': u'The date at which current entry will get or has actually executed.',
+		'doctype': u'DocField',
+		'fieldname': u'posting_date',
+		'fieldtype': u'Date',
+		'hidden': 0,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
+		'in_filter': 1,
+		'label': u'Posting Date',
+		'no_copy': 1,
+		'oldfieldname': u'posting_date',
+		'oldfieldtype': u'Date',
+		'permlevel': 0,
+		'print_hide': 1,
+		'report_hide': 0,
+		'reqd': 1,
+		'search_index': 1
+	},
+
+	# DocField
+	{
+		'allow_on_submit': 0,
+<<<<<<< HEAD
+		'doctype': 'DocField',
+		'fieldname': 'fg_completed_qty',
+		'fieldtype': 'Currency',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'posting_time',
+		'fieldtype': u'Time',
+		'hidden': 0,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
+		'in_filter': 0,
+		'label': u'Posting Time',
+		'no_copy': 1,
+		'oldfieldname': u'posting_time',
+		'oldfieldtype': u'Time',
+		'permlevel': 0,
+		'print_hide': 1,
+		'report_hide': 0,
+		'reqd': 1,
+		'search_index': 0
+	},
+
+	# DocField
+	{
+<<<<<<< HEAD
+		'colour': 'White:FFF',
+		'doctype': 'DocField',
+		'fieldtype': 'HTML',
+		'label': 'Warehouse HTML',
+		'no_copy': 0,
+		'oldfieldtype': 'HTML',
+		'options': "<div class='columnHeading'>Warehouse</div>",
+=======
+		'allow_on_submit': 0,
+		'doctype': u'DocField',
+		'fieldname': u'remarks',
+		'fieldtype': u'Text',
+		'hidden': 0,
+		'in_filter': 0,
+		'label': u'Remarks',
+		'no_copy': 1,
+		'oldfieldname': u'remarks',
+		'oldfieldtype': u'Text',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
+		'permlevel': 0,
+		'print_hide': 1,
+		'report_hide': 0,
+		'reqd': 1,
+		'search_index': 0
+	},
+
+	# DocField
+	{
+		'doctype': u'DocField',
+		'fieldname': u'items_section',
+		'fieldtype': u'Section Break',
+		'label': u'Items',
+		'oldfieldtype': u'Section Break',
+		'permlevel': 0
+	},
+
+	# DocField
+	{
+		'allow_on_submit': 0,
+<<<<<<< HEAD
+		'colour': 'White:FFF',
+		'doctype': 'DocField',
+		'fieldname': 'from_warehouse',
+		'fieldtype': 'Link',
+=======
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'mtn_details',
+		'fieldtype': u'Table',
+		'hidden': 0,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
+		'in_filter': 0,
+		'label': u'MTN Details',
+		'no_copy': 0,
+		'oldfieldname': u'mtn_details',
+		'oldfieldtype': u'Table',
+		'options': u'Stock Entry Detail',
+		'permlevel': 0,
+		'print_hide': 0,
+		'report_hide': 0,
+		'reqd': 0,
+		'search_index': 0
+	},
+
+	# DocField
+	{
+		'doctype': u'DocField',
+		'fieldname': u'item_section',
+		'fieldtype': u'Section Break',
+		'oldfieldtype': u'Section Break',
+		'options': u'Simple',
+		'permlevel': 0
+	},
+
+	# DocField
+	{
+		'allow_on_submit': 0,
+<<<<<<< HEAD
+		'colour': 'White:FFF',
+		'description': '<b>Notes:</b> Either Source or Target is Mandatory',
+		'doctype': 'DocField',
+		'fieldname': 'to_warehouse',
+		'fieldtype': 'Link',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'total_amount',
+		'fieldtype': u'Currency',
+		'hidden': 0,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
+		'in_filter': 0,
+		'label': u'Total Amount',
+		'no_copy': 0,
+		'oldfieldname': u'total_amount',
+		'oldfieldtype': u'Currency',
+		'permlevel': 1,
+		'print_hide': 1,
+		'report_hide': 0,
+		'reqd': 0,
+		'search_index': 0
+	},
+
+	# DocField
+	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'project_name',
 		'fieldtype': 'Link',
@@ -533,20 +799,36 @@
 		'oldfieldname': 'project_name',
 		'oldfieldtype': 'Link',
 		'options': 'Project',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'col3',
+		'fieldtype': u'Column Break',
+		'oldfieldtype': u'Column Break',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldtype': 'Column Break',
 		'oldfieldtype': 'Column Break',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'get_stock_and_rate',
+		'fieldtype': u'Button',
+		'label': u'Get Stock and Rate',
+		'oldfieldtype': u'Button',
+		'options': u'get_stock_and_rate',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
-		'width': '50%'
+		'print_hide': 1
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'allow_on_submit': 0,
 		'default': 'Today',
 		'doctype': 'DocField',
@@ -562,11 +844,19 @@
 		'report_hide': 0,
 		'reqd': 1,
 		'search_index': 0
+=======
+		'doctype': u'DocField',
+		'fieldname': u'contact_section',
+		'fieldtype': u'Section Break',
+		'label': u'Contact Info',
+		'permlevel': 0
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
+<<<<<<< HEAD
 		'description': 'The date at which current entry will get or has actually executed.',
 		'doctype': 'DocField',
 		'fieldname': 'posting_date',
@@ -576,104 +866,160 @@
 		'no_copy': 1,
 		'oldfieldname': 'posting_date',
 		'oldfieldtype': 'Date',
+=======
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'supplier',
+		'fieldtype': u'Link',
+		'hidden': 0,
+		'in_filter': 0,
+		'label': u'Supplier',
+		'no_copy': 0,
+		'oldfieldname': u'supplier',
+		'oldfieldtype': u'Link',
+		'options': u'Supplier',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
 		'print_hide': 1,
 		'report_hide': 0,
-		'reqd': 1,
-		'search_index': 1
+		'reqd': 0,
+		'search_index': 0,
+		'trigger': u'Client'
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'posting_time',
 		'fieldtype': 'Time',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'supplier_name',
+		'fieldtype': u'Data',
+		'hidden': 0,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 0,
-		'label': 'Posting Time',
-		'no_copy': 1,
-		'oldfieldname': 'posting_time',
-		'oldfieldtype': 'Time',
-		'permlevel': 0,
-		'print_hide': 1,
+		'label': u'Supplier Name',
+		'no_copy': 0,
+		'oldfieldname': u'supplier_name',
+		'oldfieldtype': u'Data',
+		'permlevel': 1,
+		'print_hide': 0,
 		'report_hide': 0,
-		'reqd': 1,
+		'reqd': 0,
 		'search_index': 0
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'amended_from',
 		'fieldtype': 'Link',
+=======
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'supplier_address',
+		'fieldtype': u'Small Text',
+		'hidden': 0,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 0,
-		'label': 'Amended From',
-		'no_copy': 1,
-		'oldfieldname': 'amended_from',
-		'oldfieldtype': 'Link',
-		'options': 'Stock Entry',
-		'permlevel': 1,
-		'print_hide': 1,
+		'label': u'Supplier Address',
+		'no_copy': 0,
+		'oldfieldname': u'supplier_address',
+		'oldfieldtype': u'Small Text',
+		'permlevel': 0,
+		'print_hide': 0,
 		'report_hide': 0,
-		'search_index': 0
+		'reqd': 0,
+		'search_index': 0,
+		'trigger': u'Client'
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'transporter',
 		'fieldtype': 'Data',
+=======
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'customer',
+		'fieldtype': u'Link',
+		'hidden': 0,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 0,
-		'label': 'Transporter',
+		'label': u'Customer',
 		'no_copy': 0,
-		'oldfieldname': 'transporter',
-		'oldfieldtype': 'Data',
+		'oldfieldname': u'customer',
+		'oldfieldtype': u'Link',
+		'options': u'Customer',
 		'permlevel': 0,
 		'print_hide': 1,
 		'report_hide': 0,
-		'search_index': 0
+		'reqd': 0,
+		'search_index': 0,
+		'trigger': u'Client'
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'is_excisable_goods',
 		'fieldtype': 'Select',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'customer_name',
+		'fieldtype': u'Data',
+		'hidden': 0,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 0,
-		'label': 'Is Excisable Goods',
+		'label': u'Customer Name',
 		'no_copy': 0,
-		'oldfieldname': 'is_excisable_goods',
-		'oldfieldtype': 'Select',
-		'options': '\nYes\nNo',
-		'permlevel': 0,
-		'print_hide': 1,
+		'oldfieldname': u'customer_name',
+		'oldfieldtype': u'Data',
+		'permlevel': 1,
+		'print_hide': 0,
 		'report_hide': 0,
+		'reqd': 0,
 		'search_index': 0
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'excisable_goods',
 		'fieldtype': 'Select',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'customer_address',
+		'fieldtype': u'Small Text',
+		'hidden': 0,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 0,
-		'label': 'Excisable Goods',
+		'label': u'Customer Address',
 		'no_copy': 0,
-		'oldfieldname': 'excisable_goods',
-		'oldfieldtype': 'Select',
-		'options': '\nReturnable\nNon-Returnable',
+		'oldfieldname': u'customer_address',
+		'oldfieldtype': u'Small Text',
 		'permlevel': 0,
-		'print_hide': 1,
+		'print_hide': 0,
 		'report_hide': 0,
+		'reqd': 0,
 		'search_index': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'allow_on_submit': 0,
 		'doctype': 'DocField',
 		'fieldname': 'under_rule',
@@ -685,42 +1031,76 @@
 		'oldfieldname': 'under_rule',
 		'oldfieldtype': 'Select',
 		'options': '\nOrdinary\n57 AC (5) a\n57 F (2) Non-Exc.',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'more_info',
+		'fieldtype': u'Section Break',
+		'label': u'More Info',
+		'oldfieldtype': u'Section Break',
+		'permlevel': 0
+	},
+
+	# DocField
+	{
+		'doctype': u'DocField',
+		'fieldname': u'col4',
+		'fieldtype': u'Column Break',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
-		'print_hide': 1,
-		'report_hide': 0,
-		'search_index': 0
+		'width': u'50%'
+	},
+
+	# DocField
+	{
+		'doctype': u'DocField',
+		'fieldname': u'project_name',
+		'fieldtype': u'Link',
+		'in_filter': 1,
+		'label': u'Project Name',
+		'oldfieldname': u'project_name',
+		'oldfieldtype': u'Link',
+		'options': u'Project',
+		'permlevel': 0
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'remarks',
 		'fieldtype': 'Text',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'select_print_heading',
+		'fieldtype': u'Link',
+		'hidden': 0,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 0,
-		'label': 'Remarks',
-		'no_copy': 1,
-		'oldfieldname': 'remarks',
-		'oldfieldtype': 'Text',
+		'label': u'Select Print Heading',
+		'no_copy': 0,
+		'oldfieldname': u'select_print_heading',
+		'oldfieldtype': u'Link',
+		'options': u'Print Heading',
 		'permlevel': 0,
-		'print_hide': 1,
+		'print_hide': 0,
 		'report_hide': 0,
-		'reqd': 1,
+		'reqd': 0,
 		'search_index': 0
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'doctype': 'DocField',
-		'fieldname': 'cancel_reason',
-		'fieldtype': 'Data',
+		'doctype': u'DocField',
+		'fieldname': u'cancel_reason',
+		'fieldtype': u'Data',
 		'hidden': 1,
 		'in_filter': 0,
-		'label': 'Cancel Reason',
+		'label': u'Cancel Reason',
 		'no_copy': 1,
-		'oldfieldname': 'cancel_reason',
-		'oldfieldtype': 'Data',
+		'oldfieldname': u'cancel_reason',
+		'oldfieldtype': u'Data',
 		'permlevel': 1,
 		'print_hide': 1,
 		'report_hide': 0,
@@ -730,6 +1110,7 @@
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldtype': 'Section Break',
 		'label': 'Items',
@@ -744,38 +1125,65 @@
 		'label': 'Get Stock and Rate',
 		'oldfieldtype': 'Button',
 		'options': 'get_stock_and_rate',
-		'permlevel': 0,
-		'print_hide': 1
-	},
-
-	# DocField
-	{
-		'doctype': 'DocField',
-		'fieldtype': 'Column Break',
-		'oldfieldtype': 'Column Break',
-		'permlevel': 0
-	},
-
-	# DocField
-	{
+=======
 		'allow_on_submit': 0,
-		'colour': 'White:FFF',
-		'doctype': 'DocField',
-		'fieldtype': 'Button',
+		'default': u'Today',
+		'doctype': u'DocField',
+		'fieldname': u'transfer_date',
+		'fieldtype': u'Date',
 		'hidden': 0,
-		'in_filter': 0,
-		'label': 'Get Items',
-		'no_copy': 0,
-		'oldfieldtype': 'Button',
-		'options': 'get_items',
+		'in_filter': 1,
+		'label': u'Transfer Date',
+		'no_copy': 1,
+		'oldfieldname': u'transfer_date',
+		'oldfieldtype': u'Date',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
-		'print_hide': 1,
+		'print_hide': 0,
 		'report_hide': 0,
+		'reqd': 1,
 		'search_index': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
+		'doctype': 'DocField',
+		'fieldtype': 'Column Break',
+		'oldfieldtype': 'Column Break',
+		'permlevel': 0
+=======
+		'doctype': u'DocField',
+		'fieldname': u'col5',
+		'fieldtype': u'Column Break',
+		'permlevel': 0,
+		'width': u'50%'
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
+	},
+
+	# DocField
+	{
+		'allow_on_submit': 0,
+		'doctype': u'DocField',
+		'fieldname': u'is_excisable_goods',
+		'fieldtype': u'Select',
+		'hidden': 0,
+		'in_filter': 0,
+		'label': u'Is Excisable Goods',
+		'no_copy': 0,
+		'oldfieldname': u'is_excisable_goods',
+		'oldfieldtype': u'Select',
+		'options': u'\nYes\nNo',
+		'permlevel': 0,
+		'print_hide': 1,
+		'report_hide': 0,
+		'reqd': 0,
+		'search_index': 0
+	},
+
+	# DocField
+	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldtype': 'Section Break',
 		'oldfieldtype': 'Section Break',
@@ -790,56 +1198,98 @@
 		'doctype': 'DocField',
 		'fieldname': 'mtn_details',
 		'fieldtype': 'Table',
+=======
+		'allow_on_submit': 0,
+		'doctype': u'DocField',
+		'fieldname': u'excisable_goods',
+		'fieldtype': u'Select',
+		'hidden': 0,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 0,
-		'label': 'MTN Details',
+		'label': u'Excisable Goods',
 		'no_copy': 0,
-		'oldfieldname': 'mtn_details',
-		'oldfieldtype': 'Table',
-		'options': 'Stock Entry Detail',
+		'oldfieldname': u'excisable_goods',
+		'oldfieldtype': u'Select',
+		'options': u'\nReturnable\nNon-Returnable',
 		'permlevel': 0,
-		'print_hide': 0,
+		'print_hide': 1,
 		'report_hide': 0,
+		'reqd': 0,
 		'search_index': 0
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'total_amount',
 		'fieldtype': 'Currency',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'under_rule',
+		'fieldtype': u'Select',
+		'hidden': 1,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 0,
-		'label': 'Total Amount',
+		'label': u'Under Rule',
 		'no_copy': 0,
-		'oldfieldname': 'total_amount',
-		'oldfieldtype': 'Currency',
-		'permlevel': 1,
+		'oldfieldname': u'under_rule',
+		'oldfieldtype': u'Select',
+		'options': u'\nOrdinary\n57 AC (5) a\n57 F (2) Non-Exc.',
+		'permlevel': 0,
 		'print_hide': 1,
 		'report_hide': 0,
+		'reqd': 0,
 		'search_index': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldtype': 'Section Break',
 		'label': 'Other Details',
 		'oldfieldtype': 'Section Break',
 		'permlevel': 0
+=======
+		'allow_on_submit': 0,
+		'doctype': u'DocField',
+		'fieldname': u'transporter',
+		'fieldtype': u'Data',
+		'hidden': 0,
+		'in_filter': 0,
+		'label': u'Transporter',
+		'no_copy': 0,
+		'oldfieldname': u'transporter',
+		'oldfieldtype': u'Data',
+		'permlevel': 0,
+		'print_hide': 1,
+		'report_hide': 0,
+		'reqd': 0,
+		'search_index': 0
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'company',
 		'fieldtype': 'Link',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'company',
+		'fieldtype': u'Link',
+		'hidden': 0,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 1,
-		'label': 'Company',
+		'label': u'Company',
 		'no_copy': 0,
-		'oldfieldname': 'company',
-		'oldfieldtype': 'Link',
-		'options': 'Company',
+		'oldfieldname': u'company',
+		'oldfieldtype': u'Link',
+		'options': u'Company',
 		'permlevel': 0,
 		'print_hide': 1,
 		'report_hide': 0,
@@ -850,15 +1300,22 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'fiscal_year',
 		'fieldtype': 'Select',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'fiscal_year',
+		'fieldtype': u'Select',
+		'hidden': 0,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 0,
-		'label': 'Fiscal Year',
+		'label': u'Fiscal Year',
 		'no_copy': 0,
-		'oldfieldname': 'fiscal_year',
-		'oldfieldtype': 'Select',
-		'options': 'link:Fiscal Year',
+		'oldfieldname': u'fiscal_year',
+		'oldfieldtype': u'Select',
+		'options': u'link:Fiscal Year',
 		'permlevel': 0,
 		'print_hide': 1,
 		'report_hide': 0,
@@ -869,17 +1326,46 @@
 	# DocField
 	{
 		'allow_on_submit': 0,
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'select_print_heading',
 		'fieldtype': 'Link',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'amended_from',
+		'fieldtype': u'Link',
+		'hidden': 0,
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 0,
-		'label': 'Select Print Heading',
-		'no_copy': 0,
-		'oldfieldname': 'select_print_heading',
-		'oldfieldtype': 'Link',
-		'options': 'Print Heading',
-		'permlevel': 0,
+		'label': u'Amended From',
+		'no_copy': 1,
+		'oldfieldname': u'amended_from',
+		'oldfieldtype': u'Link',
+		'options': u'Stock Entry',
+		'permlevel': 1,
+		'print_hide': 1,
 		'report_hide': 0,
+		'reqd': 0,
+		'search_index': 0
+	},
+
+	# DocField
+	{
+		'allow_on_submit': 0,
+		'description': u'The date at which current entry is corrected in the system.',
+		'doctype': u'DocField',
+		'fieldname': u'amendment_date',
+		'fieldtype': u'Date',
+		'hidden': 0,
+		'in_filter': 0,
+		'label': u'Amendment Date',
+		'no_copy': 1,
+		'oldfieldname': u'amendment_date',
+		'oldfieldtype': u'Date',
+		'permlevel': 0,
+		'print_hide': 1,
+		'report_hide': 0,
+		'reqd': 0,
 		'search_index': 0
 	}
 ]

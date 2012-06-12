@@ -1,3 +1,19 @@
+// ERPNext - web based ERP (http://erpnext.com)
+// Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 cur_frm.cscript.onload = function(doc, dt, dn) {
   // created?
   if(cur_frm.mylist) {
@@ -39,7 +55,7 @@ cur_frm.cscript.onload = function(doc, dt, dn) {
       if (ci==0){ 
         var d1 = $a(cell,'div');
         var img = $a(cell,'img','',{width:'40px'});
-        set_user_img(img,d[ri][0])
+        img.src = wn.user_info(d[ri][0]).image;
         var d2 = $a(cell,'div');
         d2.innerHTML =  d[ri][0] + ' on: ' + date.str_to_user(d[ri][1]);
       }
@@ -55,7 +71,7 @@ cur_frm.cscript.onload = function(doc, dt, dn) {
       }
     }
   
-    lst.make(cur_frm.fields_dict['Updates HTML'].wrapper);
+    lst.make(cur_frm.fields_dict['updates_html'].wrapper);
     cur_frm.mylist = lst;
     lst.run();
   }
@@ -65,14 +81,14 @@ cur_frm.cscript.refresh = function(doc, dt, dn) {
 
   // show activities only after project is saved
 
-  var fl = ['new_update','Add','hours','Updates HTML'];
+  var fl = ['new_update','add','hours','updates_html'];
   if(doc.__islocal) { 
     hide_field(fl);}
   else { 
     unhide_field(fl); }
 }
 
-cur_frm.cscript['Add'] = function(doc, dt, dn) {
+cur_frm.cscript.add = function(doc, dt, dn) {
   var callback = function(r,rt) {
     
     // refresh listing

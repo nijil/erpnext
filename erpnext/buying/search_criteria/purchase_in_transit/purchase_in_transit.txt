@@ -3,37 +3,37 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2010-09-01 15:48:09',
+		'creation': '2012-04-11 13:16:55',
 		'docstatus': 0,
-		'modified': '2010-08-30 13:04:44',
-		'modified_by': 'Administrator',
-		'owner': 'Administrator'
+		'modified': '2012-04-13 12:06:15',
+		'modified_by': u'Administrator',
+		'owner': u'Administrator'
 	},
 
 	# These values are common for all Search Criteria
 	{
-		'add_col': "`tabPurchase Receipt`.`posting_date` AS 'PR Posting Date'",
-		'add_cond': "`tabPV Detail`.`purchase_receipt`  = `tabPurchase Receipt`.`name`\n`tabPurchase Receipt`.`posting_date` >= '%(pr_posting_date)s'\n`tabPurchase Receipt`.`posting_date` <= '%(pr_posting_date1)s'\n`tabPurchase Receipt`.`posting_date` > `tabPayable Voucher`.`posting_date`",
-		'add_tab': '`tabPurchase Receipt`',
-		'columns': 'Payable Voucher\x01ID,Payable Voucher\x01Voucher Date,Payable Voucher\x01Posting Date,Payable Voucher\x01Credit To,PV Detail\x01Rate,PV Detail\x01Qty,PV Detail\x01Amount,PV Detail\x01Pur Order,PV Detail\x01Pur Receipt',
-		'criteria_name': 'Purchase in Transit',
-		'description': 'List of PR whose posting date is after PV posting date',
-		'dis_filters': '`tabPurchase Receipt`.`pr_posting_date`',
-		'doc_type': 'PV Detail',
+		'add_col': u"`tabPurchase Receipt`.`posting_date` AS 'PR Posting Date'",
+		'add_cond': u"`tabPurchase Invoice Item`.`purchase_receipt`  = `tabPurchase Receipt`.`name`\n`tabPurchase Receipt`.`posting_date` >= '%(pr_posting_date)s'\n`tabPurchase Receipt`.`posting_date` <= '%(pr_posting_date1)s'\n`tabPurchase Receipt`.`posting_date` > `tabPurchase Invoice`.`posting_date`",
+		'add_tab': u'`tabPurchase Receipt`',
+		'columns': u'Purchase Invoice\x01ID,Purchase Invoice\x01Posting Date,Purchase Invoice\x01Credit To,Purchase Invoice Item\x01Qty,Purchase Invoice Item\x01Amount,Purchase Invoice Item\x01Pur Order,Purchase Invoice Item\x01Pur Receipt',
+		'criteria_name': u'Purchase in Transit',
+		'description': u'List of PR whose posting date is after PV posting date',
+		'dis_filters': u'`tabPurchase Receipt`.`pr_posting_date`',
+		'doc_type': u'Purchase Invoice Item',
 		'doctype': 'Search Criteria',
-		'filters': "{'Payable Voucher\x01Submitted':1,'Payable Voucher\x01From Posting Date\x01lower':'2009-04-01','Payable Voucher\x01To Posting Date\x01upper':'2010-01-11','Payable Voucher\x01Is Opening':'','Payable Voucher\x01Fiscal Year':'','Payable Voucher\x01Company':'','Purchase Receipt\x01From PR Posting Date\x01lower':'2009-04-01','Purchase Receipt\x01To PR Posting Date\x01upper':'2010-01-11'}",
-		'module': 'Buying',
+		'filters': u'{"Purchase Invoice\\u0001Submitted":1,"Purchase Invoice\\u0001Is Opening":[""],"Purchase Invoice\\u0001Fiscal Year":[""]}',
+		'module': u'Buying',
 		'name': '__common__',
 		'page_len': 50,
-		'parent_doc_type': 'Payable Voucher',
-		'sort_by': '`tabPayable Voucher`.`name`',
-		'sort_order': 'DESC',
-		'standard': 'Yes'
+		'parent_doc_type': u'Purchase Invoice',
+		'sort_by': u'`tabPurchase Invoice`.`name`',
+		'sort_order': u'DESC',
+		'standard': u'Yes'
 	},
 
 	# Search Criteria, purchase_in_transit
 	{
 		'doctype': 'Search Criteria',
-		'name': 'purchase_in_transit'
+		'name': u'purchase_in_transit'
 	}
 ]

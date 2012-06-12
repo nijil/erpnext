@@ -1,7 +1,23 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # add expense head columns
 expense_acc = [c[0] for c in sql("""select distinct expense_head 
-									from `tabPV Detail` 
-									where parenttype='Payable Voucher' 
+									from `tabPurchase Invoice Item` 
+									where parenttype='Purchase Invoice' 
 									and docstatus=1 
 									order by expense_head asc""")]
 									
@@ -15,8 +31,8 @@ for i in expense_acc:
 
 # Add tax head columns
 tax_acc = [c[0] for c in sql("""select distinct account_head 
-							    from `tabPurchase Tax Detail` 
-							    where parenttype = 'Payable Voucher' 
+							    from `tabPurchase Taxes and Charges` 
+							    where parenttype = 'Purchase Invoice' 
 							    and add_deduct_tax = 'Add' 
 							    and category in ('For Total', 'For Both')
 							    and docstatus=1
@@ -40,8 +56,8 @@ tax_acc = tax_acc[:-2]
 for r in res:
 	#Get amounts for expense heads
 	exp_head_amount = sql("""select expense_head, sum(amount) 
-							 from `tabPV Detail` 
-							 where parent = %s and parenttype='Payable Voucher'
+							 from `tabPurchase Invoice Item` 
+							 where parent = %s and parenttype='Purchase Invoice'
 							 group by expense_head""", (r[col_idx['ID']],))
   
 	#convert the result to dictionary for easy retrieval  
@@ -68,9 +84,9 @@ for r in res:
 
 	#Get tax for account heads
 	acc_head_tax = sql("""select account_head, tax_amount 
-						  from `tabPurchase Tax Detail` 
+						  from `tabPurchase Taxes and Charges` 
 						  where parent = '%s' 
-						  and parenttype = 'Payable Voucher' 
+						  and parenttype = 'Purchase Invoice' 
 						  and add_deduct_tax = 'Add' 
 						  and category in ('For Total', 'For Both')""" %(r[col_idx['ID']],))
 

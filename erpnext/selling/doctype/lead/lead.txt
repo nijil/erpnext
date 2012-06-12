@@ -3,55 +3,74 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2010-08-08 17:09:07',
+		'creation': '2012-05-15 12:14:52',
 		'docstatus': 0,
+<<<<<<< HEAD
 		'modified': '2011-12-23 18:24:50',
 		'modified_by': 'Administrator',
 		'owner': 'Administrator'
+=======
+		'modified': '2012-05-30 12:43:03',
+		'modified_by': u'Administrator',
+		'owner': u'Administrator'
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 	},
 
 	# These values are common for all DocType
 	{
+<<<<<<< HEAD
 		'_last_update': '1324624245',
 		'allow_trash': 1,
 		'colour': 'White:FFF',
 		'default_print_format': 'Standard',
+=======
+		'_last_update': u'1332222225',
+		'allow_trash': 1,
+		'colour': u'White:FFF',
+		'default_print_format': u'Standard',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'doctype': 'DocType',
-		'document_type': 'Master',
-		'module': 'Selling',
+		'document_type': u'Master',
+		'module': u'Selling',
 		'name': '__common__',
-		'search_fields': 'lead_name,lead_owner,status',
-		'section_style': 'Tabbed',
-		'server_code_error': ' ',
+		'search_fields': u'lead_name,lead_owner,status',
+		'section_style': u'Tabbed',
+		'server_code_error': u' ',
 		'show_in_menu': 0,
+<<<<<<< HEAD
 		'subject': '%(lead_name)s from %(company_name)s | To Discuss: %(to_discuss)s | Lead Owner: %(lead_owner)s | Next Contact: %(contact_by)s | on %(contact_date)s',
 		'tag_fields': 'status,contact_by',
 		'version': 398
+=======
+		'subject': u'%(lead_name)s from %(company_name)s | To Discuss: %(to_discuss)s',
+		'tag_fields': u'status,source',
+		'version': 1
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 	},
 
 	# These values are common for all DocField
 	{
-		'doctype': 'DocField',
+		'doctype': u'DocField',
 		'name': '__common__',
-		'parent': 'Lead',
-		'parentfield': 'fields',
-		'parenttype': 'DocType'
+		'parent': u'Lead',
+		'parentfield': u'fields',
+		'parenttype': u'DocType'
 	},
 
 	# These values are common for all DocPerm
 	{
-		'doctype': 'DocPerm',
+		'doctype': u'DocPerm',
 		'name': '__common__',
-		'parent': 'Lead',
-		'parentfield': 'permissions',
-		'parenttype': 'DocType',
+		'parent': u'Lead',
+		'parentfield': u'permissions',
+		'parenttype': u'DocType',
 		'read': 1
 	},
 
 	# DocType, Lead
 	{
 		'doctype': 'DocType',
-		'name': 'Lead'
+		'name': u'Lead'
 	},
 
 	# DocPerm
@@ -59,9 +78,13 @@
 		'amend': 0,
 		'cancel': 0,
 		'create': 0,
+<<<<<<< HEAD
 		'doctype': 'DocPerm',
+=======
+		'doctype': u'DocPerm',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 1,
-		'role': 'Sales User',
+		'role': u'Sales User',
 		'submit': 0,
 		'write': 0
 	},
@@ -71,9 +94,13 @@
 		'amend': 0,
 		'cancel': 0,
 		'create': 0,
+<<<<<<< HEAD
 		'doctype': 'DocPerm',
+=======
+		'doctype': u'DocPerm',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 1,
-		'role': 'Sales Manager',
+		'role': u'Sales Manager',
 		'submit': 0,
 		'write': 0
 	},
@@ -83,9 +110,13 @@
 		'amend': 0,
 		'cancel': 1,
 		'create': 1,
+<<<<<<< HEAD
 		'doctype': 'DocPerm',
+=======
+		'doctype': u'DocPerm',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
-		'role': 'Sales Manager',
+		'role': u'Sales Manager',
 		'submit': 0,
 		'write': 1
 	},
@@ -95,18 +126,26 @@
 		'amend': 0,
 		'cancel': 0,
 		'create': 1,
+<<<<<<< HEAD
 		'doctype': 'DocPerm',
+=======
+		'doctype': u'DocPerm',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
-		'role': 'Sales User',
+		'role': u'Sales User',
 		'submit': 0,
 		'write': 1
 	},
 
 	# DocPerm
 	{
+<<<<<<< HEAD
 		'doctype': 'DocPerm',
+=======
+		'doctype': u'DocPerm',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 1,
-		'role': 'All'
+		'role': u'All'
 	},
 
 	# DocPerm
@@ -114,9 +153,13 @@
 		'amend': 0,
 		'cancel': 0,
 		'create': 1,
+<<<<<<< HEAD
 		'doctype': 'DocPerm',
+=======
+		'doctype': u'DocPerm',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
-		'role': 'System Manager',
+		'role': u'System Manager',
 		'submit': 0,
 		'write': 1
 	},
@@ -124,41 +167,84 @@
 	# DocPerm
 	{
 		'create': 1,
+<<<<<<< HEAD
 		'doctype': 'DocPerm',
+=======
+		'doctype': u'DocPerm',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
-		'role': 'Guest',
+		'role': u'Guest',
 		'write': 1
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'colour': 'White:FFF',
 		'doctype': 'DocField',
 		'fieldtype': 'Section Break',
 		'label': 'Basic Info',
 		'oldfieldtype': 'Section Break',
+=======
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'basic_info',
+		'fieldtype': u'Section Break',
+		'label': u'Basic Info',
+		'oldfieldtype': u'Section Break',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldtype': 'Column Break',
 		'oldfieldtype': 'Column Break',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'column_break0',
+		'fieldtype': u'Column Break',
+		'oldfieldtype': u'Column Break',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
-		'width': '50%'
+		'width': u'50%'
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'colour': 'White:FFF',
 		'doctype': 'DocField',
 		'fieldname': 'lead_name',
 		'fieldtype': 'Data',
+=======
+		'colour': u'White:FFF',
+		'description': u'To manage multiple series please go to Setup > Manage Series',
+		'doctype': u'DocField',
+		'fieldname': u'naming_series',
+		'fieldtype': u'Select',
+		'label': u'Naming Series',
+		'no_copy': 1,
+		'oldfieldname': u'naming_series',
+		'oldfieldtype': u'Select',
+		'options': u'LEAD\nLEAD/10-11/\nLEAD/MUMBAI/',
+		'permlevel': 0,
+		'reqd': 0
+	},
+
+	# DocField
+	{
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'lead_name',
+		'fieldtype': u'Data',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 1,
-		'label': 'Contact Name',
-		'oldfieldname': 'lead_name',
-		'oldfieldtype': 'Data',
+		'label': u'Contact Name',
+		'oldfieldname': u'lead_name',
+		'oldfieldtype': u'Data',
 		'permlevel': 0,
 		'reqd': 1,
 		'search_index': 1
@@ -166,55 +252,99 @@
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'colour': 'White:FFF',
 		'doctype': 'DocField',
 		'fieldname': 'source',
 		'fieldtype': 'Select',
+=======
+		'colour': u'White:FFF',
+		'description': u'Name of organization from where lead has come',
+		'doctype': u'DocField',
+		'fieldname': u'company_name',
+		'fieldtype': u'Data',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 1,
-		'label': 'Source',
-		'no_copy': 1,
-		'oldfieldname': 'source',
-		'oldfieldtype': 'Select',
-		'options': "\nExisting Customer\nReference\nAdvertisement\nCold Calling\nExhibition\nSupplier Reference\nMass Mailing\nCustomer's Vendor\nCampaign\nWebsite",
+		'label': u'Company Name',
+		'oldfieldname': u'company_name',
+		'oldfieldtype': u'Data',
 		'permlevel': 0,
-		'reqd': 1,
-		'search_index': 1,
-		'trigger': 'Client'
+		'reqd': 0,
+		'search_index': 0,
+		'trigger': u'Client'
 	},
 
 	# DocField
 	{
-		'colour': 'White:FFF',
-		'depends_on': "eval:doc.source == 'Existing Customer'",
-		'doctype': 'DocField',
-		'fieldname': 'customer',
-		'fieldtype': 'Link',
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'source',
+		'fieldtype': u'Select',
+		'in_filter': 1,
+		'label': u'Source',
+		'no_copy': 1,
+		'oldfieldname': u'source',
+		'oldfieldtype': u'Select',
+		'options': u"\nExisting Customer\nReference\nAdvertisement\nCold Calling\nExhibition\nSupplier Reference\nMass Mailing\nCustomer's Vendor\nCampaign\nWebsite",
+		'permlevel': 0,
+		'reqd': 1,
+<<<<<<< HEAD
+		'search_index': 1,
+		'trigger': 'Client'
+=======
+		'search_index': 0,
+		'trigger': u'Client'
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
+	},
+
+	# DocField
+	{
+		'colour': u'White:FFF',
+		'depends_on': u"eval:doc.source == 'Existing Customer'",
+		'doctype': u'DocField',
+		'fieldname': u'customer',
+		'fieldtype': u'Link',
 		'hidden': 0,
+<<<<<<< HEAD
 		'label': 'From Customer',
 		'oldfieldname': 'customer',
 		'oldfieldtype': 'Link',
 		'options': 'Customer',
+=======
+		'label': u'From Customer',
+		'oldfieldname': u'customer',
+		'oldfieldtype': u'Link',
+		'options': u'Customer',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0
 	},
 
 	# DocField
 	{
-		'colour': 'White:FFF',
-		'depends_on': "eval:doc.source == 'Campaign'",
-		'description': 'Enter campaign name if the source of lead is campaign.',
-		'doctype': 'DocField',
-		'fieldname': 'campaign_name',
-		'fieldtype': 'Link',
+		'colour': u'White:FFF',
+		'depends_on': u"eval:doc.source == 'Campaign'",
+		'description': u'Enter campaign name if the source of lead is campaign.',
+		'doctype': u'DocField',
+		'fieldname': u'campaign_name',
+		'fieldtype': u'Link',
 		'hidden': 0,
+<<<<<<< HEAD
 		'label': 'Campaign Name',
 		'oldfieldname': 'campaign_name',
 		'oldfieldtype': 'Link',
 		'options': 'Campaign',
+=======
+		'label': u'Campaign Name',
+		'oldfieldname': u'campaign_name',
+		'oldfieldtype': u'Link',
+		'options': u'Campaign',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'colour': 'White:FFF',
 		'description': 'Name of organization from where lead has come',
 		'doctype': 'DocField',
@@ -228,10 +358,18 @@
 		'reqd': 0,
 		'search_index': 1,
 		'trigger': 'Client'
+=======
+		'doctype': u'DocField',
+		'fieldname': u'column_break1',
+		'fieldtype': u'Column Break',
+		'permlevel': 0,
+		'width': u'50%'
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'colour': 'White:FFF',
 		'description': 'To manage multiple series please go to Setup > Manage Series',
 		'doctype': 'DocField',
@@ -253,15 +391,23 @@
 		'doctype': 'DocField',
 		'fieldname': 'status',
 		'fieldtype': 'Select',
+=======
+		'colour': u'White:FFF',
+		'default': u'Open',
+		'doctype': u'DocField',
+		'fieldname': u'status',
+		'fieldtype': u'Select',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 1,
-		'label': 'Status',
+		'label': u'Status',
 		'no_copy': 1,
-		'oldfieldname': 'status',
-		'oldfieldtype': 'Select',
-		'options': '\nOpen\nAttempted to Contact\nContact in Future\nContacted\nInterested\nNot interested\nLead Lost\nConverted',
+		'oldfieldname': u'status',
+		'oldfieldtype': u'Select',
+		'options': u'\nOpen\nAttempted to Contact\nContact in Future\nContacted\nInterested\nNot interested\nLead Lost\nConverted',
 		'permlevel': 0,
 		'reqd': 1,
 		'search_index': 1,
+<<<<<<< HEAD
 		'trigger': 'Client'
 	},
 
@@ -280,10 +426,14 @@
 		'permlevel': 0,
 		'reqd': 1,
 		'search_index': 1
+=======
+		'trigger': u'Client'
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldtype': 'Column Break',
 		'permlevel': 0,
@@ -296,16 +446,23 @@
 		'doctype': 'DocField',
 		'fieldname': 'type',
 		'fieldtype': 'Select',
+=======
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'type',
+		'fieldtype': u'Select',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 1,
-		'label': 'Lead Type',
-		'oldfieldname': 'type',
-		'oldfieldtype': 'Select',
-		'options': '\nClient\nChannel Partner\nConsultant',
+		'label': u'Lead Type',
+		'oldfieldname': u'type',
+		'oldfieldtype': u'Select',
+		'options': u'\nClient\nChannel Partner\nConsultant',
 		'permlevel': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'request_type',
 		'fieldtype': 'Select',
@@ -313,11 +470,21 @@
 		'oldfieldname': 'request_type',
 		'oldfieldtype': 'Select',
 		'options': '\nProduct Enquiry\nRequest for Information\nSuggestions\nOther',
+=======
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'remark',
+		'fieldtype': u'Small Text',
+		'label': u'Remark',
+		'oldfieldname': u'remark',
+		'oldfieldtype': u'Text',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'colour': 'White:FFF',
 		'description': 'Probability of lead converting to customer',
 		'doctype': 'DocField',
@@ -342,12 +509,19 @@
 		'label': 'Remark',
 		'oldfieldname': 'remark',
 		'oldfieldtype': 'Text',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'communication_history',
+		'fieldtype': u'Section Break',
+		'label': u'Communication History',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
+<<<<<<< HEAD
 		'depends_on': "eval:doc.status == 'Lead Lost'",
 		'doctype': 'DocField',
 		'fieldname': 'order_lost_reason',
@@ -357,11 +531,21 @@
 		'oldfieldname': 'order_lost_reason',
 		'oldfieldtype': 'Link',
 		'options': 'Order Lost Reason',
+=======
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'communication_html',
+		'fieldtype': u'HTML',
+		'label': u'Communication HTML',
+		'oldfieldname': u'follow_up',
+		'oldfieldtype': u'Table',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'trash_reason',
 		'fieldtype': 'Small Text',
@@ -379,11 +563,19 @@
 		'fieldtype': 'Section Break',
 		'label': 'Contact Info',
 		'oldfieldtype': 'Column Break',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'contact_info',
+		'fieldtype': u'Section Break',
+		'label': u'Contact Info',
+		'oldfieldtype': u'Column Break',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'colour': 'White:FFF',
 		'doctype': 'DocField',
 		'fieldname': 'phone',
@@ -391,57 +583,103 @@
 		'label': 'Phone',
 		'oldfieldname': 'contact_no',
 		'oldfieldtype': 'Data',
-		'permlevel': 0,
-		'reqd': 1
-	},
-
-	# DocField
-	{
-		'doctype': 'DocField',
-		'fieldname': 'mobile_no',
-		'fieldtype': 'Data',
-		'label': 'Mobile No.',
-		'oldfieldname': 'mobile_no',
-		'oldfieldtype': 'Data',
-		'permlevel': 0
-	},
-
-	# DocField
-	{
-		'doctype': 'DocField',
-		'fieldname': 'email_id',
-		'fieldtype': 'Data',
-		'label': 'Email Id',
-		'oldfieldname': 'email_id',
-		'oldfieldtype': 'Data',
+=======
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'phone',
+		'fieldtype': u'Data',
+		'label': u'Phone',
+		'oldfieldname': u'contact_no',
+		'oldfieldtype': u'Data',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
 		'reqd': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
+		'doctype': 'DocField',
+		'fieldname': 'mobile_no',
+		'fieldtype': 'Data',
+		'label': 'Mobile No.',
+		'oldfieldname': 'mobile_no',
+		'oldfieldtype': 'Data',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'mobile_no',
+		'fieldtype': u'Data',
+		'label': u'Mobile No.',
+		'oldfieldname': u'mobile_no',
+		'oldfieldtype': u'Data',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
+		'permlevel': 0
+	},
+
+	# DocField
+	{
+<<<<<<< HEAD
+		'doctype': 'DocField',
+		'fieldname': 'email_id',
+		'fieldtype': 'Data',
+		'label': 'Email Id',
+		'oldfieldname': 'email_id',
+		'oldfieldtype': 'Data',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'email_id',
+		'fieldtype': u'Data',
+		'label': u'Email Id',
+		'oldfieldname': u'email_id',
+		'oldfieldtype': u'Data',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
+		'permlevel': 0,
+		'reqd': 0
+	},
+
+	# DocField
+	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'fax',
 		'fieldtype': 'Data',
 		'label': 'Fax',
 		'oldfieldname': 'fax',
 		'oldfieldtype': 'Data',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'fax',
+		'fieldtype': u'Data',
+		'label': u'Fax',
+		'oldfieldname': u'fax',
+		'oldfieldtype': u'Data',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'website',
 		'fieldtype': 'Data',
 		'label': 'Website',
 		'oldfieldname': 'website',
 		'oldfieldtype': 'Data',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'website',
+		'fieldtype': u'Data',
+		'label': u'Website',
+		'oldfieldname': u'website',
+		'oldfieldtype': u'Data',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'colour': 'White:FFF',
 		'description': '<a href="javascript:cur_frm.cscript.TerritoryHelp();">To manage Territory, click here</a>',
 		'doctype': 'DocField',
@@ -451,25 +689,51 @@
 		'oldfieldname': 'territory',
 		'oldfieldtype': 'Link',
 		'options': 'Territory',
+=======
+		'colour': u'White:FFF',
+		'description': u'<a href="javascript:cur_frm.cscript.TerritoryHelp();">To manage Territory, click here</a>',
+		'doctype': u'DocField',
+		'fieldname': u'territory',
+		'fieldtype': u'Link',
+		'label': u'Territory',
+		'oldfieldname': u'territory',
+		'oldfieldtype': u'Link',
+		'options': u'Territory',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
 		'print_hide': 1
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldtype': 'Column Break',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'column_break2',
+		'fieldtype': u'Column Break',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'address_line1',
 		'fieldtype': 'Data',
 		'label': 'Address Line 1',
 		'oldfieldname': 'address_line1',
 		'oldfieldtype': 'Data',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'address_line1',
+		'fieldtype': u'Data',
+		'label': u'Address Line 1',
+		'oldfieldname': u'address_line1',
+		'oldfieldtype': u'Data',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
 		'print_hide': 1,
 		'reqd': 0
@@ -477,31 +741,50 @@
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'address_line2',
 		'fieldtype': 'Data',
 		'label': 'Address Line 2',
 		'oldfieldname': 'address_line2',
 		'oldfieldtype': 'Data',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'address_line2',
+		'fieldtype': u'Data',
+		'label': u'Address Line 2',
+		'oldfieldname': u'address_line2',
+		'oldfieldtype': u'Data',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
 		'print_hide': 1
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'city',
 		'fieldtype': 'Data',
 		'label': 'City',
 		'oldfieldname': 'city',
 		'oldfieldtype': 'Select',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'city',
+		'fieldtype': u'Data',
+		'label': u'City',
+		'oldfieldname': u'city',
+		'oldfieldtype': u'Select',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
 		'print_hide': 1,
-		'reqd': 1
+		'reqd': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'country',
 		'fieldtype': 'Select',
@@ -509,14 +792,24 @@
 		'oldfieldname': 'country',
 		'oldfieldtype': 'Select',
 		'options': 'link:Country',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'country',
+		'fieldtype': u'Select',
+		'label': u'Country',
+		'oldfieldname': u'country',
+		'oldfieldtype': u'Select',
+		'options': u'link:Country',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
 		'print_hide': 1,
-		'reqd': 1,
-		'trigger': 'Client'
+		'reqd': 0,
+		'trigger': u'Client'
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'colour': 'White:FFF',
 		'doctype': 'DocField',
 		'fieldname': 'state',
@@ -525,34 +818,63 @@
 		'oldfieldname': 'state',
 		'oldfieldtype': 'Select',
 		'options': 'Suggest',
+=======
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'state',
+		'fieldtype': u'Data',
+		'label': u'State',
+		'oldfieldname': u'state',
+		'oldfieldtype': u'Select',
+		'options': u'Suggest',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
 		'print_hide': 1
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'pincode',
 		'fieldtype': 'Data',
 		'label': 'Pin Code',
 		'oldfieldname': 'pincode',
 		'oldfieldtype': 'Data',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'pincode',
+		'fieldtype': u'Data',
+		'label': u'Pin Code',
+		'oldfieldname': u'pincode',
+		'oldfieldtype': u'Data',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
 		'print_hide': 1
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'colour': 'White:FFF',
 		'doctype': 'DocField',
 		'fieldtype': 'Section Break',
 		'label': 'More Info',
 		'oldfieldtype': 'Section Break',
+=======
+		'colour': u'White:FFF',
+		'doctype': u'DocField',
+		'fieldname': u'more_info',
+		'fieldtype': u'Section Break',
+		'label': u'More Info',
+		'oldfieldtype': u'Section Break',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'company',
 		'fieldtype': 'Link',
@@ -560,36 +882,56 @@
 		'oldfieldname': 'company',
 		'oldfieldtype': 'Link',
 		'options': 'Company',
+=======
+		'colour': u'White:FFF',
+		'description': u'Probability of lead converting to customer',
+		'doctype': u'DocField',
+		'fieldname': u'rating',
+		'fieldtype': u'Select',
+		'in_filter': 1,
+		'label': u'Rating',
+		'oldfieldname': u'rating',
+		'oldfieldtype': u'Select',
+		'options': u'\nHot\nWarm\nCold',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
-		'reqd': 1
+		'reqd': 0,
+		'search_index': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'default': '__user',
 		'doctype': 'DocField',
 		'fieldname': 'lead_owner',
 		'fieldtype': 'Link',
+=======
+		'default': u'__user',
+		'doctype': u'DocField',
+		'fieldname': u'lead_owner',
+		'fieldtype': u'Link',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 1,
-		'label': 'Lead Owner',
-		'oldfieldname': 'lead_owner',
-		'oldfieldtype': 'Link',
-		'options': 'Profile',
+		'label': u'Lead Owner',
+		'oldfieldname': u'lead_owner',
+		'oldfieldtype': u'Link',
+		'options': u'Profile',
 		'permlevel': 0,
 		'search_index': 1
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldname': 'market_segment',
-		'fieldtype': 'Select',
+		'doctype': u'DocField',
+		'fieldname': u'market_segment',
+		'fieldtype': u'Select',
 		'hidden': 0,
 		'in_filter': 1,
-		'label': 'Market Segment',
-		'oldfieldname': 'market_segment',
-		'oldfieldtype': 'Select',
-		'options': '\nLower Income\nMiddle Income\nUpper Income',
+		'label': u'Market Segment',
+		'oldfieldname': u'market_segment',
+		'oldfieldtype': u'Select',
+		'options': u'\nLower Income\nMiddle Income\nUpper Income',
 		'permlevel': 0,
 		'reqd': 0,
 		'search_index': 1
@@ -597,6 +939,7 @@
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldname': 'industry',
 		'fieldtype': 'Link',
@@ -604,11 +947,21 @@
 		'oldfieldname': 'industry',
 		'oldfieldtype': 'Link',
 		'options': 'Industry Type',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'industry',
+		'fieldtype': u'Link',
+		'label': u'Industry',
+		'oldfieldname': u'industry',
+		'oldfieldtype': u'Link',
+		'options': u'Industry Type',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'colour': 'White:FFF',
 		'description': 'Your products or facilities in which the lead is interested',
 		'doctype': 'DocField',
@@ -617,72 +970,112 @@
 		'label': 'Interested In',
 		'oldfieldname': 'interested_in',
 		'oldfieldtype': 'Data',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'request_type',
+		'fieldtype': u'Select',
+		'label': u'Request Type',
+		'oldfieldname': u'request_type',
+		'oldfieldtype': u'Select',
+		'options': u'\nProduct Enquiry\nRequest for Information\nSuggestions\nOther',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0
 	},
 
 	# DocField
 	{
-		'doctype': 'DocField',
-		'fieldname': 'fiscal_year',
-		'fieldtype': 'Select',
+		'doctype': u'DocField',
+		'fieldname': u'fiscal_year',
+		'fieldtype': u'Select',
 		'hidden': 1,
 		'in_filter': 1,
-		'label': 'Fiscal Year',
-		'oldfieldname': 'fiscal_year',
-		'oldfieldtype': 'Select',
-		'options': 'link:Fiscal Year',
+		'label': u'Fiscal Year',
+		'oldfieldname': u'fiscal_year',
+		'oldfieldtype': u'Select',
+		'options': u'link:Fiscal Year',
 		'permlevel': 0
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'doctype': 'DocField',
 		'fieldtype': 'Column Break',
 		'oldfieldtype': 'Column Break',
+=======
+		'doctype': u'DocField',
+		'fieldname': u'column_break3',
+		'fieldtype': u'Column Break',
+		'oldfieldtype': u'Column Break',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'permlevel': 0,
-		'width': '50%'
+		'width': u'50%'
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
-		'colour': 'White:FFF',
-		'description': 'Your sales person who will contact the lead in future',
-		'doctype': 'DocField',
-		'fieldname': 'contact_by',
-		'fieldtype': 'Link',
+		'depends_on': u"eval:doc.status == 'Lead Lost'",
+		'doctype': u'DocField',
+		'fieldname': u'order_lost_reason',
+		'fieldtype': u'Link',
+		'hidden': 0,
+		'label': u'Lost Reason',
+		'oldfieldname': u'order_lost_reason',
+		'oldfieldtype': u'Link',
+		'options': u'Quotation Lost Reason',
+		'permlevel': 0
+	},
+
+	# DocField
+	{
+		'allow_on_submit': 0,
+		'colour': u'White:FFF',
+		'description': u'Your sales person who will contact the lead in future',
+		'doctype': u'DocField',
+		'fieldname': u'contact_by',
+		'fieldtype': u'Link',
 		'hidden': 0,
 		'in_filter': 1,
-		'label': 'Next Contact By',
-		'oldfieldname': 'contact_by',
-		'oldfieldtype': 'Link',
-		'options': 'Profile',
+		'label': u'Next Contact By',
+		'oldfieldname': u'contact_by',
+		'oldfieldtype': u'Link',
+		'options': u'Profile',
 		'permlevel': 0,
 		'print_hide': 0,
 		'reqd': 0,
-		'width': '100px'
+		'width': u'100px'
 	},
 
 	# DocField
 	{
 		'allow_on_submit': 0,
+<<<<<<< HEAD
 		'colour': 'White:FFF',
 		'description': 'Your sales person will get a reminder on this date to contact the lead',
 		'doctype': 'DocField',
 		'fieldname': 'contact_date',
 		'fieldtype': 'Date',
+=======
+		'colour': u'White:FFF',
+		'description': u'Your sales person will get a reminder on this date to contact the lead',
+		'doctype': u'DocField',
+		'fieldname': u'contact_date',
+		'fieldtype': u'Date',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'in_filter': 1,
-		'label': 'Next Contact Date',
+		'label': u'Next Contact Date',
 		'no_copy': 1,
-		'oldfieldname': 'contact_date',
-		'oldfieldtype': 'Date',
+		'oldfieldname': u'contact_date',
+		'oldfieldtype': u'Date',
 		'permlevel': 0,
 		'reqd': 0,
-		'width': '100px'
+		'width': u'100px'
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'colour': 'White:FFF',
 		'depends_on': 'eval:!doc.__islocal',
 		'description': 'Date on which the lead was last contacted',
@@ -690,15 +1083,25 @@
 		'fieldname': 'last_contact_date',
 		'fieldtype': 'Date',
 		'label': 'Last Contact Date',
+=======
+		'colour': u'White:FFF',
+		'depends_on': u'eval:!doc.__islocal',
+		'description': u'Date on which the lead was last contacted',
+		'doctype': u'DocField',
+		'fieldname': u'last_contact_date',
+		'fieldtype': u'Date',
+		'label': u'Last Contact Date',
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 		'no_copy': 1,
-		'oldfieldname': 'last_contact_date',
-		'oldfieldtype': 'Date',
+		'oldfieldname': u'last_contact_date',
+		'oldfieldtype': u'Date',
 		'permlevel': 1,
 		'print_hide': 1
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'allow_on_submit': 0,
 		'doctype': 'DocField',
 		'fieldname': 'to_discuss',
@@ -719,10 +1122,22 @@
 		'label': 'Communication History',
 		'oldfieldtype': 'Section Break',
 		'permlevel': 0
+=======
+		'doctype': u'DocField',
+		'fieldname': u'company',
+		'fieldtype': u'Link',
+		'label': u'Company',
+		'oldfieldname': u'company',
+		'oldfieldtype': u'Link',
+		'options': u'Company',
+		'permlevel': 0,
+		'reqd': 1
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 	},
 
 	# DocField
 	{
+<<<<<<< HEAD
 		'allow_on_submit': 0,
 		'doctype': 'DocField',
 		'fieldname': 'follow_up',
@@ -732,5 +1147,16 @@
 		'oldfieldtype': 'Table',
 		'options': 'Follow up',
 		'permlevel': 0
+=======
+		'doctype': u'DocField',
+		'fieldname': u'trash_reason',
+		'fieldtype': u'Small Text',
+		'label': u'Trash Reason',
+		'no_copy': 1,
+		'oldfieldname': u'trash_reason',
+		'oldfieldtype': u'Small Text',
+		'permlevel': 1,
+		'print_hide': 1
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
 	}
 ]

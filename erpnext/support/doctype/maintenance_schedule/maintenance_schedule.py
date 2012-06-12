@@ -1,9 +1,25 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
@@ -28,7 +44,7 @@ class DocType(TransactionBase):
   def pull_sales_order_detail(self):
     self.doc.clear_table(self.doclist, 'item_maintenance_detail')
     self.doc.clear_table(self.doclist, 'maintenance_schedule_detail')
-    self.doclist = get_obj('DocType Mapper', 'Sales Order-Maintenance Schedule').dt_map('Sales Order', 'Maintenance Schedule', self.doc.sales_order_no, self.doc, self.doclist, "[['Sales Order', 'Maintenance Schedule'],['Sales Order Detail', 'Item Maintenance Detail']]")
+    self.doclist = get_obj('DocType Mapper', 'Sales Order-Maintenance Schedule').dt_map('Sales Order', 'Maintenance Schedule', self.doc.sales_order_no, self.doc, self.doclist, "[['Sales Order', 'Maintenance Schedule'],['Sales Order Item', 'Maintenance Schedule Item']]")
   
   #pull item details 
   #-------------------
@@ -64,6 +80,12 @@ class DocType(TransactionBase):
         child.save(1)
         
     self.on_update()
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
   def on_submit(self):
     if not getlist(self.doclist, 'maintenance_schedule_detail'):
       msgprint("Please click on 'Generate Schedule' to get schedule")
@@ -71,16 +93,32 @@ class DocType(TransactionBase):
     self.check_serial_no_added()
     self.validate_serial_no_warranty()
     self.validate_schedule()
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
     email_map ={}
     for d in getlist(self.doclist, 'item_maintenance_detail'):
       if d.serial_no:
         self.update_amc_date(d.serial_no, d.end_date)
+<<<<<<< HEAD
       if not d.incharge_name in email_map:
       	e = sql("select email_id, name from `tabSales Person` where name='%s' " %(d.incharge_name),as_dict=1)[0]
         email_map[d.incharge_name] = (e['email_id'])
       scheduled_date =sql("select scheduled_date from `tabMaintenance Schedule Detail` \
         where owner='%s' and item_code='%s' and parent='%s' " %(email_map[d.incharge_name], \
         d.item_code,self.doc.name), as_dict=1)
+=======
+
+      if d.incharge_name not in email_map:
+      	e = sql("select email_id, name from `tabSales Person` where name='%s' " %(d.incharge_name),as_dict=1)[0]
+        email_map[d.incharge_name] = (e['email_id'])
+
+      scheduled_date =sql("select scheduled_date from `tabMaintenance Schedule Detail` \
+        where incharge_name='%s' and item_code='%s' and parent='%s' " %(d.incharge_name, \
+        d.item_code, self.doc.name), as_dict=1)
+
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
       for key in scheduled_date:
         if email_map[d.incharge_name]:
           self.add_calender_event(key["scheduled_date"],email_map[d.incharge_name],d.item_code)     
@@ -91,13 +129,22 @@ class DocType(TransactionBase):
     """ Add calendar event for Maintenece Schedule in calendar of Allocated person"""
     event = Document('Event')
     event.owner = incharge_email
+<<<<<<< HEAD
     event.description = "Item Code:%s and Reference:%s" %(item_code,self.doc.name)
+=======
+    event.description = "Reference:%s, Item Code:%s and Customer: %s" %(self.doc.name, item_code, self.doc.customer)
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
     event.event_date = scheduled_date
     event.event_hour =  '10:00'
     event.event_type = 'Private'
     event.ref_type = 'Maintenance Schedule'
     event.ref_name = self.doc.name
     event.save(1)
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192
   #get schedule dates
   #----------------------
   def create_schedule_list(self, start_date, end_date, no_of_visit):
@@ -132,6 +179,8 @@ class DocType(TransactionBase):
       msgprint("Weekly periodicity can be set for period of atleast 1 week or more")
       raise Exception
   
+
+
   #get count on the basis of periodicity selected
   #----------------------------------------------------
   def get_no_of_visits(self, arg):
@@ -156,6 +205,8 @@ class DocType(TransactionBase):
     ret = {'no_of_visits':count}
     return ret
   
+
+
   def validate_maintenance_detail(self):
     if not getlist(self.doclist, 'item_maintenance_detail'):
       msgprint("Please enter Maintaince Details first")
@@ -184,7 +235,7 @@ class DocType(TransactionBase):
   def validate_sales_order(self):
     for d in getlist(self.doclist, 'item_maintenance_detail'):
       if d.prevdoc_docname:
-        chk = sql("select t1.name from `tabMaintenance Schedule` t1, `tabItem Maintenance Detail` t2 where t2.parent=t1.name and t2.prevdoc_docname=%s and t1.docstatus=1", d.prevdoc_docname)
+        chk = sql("select t1.name from `tabMaintenance Schedule` t1, `tabMaintenance Schedule Item` t2 where t2.parent=t1.name and t2.prevdoc_docname=%s and t1.docstatus=1", d.prevdoc_docname)
         if chk:
           msgprint("Maintenance Schedule against "+d.prevdoc_docname+" already exist")
           raise Exception
@@ -315,3 +366,7 @@ class DocType(TransactionBase):
   def on_trash(self):
     sql("delete from `tabEvent` where ref_type='Maintenance Schedule' and ref_name='%s' " %(self.doc.name))
     
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4f4f58293f57a5b44107eef43b357874684cb192

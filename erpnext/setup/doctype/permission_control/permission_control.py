@@ -1,9 +1,25 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
@@ -41,22 +57,33 @@ class DocType:
 	# Get Perm Level, Perm type of Doctypes of Module and Role Selected
 	# -------------------------------------------------------------------
 	def get_permissions(self,doctype):
-		ret = []
-			
-		# Get permtype for the role selected
-		ptype = sql("select `role`,`permlevel`,`read`,`write`,`create`,`submit`,`cancel`,`amend` from tabDocPerm where `parent` = %s order by `permlevel` ASC",doctype,as_dict = 1)
+		import webnotes.model.doctype
+		doclist = webnotes.model.doctype.get(doctype, form=0)
+		
+		ptype = [{
+				'role': perm.role,
+				'permlevel': cint(perm.permlevel),
+				'read': cint(perm.read),
+				'write': cint(perm.write),
+				'create': cint(perm.create),
+				'cancel': cint(perm.cancel),
+				'submit': cint(perm.submit),
+				'amend': cint(perm.amend),
+				'match': perm.match
+				} for perm in sorted(doclist,
+					key=lambda d: [d.fields.get('permlevel'),
+						d.fields.get('role')]) if perm.doctype=='DocPerm']
 
-		# to convert 0L in 0 in values of dictionary
-		for p in ptype:
-			for key in p:
-				if key!='role':
-					p[key] = cint(p[key])
-			ret.append(p)
-						
-		# fields list
-		fl = ['', 'owner'] + [l[0] for l in sql("select fieldname from tabDocField where parent=%s and fieldtype='Link' and ifnull(options,'')!=''", doctype)]
-						
-		return {'perms':ret, 'fields':fl}
+		fl = ['', 'owner'] + [d.fieldname for d in doclist \
+				if d.doctype=='DocField' and ((d.fieldtype=='Link' \
+				and cstr(d.options)!='') or (d.fieldtype=='Select' and
+					'link:' in cstr(d.options).lower()))]
+
+		return {
+			'perms':ptype,
+			'fields':fl,
+			'is_submittable': doclist[0].fields.get('is_submittable')
+		}
 		
 	# get default values
 	# ------------------
@@ -129,7 +156,7 @@ class DocType:
 	def update_permissions(self,args=''):
 		args = eval(args)
 		di = args['perm_dict']
-		doctype_keys = di.keys()	# ['Enquiry','Competitor','Zone','State']
+		doctype_keys = di.keys()	# ['Opportunity','Competitor','Zone','State']
 		for parent in doctype_keys:
 			for permlevel in di[parent].keys():
 				for role in di[parent][permlevel].keys(): 
@@ -164,6 +191,11 @@ class DocType:
 							sql("delete from tabDocPerm where parent = %s and role = %s and ifnull(permlevel,0) = %s",(parent, role, cint(permlevel)))
 						
 						sql("update tabDocType set modified = %s where name = %s",(now(), parent))
+
+
+		from webnotes.utils.cache import CacheItem
+		CacheItem(parent).clear()		
+
 		msgprint("Permissions Updated")
 				
 	# Get Fields based on DocType and Permlevel

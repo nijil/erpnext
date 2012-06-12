@@ -1,8 +1,24 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes import session, msgprint, errprint
 
 sql = webnotes.conn.sql
@@ -22,7 +38,6 @@ class DocType:
 # ------------------------------------- Home page module details -----------------------------------------
 	
 	def delete_cache(self):
-		sql("delete from __DocTypeCache")
 		com = sql("select abbr, name from tabCompany")
 		for d in com:
 			sql("update `tabCompany` set receivables_group = '%s' where (receivables_group = '%s' or receivables_group = '' or receivables_group is null) and name = '%s'" % ('Accounts Receivable - '+cstr(d[0]), 'Accounts Receivables - '+cstr(d[0]), d[1]))
@@ -125,8 +140,8 @@ class DocType:
 	# get dashboard counts
 	# --------------------
 	def get_wip_counts(self):
-		#dtl = ['Lead', 'Enquiries', 'Sales Order', 'Invoices', 'Indent', 'Purchase Order', 'Bills', 'Tasks', 'Delivery Note', 'Maintenance']
-		can_read_dt = ['Lead', 'Enquiry', 'Sales Order', 'Receivable Voucher', 'Indent', 'Purchase Order', 'Payable Voucher', 'Delivery Note', 'Task', 'Serial No']
+		#dtl = ['Lead', 'Enquiries', 'Sales Order', 'Invoices', 'Purchase Request', 'Purchase Order', 'Bills', 'Tasks', 'Delivery Note', 'Maintenance']
+		can_read_dt = ['Lead', 'Opportunity', 'Sales Order', 'Sales Invoice', 'Purchase Request', 'Purchase Order', 'Purchase Invoice', 'Delivery Note', 'Task', 'Serial No']
 		dt = {}
 		for d in can_read_dt:
 			args = {}
@@ -135,10 +150,10 @@ class DocType:
 			if d=='Lead':
 				args = {'To follow up':sql("select count(name) from tabLead where status!='Converted' and status!='Lead Lost' and status!='Not Interested'")}
 
-			# if Enquiry
-			elif d=='Enquiry':
-				args['Quotations to be sent'] = sql("select count(distinct(t2.name)) from `tabQuotation`t1, `tabEnquiry`t2 where t1.enq_no!=t2.name and t2.docstatus=1")
-				args['To follow up'] = sql("select count(distinct(t2.name)) from `tabQuotation`t1, `tabEnquiry`t2 where t1.enq_no=t2.name and t2.docstatus=1 and t1.docstatus=1")
+			# if Opportunity
+			elif d=='Opportunity':
+				args['Quotations to be sent'] = sql("select count(distinct(t2.name)) from `tabQuotation`t1, `tabOpportunity`t2 where t1.enq_no!=t2.name and t2.docstatus=1")
+				args['To follow up'] = sql("select count(distinct(t2.name)) from `tabQuotation`t1, `tabOpportunity`t2 where t1.enq_no=t2.name and t2.docstatus=1 and t1.docstatus=1")
 
 			# if Sales Order
 			elif d=='Sales Order':
@@ -147,16 +162,16 @@ class DocType:
 				args['Overdue'] = sql("select count(name) from `tabSales Order` where ifnull(per_delivered,0)<100 and delivery_date<now() and docstatus=1")
 				args['To be submitted'] = sql("select count(name) from `tabSales Order` where docstatus=0 and status='Draft'")      #Draft
 
-			# if Receivable Voucher
-			elif d=='Receivable Voucher':
-				args['To receive payment'] = sql("select count(name) from `tabReceivable Voucher` where docstatus=1 and due_date>now() and outstanding_amount!=0")
-				args['Overdue'] = sql("select count(name) from `tabReceivable Voucher` where docstatus=1 and due_date<now() and outstanding_amount!=0")  
-				args['To be submitted'] = sql("select count(name) from `tabReceivable Voucher` where docstatus=0")       #Draft
+			# if Sales Invoice
+			elif d=='Sales Invoice':
+				args['To receive payment'] = sql("select count(name) from `tabSales Invoice` where docstatus=1 and due_date>now() and outstanding_amount!=0")
+				args['Overdue'] = sql("select count(name) from `tabSales Invoice` where docstatus=1 and due_date<now() and outstanding_amount!=0")  
+				args['To be submitted'] = sql("select count(name) from `tabSales Invoice` where docstatus=0")       #Draft
 
-			# if Indent 
-			elif d=='Indent':
-				args['Purchase Order to be made'] = sql("select count(name) from `tabIndent` where ifnull(per_ordered,0)<100 and docstatus=1")
-				args['To be submitted'] = sql("select count(name) from `tabIndent` where status='Draft'")      #Draft
+			# if Purchase Request 
+			elif d=='Purchase Request':
+				args['Purchase Order to be made'] = sql("select count(name) from `tabPurchase Request` where ifnull(per_ordered,0)<100 and docstatus=1")
+				args['To be submitted'] = sql("select count(name) from `tabPurchase Request` where status='Draft'")      #Draft
 
 			# if Purchase Order    
 			elif d=='Purchase Order':
@@ -164,10 +179,10 @@ class DocType:
 				args['To be billed'] = sql("select count(name) from `tabPurchase Order` where ifnull(per_billed,0)<100 and docstatus=1")
 				args['To be submitted'] = sql("select count(name) from `tabPurchase Order` where status='Draft'")        #Draft
 
-			# if Payable Voucher
-			elif d=='Payable Voucher':
-				args['To be paid'] = sql("select count(name) from `tabPayable Voucher` where docstatus=1 and outstanding_amount!=0")
-				args['To be submitted'] = sql("select count(name) from `tabPayable Voucher` where docstatus=0")       #Draft
+			# if Purchase Invoice
+			elif d=='Purchase Invoice':
+				args['To be paid'] = sql("select count(name) from `tabPurchase Invoice` where docstatus=1 and outstanding_amount!=0")
+				args['To be submitted'] = sql("select count(name) from `tabPurchase Invoice` where docstatus=0")       #Draft
 
 			# if Delivery Note
 			elif d=='Delivery Note':
@@ -176,7 +191,7 @@ class DocType:
 			
 			# if Tasks
 			elif d=='Task':
-				args = {'Open': sql("select count(name) from `tabTicket` where status='Open'")}
+				args = {'Open': sql("select count(name) from `tabTask` where status='Open'")}
 
 			# if Serial No
 			elif d=='Serial No':
@@ -192,17 +207,21 @@ class DocType:
 	# -------------------------------------------------------------------------------------------------------
 	
 	def get_todo_count(self):
-		count = sql("select count(distinct name) from `tabToDo Item` where owner=%s", session['user'])
+		count = sql("select count(distinct name) from `tabToDo` where owner=%s", session['user'])
 		count = count and count[0][0] or 0
 		return count
 		
 	def get_todo_list(self):
-		return convert_to_lists(sql("select name, description, date, priority,checked from `tabToDo Item` where owner=%s order by field(priority,'High','Medium','Low') asc, date asc", session['user']))
+		res = sql("""select name, description, `date`, 
+			priority, checked, reference_type, reference_name from `tabToDo` 
+			where owner=%s order by field(priority,'High','Medium','Low') asc, date asc""", \
+				session['user'], as_dict=1)
+		return res
 		
 	def add_todo_item(self,args):
 		args = json.loads(args)
 
-		d = Document('ToDo Item', args.get('name') or None)
+		d = Document('ToDo', args.get('name') or None)
 		d.description = args['description']
 		d.date = args['date']
 		d.priority = args['priority']
@@ -210,10 +229,26 @@ class DocType:
 		d.owner = session['user']
 		d.save(not args.get('name') and 1 or 0)
 
+		if args.get('name') and d.checked:
+			self.notify_assignment(d)
+	
 		return d.name
 
 	def remove_todo_item(self,nm):
-		sql("delete from `tabToDo Item` where name = %s",nm)
+		d = Document('ToDo', nm or None)
+		if d and d.name:
+			self.notify_assignment(d)
+		sql("delete from `tabToDo` where name = %s",nm)
+
+	def notify_assignment(self, d):
+		doc_type = d.fields.get('reference_type')
+		doc_name = d.fields.get('reference_name')
+		assigned_by = d.fields.get('assigned_by')
+		if doc_type and doc_name and assigned_by:
+			from webnotes.widgets.form import assign_to
+			assign_to.notify_assignment(assigned_by, d.owner, doc_type, doc_name)
+
+
 
 	# -------------------------------------------------------------------------------------------------------
 
@@ -224,7 +259,7 @@ class DocType:
 	# -------------------------------------------------------------------------------------------------------
 
 	def get_todo_reminder(self):
-		return convert_to_lists(sql("select name, description, date, priority,checked from `tabToDo Item` where owner=%s and date=%s and checked=1 order by priority, date", (session['user'], nowdate())))
+		return convert_to_lists(sql("select name, description, date, priority,checked from `tabToDo` where owner=%s and date=%s and checked=1 order by priority, date", (session['user'], nowdate())))
 		
 	# get user details
 	def get_users(self):

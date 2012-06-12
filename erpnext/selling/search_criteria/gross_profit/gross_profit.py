@@ -1,3 +1,19 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Add Columns
 # ------------
 colnames[colnames.index('Rate*')] = 'Rate' 
@@ -23,7 +39,7 @@ out, tot_amount, tot_val_amount, tot_gross_profit = [], 0, 0, 0
 
 for r in res:
   tot_val_rate = 0
-  packing_list_items = sql("select item_code, warehouse, qty from `tabDelivery Note Packing Detail` where parent = %s and parent_item = %s", (r[col_idx['ID']], r[col_idx['Item Code']]))
+  packing_list_items = sql("select item_code, warehouse, qty from `tabDelivery Note Packing Item` where parent = %s and parent_item = %s", (r[col_idx['ID']], r[col_idx['Item Code']]))
   for d in packing_list_items:
     if d[1]:
       val_rate = sql("select valuation_rate from `tabStock Ledger Entry` where item_code = %s and warehouse = %s and voucher_type = 'Delivery Note' and voucher_no = %s and is_cancelled = 'No'", (d[0], d[1], r[col_idx['ID']]))

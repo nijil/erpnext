@@ -1,3 +1,19 @@
+// ERPNext - web based ERP (http://erpnext.com)
+// Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 function SMSManager() {
 	var me = this;
 	this.get_contact_number = function(contact, key, value) {
@@ -61,33 +77,33 @@ function SMSManager() {
 	}
 }
 
-cur_frm.cscript['Send SMS'] = function(doc,dt,dn) {
+cur_frm.cscript.send_sms = function(doc,dt,dn) {
 	var doc = cur_frm.doc;
 	var sms_man = new SMSManager();
 	var default_msg = {
 		'Lead'				: '',
-		'Enquiry'			: 'Your enquiry has been logged into the system. Ref No: ' + doc.name,
+		'Opportunity'			: 'Your enquiry has been logged into the system. Ref No: ' + doc.name,
 		'Quotation'			: 'Quotation ' + doc.name + ' has been sent via email. Thanks!',
 		'Sales Order'		: 'Sales Order ' + doc.name + ' has been created against ' 
 					+ (doc.quotation_no ? ('Quote No:' + doc.quotation_no) : '')
 					+ (doc.po_no ? (' for your PO: ' + doc.po_no) : ''),
 		'Delivery Note'		: 'Items has been delivered against delivery note: ' + doc.name
 					+ (doc.po_no ? (' for your PO: ' + doc.po_no) : ''),		
-		'Receivable Voucher': 'Invoice ' + doc.name + ' has been sent via email '
+		'Sales Invoice': 'Invoice ' + doc.name + ' has been sent via email '
 					+ (doc.po_no ? (' for your PO: ' + doc.po_no) : ''),
-		'Indent'			: 'Indent ' + doc.name + ' has been raised in the system',
+		'Purchase Request'			: 'Purchase Request ' + doc.name + ' has been raised in the system',
 		'Purchase Order'	: 'Purchase Order ' + doc.name + ' has been sent via email',
 		'Purchase Receipt'	: 'Items has been received against purchase receipt: ' + doc.name
 	}
 
-	if (in_list(['Quotation', 'Sales Order', 'Delivery Note', 'Receivable Voucher'], doc.doctype))
+	if (in_list(['Quotation', 'Sales Order', 'Delivery Note', 'Sales Invoice'], doc.doctype))
 		sms_man.show(doc.contact_person, 'customer', doc.customer, '', default_msg[doc.doctype]);
 	else if (in_list(['Purchase Order', 'Purchase Receipt'], doc.doctype))
 		sms_man.show(doc.contact_person, 'supplier', doc.supplier, '', default_msg[doc.doctype]);
 	else if (doc.doctype == 'Lead')
 		sms_man.show('', '', '', doc.mobile_no, default_msg[doc.doctype]);
-	else if (doc.doctype == 'Enquiry')
+	else if (doc.doctype == 'Opportunity')
 		sms_man.show('', '', '', doc.contact_no, default_msg[doc.doctype]);
-	else if (doc.doctype == 'Indent')
+	else if (doc.doctype == 'Purchase Request')
 		sms_man.show('', '', '', '', default_msg[doc.doctype]);
 }

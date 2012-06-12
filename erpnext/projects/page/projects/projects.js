@@ -1,3 +1,19 @@
+// ERPNext - web based ERP (http://erpnext.com)
+// Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 pscript.queries_bg_dict = {
 	'Urgent':'RED',
 	'High':'ORANGE',
@@ -58,7 +74,7 @@ GanttChart.prototype.make_date = function(label,idx) {
 	var w = this.make_filter(label,idx);
 	var i = $a(w, 'input');
 
-	var user_fmt = locals['Control Panel']['Control Panel'].date_format;
+	var user_fmt = wn.boot.sysdefaults.date_format;
 	if(!this.user_fmt)this.user_fmt = 'dd-mm-yy';
 
 	$(i).datepicker({
@@ -148,6 +164,13 @@ GanttGrid = function(chart, s_date, e_date) {
 	this.make();
 }
 
+GanttGrid.prototype.make = function() {
+	this.body = make_table(this.wrapper, 1, 2, '100%', ['30%','70%']);
+	this.make_grid();
+	this.make_labels();
+	this.y_labels = $a($td(this.body, 0, 0), 'div', '', {marginTop:'2px', position:'relative'});	
+}
+
 GanttGrid.prototype.make_grid = function() {
 	// grid -----------
 	var ht = this.chart.tasks.length * 40 + 'px';
@@ -175,17 +198,12 @@ GanttGrid.prototype.make_labels = function() {
 		if(d.getDate()==today.getDate() && d.getMonth()==today.getMonth() && d.getYear() == today.getYear()) {
 			$y($td(this.grid_tab,0,i),{borderLeft:'2px solid #000'})
 		}
-		var d = date.add_days(this.start_date, 1);
+		var d = date.str_to_obj(date.add_days(this.start_date, 1));
 	}
 	this.start_date = date.str_to_obj(date.user_to_str(this.s_date));
 }
 
-GanttGrid.prototype.make = function() {
-	this.body = make_table(this.wrapper, 1, 2, '100%', ['30%','70%']);
-	this.make_grid();
-	this.make_labels();
-	this.y_labels = $a($td(this.body, 0, 0), 'div', '', {marginTop:'2px', position:'relative'});	
-}
+
 
 GanttGrid.prototype.get_x = function(dt) {
 	var d = date.str_to_obj(dt); // convert to obj
@@ -201,7 +219,7 @@ GanttTask = function(grid, data, idx) {
 
 	// label
 	this.label = $a(grid.y_labels, 'div', '', {'top':(idx*40) + 'px', overflow:'hidden', position:'absolute', 'width':'100%', height: '40px'});
-	var l1 = $a($a(this.label, 'div'), 'span', 'link_type'); l1.innerHTML = data[0]; l1.dn = data[7]; l1.onclick = function() { loaddoc('Ticket', this.dn) };
+	var l1 = $a($a(this.label, 'div'), 'span', 'link_type'); l1.innerHTML = data[0]; l1.dn = data[7]; l1.onclick = function() { loaddoc('Task', this.dn) };
 	var l2 = $a(this.label, 'div', '', {fontSize:'10px'}); l2.innerHTML = data[1];
 
 	// bar
@@ -240,33 +258,18 @@ GanttTask = function(grid, data, idx) {
 }
 
 GanttTask.prototype.make_tooltip = function(d) {
-	var t = '<div>';
-	if(d[0]) t += '<b>Task: </b>' + d[0];
-	if(d[5]) t += '<br><b>Priority: </b>' + d[5];
-	if(d[6]) t += '<br><b>Status: </b>' + d[6];
-	if(d[1]) t += '<br><b>Allocated To: </b>' + d[1];
-	if(d[2]) t += '<br><b>Project: </b>' + d[2];
-	if(d[3]) t += '<br><b>From: </b>' + date.str_to_user(d[3]);
-	if(d[4]) t += '<br><b>To: </b>' + date.str_to_user(d[4]);
-	t += '</div>';
+	$(this.body).click(function() {
+		var t = '<div>';
+		if(d[0]) t += '<b>Task: </b>' + d[0];
+		if(d[5]) t += '<br><b>Priority: </b>' + d[5];
+		if(d[6]) t += '<br><b>Status: </b>' + d[6];
+		if(d[1]) t += '<br><b>Allocated To: </b>' + d[1];
+		if(d[2]) t += '<br><b>Project: </b>' + d[2];
+		if(d[3]) t += '<br><b>From: </b>' + date.str_to_user(d[3]);
+		if(d[4]) t += '<br><b>To: </b>' + date.str_to_user(d[4]);
+		t += '</div>';
 
-	$(this.body).qtip({
-		content:t,
-		position:{
-			corner:{
-				tooltip: 'topMiddle', // Use the corner...
-				target: 'bottomMiddle' // ...and opposite corner
-			}
-		},
-		style:{
-			border: {
-				width: 5,
-				radius: 10
-			},
-			padding: 10, 
-			tip: true, // Give it a speech bubble tip with automatic corner detection
-			name: 'green' // Style it according to the preset 'cream' style
-		}
+		msgprint(t)
 	})
 
 }

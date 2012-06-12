@@ -1,9 +1,25 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
@@ -46,12 +62,12 @@ class DocType:
 				if sql("select name from tabItem where name=%s", line[0]):
 					if self.is_currency_valid(line[2]):
 						# if price exists
-						ref_ret_detail = sql("select name from `tabRef Rate Detail` where parent=%s and price_list_name=%s and ref_currency=%s", \
+						ref_ret_detail = sql("select name from `tabItem Price` where parent=%s and price_list_name=%s and ref_currency=%s", \
 							(line[0], self.doc.name, line[2]))
 						if ref_ret_detail:
-							sql("update `tabRef Rate Detail` set ref_rate=%s where name=%s", (line[1], ref_ret_detail[0][0]))
+							sql("update `tabItem Price` set ref_rate=%s where name=%s", (line[1], ref_ret_detail[0][0]))
 						else:
-							d = Document('Ref Rate Detail')
+							d = Document('Item Price')
 							d.parent = line[0]
 							d.parentfield = 'ref_rate_details'
 							d.parenttype = 'Item'
@@ -71,8 +87,8 @@ class DocType:
 
 	# clear prices
 	def clear_prices(self):
-		cnt = sql("select count(*) from `tabRef Rate Detail` where price_list_name = %s", self.doc.name)
-		sql("delete from `tabRef Rate Detail` where price_list_name = %s", self.doc.name)
+		cnt = sql("select count(*) from `tabItem Price` where price_list_name = %s", self.doc.name)
+		sql("delete from `tabItem Price` where price_list_name = %s", self.doc.name)
 		msgprint("%s prices cleared" % cnt[0][0])
 
 	# Update CSV data
@@ -85,8 +101,9 @@ class DocType:
 		  
 		from webnotes.utils import file_manager
 		fn, content = file_manager.get_file(fid)
-		
-		if not type(content) == str:
+	
+		# NOTE: Don't know why this condition exists
+		if not isinstance(content, basestring) and hasattr(content, 'tostring'):
 		  content = content.tostring()
 
 		return content	

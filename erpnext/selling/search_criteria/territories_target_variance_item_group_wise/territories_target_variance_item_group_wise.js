@@ -1,3 +1,19 @@
+// ERPNext - web based ERP (http://erpnext.com)
+// Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 report.customize_filters = function() {
 
   this.hide_all_filters();
@@ -19,7 +35,7 @@ report.get_query = function() {
   territory = this.filter_fields_dict['Target Detail'+FILTER_SEP+'Territory'].get_value();
   target_on = this.filter_fields_dict['Target Detail'+FILTER_SEP+'Target On'].get_value();   
   under = this.filter_fields_dict['Target Detail'+FILTER_SEP+'Under'].get_value();   
-  if(under == 'Sales Invoice') under = 'Receivable Voucher';
+  if(under == 'Sales Invoice') under = 'Sales Invoice';
 
   if(target_on == 'Quantity'){
     q1 = 't1.target_qty AS "Target Quantity"';
@@ -33,7 +49,7 @@ report.get_query = function() {
     cond1 = 'ifnull(t1.target_amount,"")!=""';
     cond2 = 'ifnull(t5.target_amount,"")!=""';
   }
-  if(under =='Receivable Voucher')
+  if(under =='Sales Invoice')
     tab = 'RV';
   else
     tab = under;

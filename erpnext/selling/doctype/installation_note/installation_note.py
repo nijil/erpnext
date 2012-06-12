@@ -1,9 +1,25 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
@@ -22,7 +38,7 @@ class DocType(TransactionBase):
   def __init__(self, doc, doclist=[]):
     self.doc = doc
     self.doclist = doclist
-    self.tname = 'Installed Item Details'
+    self.tname = 'Installation Note Item'
     self.fname = 'installed_item_details'
 
   # Autoname
@@ -35,7 +51,7 @@ class DocType(TransactionBase):
   #====================================
   def pull_delivery_note_details(self):
     self.validate_prev_docname()
-    self.doclist = get_obj('DocType Mapper', 'Delivery Note-Installation Note').dt_map('Delivery Note', 'Installation Note', self.doc.delivery_note_no, self.doc, self.doclist, "[['Delivery Note', 'Installation Note'],['Delivery Note Detail', 'Installed Item Details']]")
+    self.doclist = get_obj('DocType Mapper', 'Delivery Note-Installation Note').dt_map('Delivery Note', 'Installation Note', self.doc.delivery_note_no, self.doc, self.doclist, "[['Delivery Note', 'Installation Note'],['Delivery Note Item', 'Installation Note Item']]")
   
   # Validates that Delivery Note is not pulled twice 
   #============================================
@@ -98,9 +114,9 @@ class DocType(TransactionBase):
   #get list of serial no from previous_doc
   #----------------------------------------------
   def get_prevdoc_serial_no(self, prevdoc_detail_docname, prevdoc_docname):
-    from material_management.doctype.stock_ledger.stock_ledger import get_sr_no_list
+    from stock.doctype.stock_ledger.stock_ledger import get_sr_no_list
 	
-    res = sql("select serial_no from `tabDelivery Note Detail` where name = '%s' and parent ='%s'" % (prevdoc_detail_docname, prevdoc_docname))
+    res = sql("select serial_no from `tabDelivery Note Item` where name = '%s' and parent ='%s'" % (prevdoc_detail_docname, prevdoc_docname))
     return get_sr_no_list(res[0][0])
     
   #check if all serial nos from current record exist in resp delivery note
@@ -122,7 +138,7 @@ class DocType(TransactionBase):
       
       if d.serial_no:
 
-        sr_list = get_sr_no_list(d.serial_no, d.qty)
+        sr_list = get_sr_no_list(d.serial_no, d.qty, d.item_code)
         self.is_serial_no_exist(d.item_code, sr_list)
         
         prevdoc_s_no = self.get_prevdoc_serial_no(d.prevdoc_detail_docname, d.prevdoc_docname)

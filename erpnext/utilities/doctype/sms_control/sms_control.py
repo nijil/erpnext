@@ -1,3 +1,19 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
@@ -53,17 +69,9 @@ class DocType:
 		return validated_receiver_list
 
 
-	# Connect Gateway
-	# =========================================================
-	def connect_gateway(self):
-		"login to gateway"
-		from webnotes.utils.webservice import FrameworkServer
-		fw = FrameworkServer('www.erpnext.com', '/', '__system@webnotestech.com', 'password', https=1)
-		return fw
-
 	def get_sender_name(self):
 		"returns name as SMS sender"
-		sender_name = webnotes.conn.get_value('Manage Account', None, 'sms_sender_name') or 'ERPNXT'
+		sender_name = webnotes.conn.get_value('Global Defaults', None, 'sms_sender_name') or 'ERPNXT'
 		if len(sender_name) > 6:
 			msgprint("""
 				As per TRAI rule, sender name must be exactly 6 characters.
@@ -101,8 +109,7 @@ class DocType:
 		if get_value('SMS Settings', None, 'sms_gateway_url'):
 			ret = self.send_via_personalized_gateway(arg)
 			msgprint(ret)
-		else:
-			ret = self.send_via_erpnext_gateway(arg)
+
 
 	# Send sms via personalized gateway
 	# ==========================================================
@@ -118,30 +125,6 @@ class DocType:
 			resp.append(self.send_request(ss.doc.sms_gateway_url, args))
 
 		return resp
-
-	# Send sms via ERPNext gateway
-	# ==========================================================
-	def send_via_erpnext_gateway(self, arg):
-		fw = self.connect_gateway()
-		ret = fw.run_method(method = 'erpnext_utils.sms_control.send_sms', args = arg)
-
-		if ret.get('exc'):
-			msgprint(ret['exc'])
-			raise Exception
-		elif ret['message']:
-			sms_sent = cint(ret['message']['sms_sent'])
-			sms_bal = cint(ret['message']['sms_balance'])
-			self.create_sms_log(arg, ret['message']['sms_sent'])
-
-			if not sms_sent:
-				if sms_bal < len(arg['receiver_list']):
-					msgprint("You do not have enough SMS balance. Current SMS Balance: " + cstr(sms_bal) + "\nYou can send mail to sales@erpnext.com to buy additional sms packages")
-					raise Exception
-				else:
-					msgprint("Message sent failed. May be numbers are invalid or some other issues.")
-			else:
-				msgprint(cstr(sms_sent) + " message sucessfully sent!\nCurrent SMS Balance: " + cstr(cint(ret['message']['sms_balance']) - cint(ret['message']['sms_sent'])))
-
 
 	# Send Request
 	# =========================================================
@@ -166,8 +149,6 @@ class DocType:
 			api_url += '?'
 		return server, api_url
 
-		
-
 
 	# Create SMS Log
 	# =========================================================
@@ -180,19 +161,3 @@ class DocType:
 		sl.no_of_requested_sms = len(arg['receiver_list'])
 		sl.no_of_sent_sms = sent_sms
 		sl.save(new=1)
-
-	# Get SMS Balance
-	# =========================================================
-	def get_sms_balance(self):
-		arg = { 'account_name'	: webnotes.conn.get_value('Control Panel',None,'account_id') }
-		if get_value('SMS Settings', None, 'sms_gateway_url'):
-			ret = {}
-		else:
-			fw = self.connect_gateway()
-			ret = fw.run_method(mothod = 'erpnext_utils.sms_control.get_sms_balance', args = arg)
-
-		if ret.get('exc'):
-			msgprint(ret['exc'])
-			raise Exception
-		else:
-			msgprint("Current SMS Balance: " + cstr(ret['message']) + "\nYou can send mail to sales@erpnext.com to buy sms packages")

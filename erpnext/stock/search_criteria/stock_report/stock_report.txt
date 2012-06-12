@@ -3,31 +3,31 @@
 
 	# These values are common in all dictionaries
 	{
-		'creation': '2010-11-02 15:37:37',
+		'creation': '2012-04-03 12:49:53',
 		'docstatus': 0,
-		'modified': '2010-11-02 15:35:12',
-		'modified_by': 'Administrator',
-		'owner': 'Administrator'
+		'modified': '2012-04-03 12:49:53',
+		'modified_by': u'Administrator',
+		'owner': u'Administrator'
 	},
 
 	# These values are common for all Search Criteria
 	{
-		'columns': 'Stock Ledger Entry\x01ID',
-		'criteria_name': 'Stock Report',
-		'doc_type': 'Stock Ledger Entry',
+		'columns': u'Stock Ledger Entry\x01ID',
+		'criteria_name': u'Stock Report',
+		'doc_type': u'Stock Ledger Entry',
 		'doctype': 'Search Criteria',
-		'filters': "{'Stock Ledger Entry\x01Is Cancelled':'','Stock Ledger Entry\x01Is Stock Entry':''}",
-		'module': 'Stock',
+		'filters': u"{'Stock Ledger Entry\x01Is Cancelled':'','Stock Ledger Entry\x01Is Stock Entry':''}",
+		'module': u'Stock',
 		'name': '__common__',
 		'page_len': 50,
-		'sort_by': '`tabStock Ledger Entry`.`name`',
-		'sort_order': 'DESC',
-		'standard': 'Yes'
+		'sort_by': u'`tabStock Ledger Entry`.`name`',
+		'sort_order': u'DESC',
+		'standard': u'Yes'
 	},
 
 	# Search Criteria, stock_report
 	{
 		'doctype': 'Search Criteria',
-		'name': 'stock_report'
+		'name': u'stock_report'
 	}
 ]

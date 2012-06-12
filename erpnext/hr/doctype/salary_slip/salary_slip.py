@@ -1,9 +1,25 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
-from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
+from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
@@ -57,7 +73,7 @@ class DocType(TransactionBase):
 		self.doc.clear_table(self.doclist, 'earning_details')
 		self.doc.clear_table(self.doclist, 'deduction_details')
 
-		get_obj('DocType Mapper', 'Salary Structure-Salary Slip').dt_map('Salary Structure', 'Salary Slip', struct, self.doc, self.doclist, "[['Salary Structure', 'Salary Slip'],['Earning Detail', 'SS Earning Detail'],['Deduction Detail','SS Deduction Detail']]")
+		get_obj('DocType Mapper', 'Salary Structure-Salary Slip').dt_map('Salary Structure', 'Salary Slip', struct, self.doc, self.doclist, "[['Salary Structure', 'Salary Slip'],['Salary Structure Earning', 'Salary Slip Earning'],['Salary Structure Deduction','Salary Slip Deduction']]")
 
 		basic_info = sql("select bank_name, bank_ac_no, esic_card_no, pf_number from `tabEmployee` where name ='%s'" % self.doc.employee)
 		self.doc.bank_name = basic_info[0][0]
@@ -93,9 +109,9 @@ class DocType(TransactionBase):
 	# Calculate LWP
 	#=======================================================
 	def calculate_lwp(self, m):
-		holidays = sql("select t1.holiday_date from `tabHoliday List Detail` t1, tabEmployee t2 where t1.parent = t2.holiday_list and t2.name = '%s' and t1.holiday_date between '%s' and '%s'" % (self.doc.employee, m[1], m[2]))
+		holidays = sql("select t1.holiday_date from `tabHoliday` t1, tabEmployee t2 where t1.parent = t2.holiday_list and t2.name = '%s' and t1.holiday_date between '%s' and '%s'" % (self.doc.employee, m[1], m[2]))
 		if not holidays:
-			holidays = sql("select t1.holiday_date from `tabHoliday List Detail` t1, `tabHoliday List` t2 where t1.parent = t2.name and ifnull(t2.is_default, 0) = 1 and t2.fiscal_year = '%s'" % self.doc.fiscal_year)
+			holidays = sql("select t1.holiday_date from `tabHoliday` t1, `tabHoliday List` t2 where t1.parent = t2.name and ifnull(t2.is_default, 0) = 1 and t2.fiscal_year = '%s'" % self.doc.fiscal_year)
 		holidays = [cstr(i[0]) for i in holidays]
 		lwp = 0
 		for d in range(m[3]):
@@ -172,12 +188,13 @@ class DocType(TransactionBase):
 	# Send mail
 	#=======================================================
 	def send_mail_funct(self):	 
+		from webnotes.utils.email_lib import sendmail
 		emailid_ret=sql("select company_email from `tabEmployee` where name = '%s'"%self.doc.employee)
 		if emailid_ret:
 			receiver = cstr(emailid_ret[0][0]) 
 			subj = 'Salary Slip - ' + cstr(self.doc.month) +'/'+cstr(self.doc.fiscal_year)
-			earn_ret=sql("select e_type,e_modified_amount from `tabSS Earning Detail` where parent = '%s'"%self.doc.name)
-			ded_ret=sql("select d_type,d_modified_amount from `tabSS Deduction Detail` where parent = '%s'"%self.doc.name)
+			earn_ret=sql("select e_type,e_modified_amount from `tabSalary Slip Earning` where parent = '%s'"%self.doc.name)
+			ded_ret=sql("select d_type,d_modified_amount from `tabSalary Slip Deduction` where parent = '%s'"%self.doc.name)
 		 
 			earn_table = ''
 			ded_table = ''
@@ -262,6 +279,6 @@ class DocType(TransactionBase):
 					<td width='25%%'><b>Net Pay(in words) : </td><td colspan = '3' width = '50%%'>%s</b></td>
 				</tr>
 			</table></div>'''%(cstr(letter_head[0][0]),cstr(self.doc.employee), cstr(self.doc.employee_name), cstr(self.doc.month), cstr(self.doc.fiscal_year), cstr(self.doc.department), cstr(self.doc.branch), cstr(self.doc.designation), cstr(self.doc.grade), cstr(self.doc.bank_account_no), cstr(self.doc.bank_name), cstr(self.doc.arrear_amount), cstr(self.doc.payment_days), earn_table, ded_table, cstr(flt(self.doc.gross_pay)), cstr(flt(self.doc.total_deduction)), cstr(flt(self.doc.net_pay)), cstr(self.doc.total_in_words))
-			sendmail([receiver], sender='automail@erpnext.com', subject=subj, parts=[['text/plain', msg]])
+			sendmail([receiver], subject=subj, msg = msg)
 		else:
 			msgprint("Company Email ID not found.")

@@ -1,9 +1,25 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Please edit this list and import only required elements
 import webnotes
 
 from webnotes.utils import add_days, add_months, add_years, cint, cstr, date_diff, default_fields, flt, fmt_money, formatdate, generate_hash, getTraceback, get_defaults, get_first_day, get_last_day, getdate, has_common, month_name, now, nowdate, replace_newlines, sendmail, set_default, str_esc_quote, user_format, validate_email_add
 from webnotes.model import db_exists
-from webnotes.model.doc import Document, addchild, removechild, getchildren, make_autoname, SuperDocType
+from webnotes.model.doc import Document, addchild, getchildren, make_autoname
 from webnotes.model.doclist import getlist, copy_doclist
 from webnotes.model.code import get_obj, get_server_obj, run_server_obj, updatedb, check_syntax
 from webnotes import session, form, is_testing, msgprint, errprint
@@ -43,48 +59,15 @@ class DocType:
       msgprint("Employee's attendance already marked.")
       raise Exception
       
-  #validation - leave_type is mandatory for status absent/ half day else not required to entered.
-  def validate_status(self):
-    if self.doc.status == 'Present' and self.doc.leave_type:
-      msgprint("You can not enter leave type for attendance status 'Present'")
-      raise Exception
-
-    elif (self.doc.status == 'Absent' or self.doc.status == 'Half Day') and not self.doc.leave_type:
-      msgprint("Please enter leave type for attendance status 'Absent'")
-      raise Exception
   
   #check for already record present in leave transaction for same date
   def check_leave_record(self):
     if self.doc.status == 'Present':
-      chk = sql("select name from `tabLeave Transaction` where employee=%s and (from_date <= %s and to_date >= %s) and status = 'Submitted' and leave_transaction_type = 'Deduction' and docstatus!=2", (self.doc.employee, self.doc.att_date, self.doc.att_date))
+      chk = sql("select name from `tabLeave Application` where employee=%s and (from_date <= %s and to_date >= %s) and docstatus!=2", (self.doc.employee, self.doc.att_date, self.doc.att_date))
       if chk:
         msgprint("Leave Application created for employee "+self.doc.employee+" whom you are trying to mark as 'Present' ")
         raise Exception
   
-  #For absent/ half day record - check for leave balances of the employees 
-  def validate_leave_type(self):
-    if not self.doc.status =='Present' and self.doc.leave_type not in ('Leave Without Pay','Compensatory Off'):
-      #check for leave allocated to employee from leave transaction
-      ret = sql("select name from `tabLeave Transaction` where employee = '%s' and leave_type = '%s' and leave_transaction_type = 'Allocation' and fiscal_year = '%s'"%(self.doc.employee,self.doc.leave_type,self.doc.fiscal_year))   
-      
-      #if leave allocation is present then calculate leave balance i.e. sum(allocation) - sum(deduction) 
-      if ret:
-        q1 = 'SUM(CASE WHEN leave_transaction_type = "Allocation" THEN total_leave ELSE 0 END)-SUM(CASE WHEN leave_transaction_type = "Deduction" THEN total_leave ELSE 0 END)'
-        q2 = "select %s from `tabLeave Transaction` where employee = '%s' and leave_type = '%s' and fiscal_year = '%s' and docstatus = 1"
-        
-        res = sql(q2%(q1,self.doc.employee,self.doc.leave_type,self.doc.fiscal_year))
-       
-        if res:
-          if self.doc.status == 'Absent' and flt(res[0][0]) < 1:
-            msgprint("%s balances are insufficient to cover a day absence, please select other leave type."%self.doc.leave_type)
-            raise Exception
-          if self.doc.status == 'Half Day' and flt(res[0][0]) < 0.5:
-            msgprint("%s balances are insufficient to cover a half day absence, please select other leave type."%self.doc.leave_type)
-            raise Exception
-
-      else:
-        msgprint("Leave Allocation for employee %s not done.\n You can allocate leaves from HR -> Leave Transaction OR HR -> Leave Control Panel."%self.doc.employee)
-        raise Exception
          
   def validate_fiscal_year(self):
     fy=sql("select year_start_date from `tabFiscal Year` where name='%s'"% self.doc.fiscal_year)
@@ -113,7 +96,6 @@ class DocType:
   def validate(self):
     self.validate_fiscal_year()
     self.validate_att_date()
-    #self.validate_leave_type()
     self.validate_duplicate_record()
     #self.validate_status()
     self.check_leave_record()

@@ -1,3 +1,19 @@
+# ERPNext - web based ERP (http://erpnext.com)
+# Copyright (C) 2012 Web Notes Technologies Pvt Ltd
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import webnotes
 from webnotes import msgprint
 
@@ -16,86 +32,57 @@ feed_dict = {
 
 	# Stock
 	'Delivery Note':	['[%(status)s] To %(customer_name)s', '#4169E1'],
+	'Purchase Receipt': ['[%(status)s] From %(supplier)s', '#4169E1'],
 
 	# Accounts
 	'Journal Voucher':      ['[%(voucher_type)s] %(name)s', '#4169E1'],
-	'Payable Voucher':      ['To %(supplier_name)s for %(currency)s %(grand_total_import)s', '#4169E1'],
-	'Receivable Voucher':['To %(customer_name)s for %(currency)s %(grand_total_export)s', '#4169E1'],
+	'Purchase Invoice':      ['To %(supplier_name)s for %(currency)s %(grand_total_import)s', '#4169E1'],
+	'Sales Invoice':['To %(customer_name)s for %(currency)s %(grand_total_export)s', '#4169E1'],
 
 	# HR
-	'Expense Voucher':      ['[%(approval_status)s] %(name)s by %(employee_name)s', '#4169E1'],
+	'Expense Claim':      ['[%(approval_status)s] %(name)s by %(employee_name)s', '#4169E1'],
 	'Salary Slip':	  ['%(employee_name)s for %(month)s %(fiscal_year)s', '#4169E1'],
 	'Leave Transaction':['%(leave_type)s for %(employee)s', '#4169E1'],
 
 	# Support
 	'Customer Issue':       ['[%(status)s] %(description)s by %(customer_name)s', '#000080'],
 	'Maintenance Visit':['To %(customer_name)s', '#4169E1'],
-	'Support Ticket':       ['[%(status)s] %(subject)s', '#000080']	
-}
-
-feed_dict_color = {
-	# Project
-	'Project': '#000080',
+	'Support Ticket':       ["[%(status)s] %(subject)s", '#000080'],
 	
-	# Sales
-	'Lead':	'#000080',
-	'Quotation': '#4169E1',
-	'Sales Order': '#4169E1',
-
-	# Purchase
-	'Supplier': '#6495ED',
-	'Purchase Order': '#4169E1',
-
-	# Stock
-	'Delivery Note': '#4169E1',
-
-	# Accounts
-	'Journal Voucher': '#4169E1',
-	'Payable Voucher': '#4169E1',
-	'Receivable Voucher': '#4169E1',
-
-	# HR
-	'Expense Voucher': '#4169E1',
-	'Salary Slip': '#4169E1',
-	'Leave Transaction': '#4169E1',
-
-	# Support
-	'Customer Issue': '#000080',
-	'Maintenance Visit': '#4169E1',
-	'Support Ticket': '#000080'
+	# Website
+	'Web Page': ['%(title)s', '#000080'],
+	'Blog': ['%(title)s', '#000080']
 }
 
-def make_feed(doc, subject, color):
+def make_feed(feedtype, doctype, name, owner, subject, color):
 	"makes a new Feed record"
 	#msgprint(subject)
 	from webnotes.model.doc import Document
-	webnotes.conn.sql("delete from tabFeed where doc_type=%s and doc_name=%s", (doc.doctype, doc.name))
+	from webnotes.utils import get_fullname
+
+	if feedtype in ('Login', 'Comment', 'Assignment'):
+		# delete old login, comment feed
+		webnotes.conn.sql("""delete from tabFeed where 
+			datediff(curdate(), creation) > 7 and doc_type in ('Comment', 'Login', 'Assignment')""")
+	else:
+		# one feed per item
+		webnotes.conn.sql("""delete from tabFeed
+			where doc_type=%s and doc_name=%s 
+			and ifnull(feed_type,'') != 'Comment'""", (doctype, name))
+
 	f = Document('Feed')
-	f.doc_type = doc.doctype
-	f.doc_name = doc.name
+	f.owner = owner
+	f.feed_type = feedtype
+	f.doc_type = doctype
+	f.doc_name = name
 	f.subject = subject
 	f.color = color
-	f.save(1)
+	f.full_name = get_fullname(owner)
+	f.save()
 
-def update_feed1(doc):   
-	"adds a new feed"
-	prop_rec = webnotes.conn.sql("select value from `tabProperty Setter` where doc_type = %s and property = 'subject'", (doc.doctype))
-	if prop_rec:		
-		subject = prop_rec[0][0]
-	else:	
-		rec = webnotes.conn.sql("select subject from tabDocType where name=%s", (doc.doctype))
-		subject = rec[0][0]
-	
-	subject, color = [subject, feed_dict_color.get(doc.doctype)]
-	if subject:
-		subject = subject % doc.fields
-		make_feed(doc, subject, color)
-		
 def update_feed(doc, method=None):   
 	"adds a new feed"
-	if method=='validate':
-		return
-	subject, color = feed_dict.get(doc.doctype, [None, None])
-	if subject:
-		subject = subject % doc.fields
-		make_feed(doc, subject, color)
+	if method in ['on_update', 'on_submit']:
+		subject, color = feed_dict.get(doc.doctype, [None, None])
+		if subject:			
+			make_feed('', doc.doctype, doc.name, doc.owner, subject % doc.fields, color)
